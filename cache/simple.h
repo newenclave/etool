@@ -13,8 +13,8 @@ namespace etool { namespace cache {
     template <typename T,
               typename MutexType = std::mutex,
               template <typename> class ValueTrait = traits::shared>
-    class simple
-    {
+    class simple {
+
         typedef std::lock_guard<MutexType> locker_type;
 
     public:
