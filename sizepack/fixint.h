@@ -11,8 +11,8 @@ namespace etool { namespace sizepack {
 
         typedef SizeType size_type;
 
-        static const size_t max_length = sizeof(SizeType);
-        static const size_t min_length = sizeof(SizeType);
+        static const size_t max_length = sizeof(size_type);
+        static const size_t min_length = sizeof(size_type);
 
         static
         bool valid_length( size_t len )
