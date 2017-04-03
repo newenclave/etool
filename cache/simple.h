@@ -11,23 +11,16 @@
 namespace etool { namespace cache {
 
     template <typename T,
-              typename MutexType  = std::mutex,
-              typename ValueTrait = traits::shared<T> >
+              typename MutexType = std::mutex,
+              template <typename> class ValueTrait = traits::shared>
     class simple
     {
         typedef std::lock_guard<MutexType> locker_type;
 
-        void clear_unsafe( )
-        {
-            while( !cache_.empty( ) ) {
-                ValueTrait::destroy( std::move(cache_.front( )) );
-                cache_.pop( );
-            }
-        }
-
     public:
 
-        typedef typename ValueTrait::value_type value_type;
+        typedef ValueTrait<T> trait_type;
+        typedef typename trait_type::value_type value_type;
         typedef MutexType                       mutex_type;
 
         simple( size_t maximum )
@@ -54,7 +47,7 @@ namespace etool { namespace cache {
         {
             locker_type l(cache_lock_);
             if( cache_.empty( ) ) {
-                return ValueTrait::create(std::forward<Args>(args)...);
+                return trait_type::create(std::forward<Args>(args)...);
             } else {
                 value_type n = std::move(cache_.front( ));
                 cache_.pop( );
@@ -78,6 +71,14 @@ namespace etool { namespace cache {
 
     private:
 
+        void clear_unsafe( )
+        {
+            while( !cache_.empty( ) ) {
+                trait_type::destroy( std::move(cache_.front( )) );
+                cache_.pop( );
+            }
+        }
+
         size_t                 maximum_;
         std::queue<value_type> cache_;
         mutable mutex_type     cache_lock_;
@@ -85,4 +86,4 @@ namespace etool { namespace cache {
 
 }}
 
-#endif // SRPC_COMMON_CHACHE_SIMPLE_H
+#endif // ETOOL_CHACHE_SIMPLE_H

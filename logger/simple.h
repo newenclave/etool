@@ -59,12 +59,13 @@ namespace etool { namespace logger {
         using log_data_sptr = std::shared_ptr<log_data>;
         using log_data_uptr = std::unique_ptr<log_data>;
 
-        using cache_trait   = cache::traits::unique<log_data>;
+        template <typename T>
+        using cache_trait   = cache::traits::unique<T>;
+        using cache_type    = cache::simple<log_data, std::mutex, cache_trait>;
 
 //        using cache_type = cache::none<log_data>;
 //        using cache_type = cache::simple<log_data>;
 
-        using cache_type = cache::simple<log_data, std::mutex, cache_trait>;
 
         using queue_element = typename cache_type::value_type;
 
