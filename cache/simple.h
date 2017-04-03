@@ -19,9 +19,10 @@ namespace etool { namespace cache {
 
     public:
 
-        typedef ValueTrait<T> trait_type;
-        typedef typename trait_type::value_type value_type;
-        typedef MutexType                       mutex_type;
+        using element_type  = T;
+        using trait_type    = ValueTrait<element_type>;
+        using value_type    = typename trait_type::value_type;
+        using mutex_type    = MutexType;
 
         simple( size_t maximum )
             :maximum_(maximum)
