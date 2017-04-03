@@ -42,13 +42,9 @@ namespace etool { namespace sizepack {
 
         static size_t packed_length( size_type input )
         {
-            if( input > 0 ) {
-                size_t res = 0;
-                while( input ) ++res, input >>= 7;
-                return res;
-            } else {
-                return 0;
-            }
+            size_t res = 0;
+            while( input ) ++res, input >>= 7;
+            return res ? res : 1;
         }
 
         static std::string pack( size_type size )
