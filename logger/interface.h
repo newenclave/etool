@@ -10,63 +10,58 @@ namespace etool { namespace logger {
 
         struct string_accumulator {
 
-            string_accumulator( interface &parent, int lev, std::string name )
+            string_accumulator( interface *parent, int lev, std::string name )
                 :parent_(parent)
                 ,level_(lev)
                 ,name_(name)
                 ,act_(true)
             { }
 
-            string_accumulator( string_accumulator &other )
-                :parent_(other.parent_)
-                ,level_(other.level_)
-                ,act_(true)
-            {
-                name_.swap(other.name_);
-                other.act_ = false;
-            }
-
-            string_accumulator& operator = ( string_accumulator &other )
-            {
-                name_.swap(other.name_);
-                level_     = other.level_;
-                other.act_ = false;
-                return *this;
-            }
+            string_accumulator( string_accumulator & ) = delete;
+            string_accumulator& operator = ( string_accumulator & ) = delete;
 
             string_accumulator( string_accumulator &&other )
                 :parent_(other.parent_)
                 ,level_(other.level_)
+                ,name_(std::move(other.name_))
                 ,act_(true)
             {
-                name_.swap(other.name_);
                 other.act_ = false;
             }
 
             string_accumulator& operator = ( string_accumulator &&other )
             {
-                name_.swap(other.name_);
-                level_     = other.level_;
-                other.act_ = false;
+                swap( other );
                 return *this;
             }
 
             ~string_accumulator( )
             {
-                if( act_ && ( level_ <= parent_.level_ ) ) {
-                    parent_.send_data( level_, name_, oss_.str( ) );
+                if( act_ && ( level_ <= parent_->level_ ) ) {
+                    parent_->send_data( level_, name_, std::move(oss_.str( )) );
                 }
             }
 
             template<typename T>
             string_accumulator &operator << ( const T &data )
             {
-                if( level_ <= parent_.level_ ) {
+                if( level_ <= parent_->level_ ) {
                     oss_ << data;
                 }
                 return *this;
             }
-            interface              &parent_;
+
+            void swap( string_accumulator &other ) noexcept
+            {
+                std::swap( parent_, other.parent_ );
+                std::swap( level_,  other.level_  );
+                std::swap( act_,    other.act_    );
+
+                name_.swap( other.name_ );
+                oss_.swap ( other.oss_  );
+            }
+
+            interface              *parent_;
             int                     level_;
             std::string             name_;
             std::ostringstream      oss_;
@@ -81,26 +76,26 @@ namespace etool { namespace logger {
 
         string_accumulator operator ( )( int lev, const std::string &name )
         {
-            string_accumulator res( *this, lev, name );
-            return res;
+            string_accumulator res( this, lev, name );
+            return std::move(res);
         }
 
         string_accumulator operator ( )( int lev )
         {
-            string_accumulator res( *this, lev, "" );
-            return res;
+            string_accumulator res( this, lev, "" );
+            return std::move(res);
         }
 
         string_accumulator operator ( )( const std::string &name )
         {
-            string_accumulator res( *this, level_, name );
-            return res;
+            string_accumulator res( this, level_, name );
+            return std::move(res);
         }
 
         string_accumulator operator ( )( )
         {
-            string_accumulator res( *this, level_, "" );
-            return res;
+            string_accumulator res( this, level_, "" );
+            return std::move(res);
         }
 
         interface( int lev )

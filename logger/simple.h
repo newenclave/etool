@@ -9,6 +9,9 @@
 #include "etool/queues/condition/base.h"
 #include "etool/observers/define.h"
 
+#include "etool/cache/simple.h"
+#include "etool/cache/none.h"
+
 namespace etool { namespace logger {
 
     class simple: public etool::logger::interface {
@@ -42,21 +45,46 @@ namespace etool { namespace logger {
             std::thread::id  thread;
             std::string      thread_data;
             void_call        call;
+            log_data( )
+            {
+                //std::cerr << "ctor\n";
+            }
+
+            ~log_data( )
+            {
+                //std::cerr << "dtor\n";
+            }
         };
 
         using log_data_sptr = std::shared_ptr<log_data>;
         using log_data_uptr = std::unique_ptr<log_data>;
+
+        using cache_trait   = cache::traits::unique<log_data>;
+
+//        using cache_type = cache::none<log_data>;
+//        using cache_type = cache::simple<log_data>;
+
+        using cache_type = cache::simple<log_data, std::mutex, cache_trait>;
+
+        using queue_element = typename cache_type::value_type;
 
         ETOOL_OBSERVER_DEFINE( on_write, void(const log_data &) );
 
     public:
 
         using qresult    = etool::queues::condition::result;
-        using queue_type = etool::queues::condition::base<log_data_sptr>;
+        using queue_type = etool::queues::condition::base<queue_element>;
 
         simple( int lvl )
             :etool::logger::interface(lvl)
+            ,cache_(100)
         { }
+
+        ~simple( )
+        { }
+
+        simple( const simple & ) = delete;
+        simple& operator = ( const simple & ) = delete;
 
         static
         log_time now( )
@@ -76,17 +104,19 @@ namespace etool { namespace logger {
             using std::chrono::high_resolution_clock;
             using std::chrono::duration_cast;
 
-            auto element = std::make_shared<log_data>( );
+            //auto element = std::make_shared<log_data>( ); //cache_.get( );
+            auto element = cache_.get( );
 
             element->when        = now( );
             element->lvl         = lev;
             element->thread      = std::this_thread::get_id( );
             element->thread_data = thread_data( );
+            element->call        = std::move(void_call( ));
 
             element->name.assign( name );
-            element->data.swap(data);
+            element->data.swap( data );
 
-            queue_.push( element );
+            queue_.push( std::move(element) );
         }
 
         void stop( )
@@ -106,19 +136,20 @@ namespace etool { namespace logger {
 
         void attach( )
         {
-            log_data_sptr data;
+            queue_element data;
             while( qresult::WAIT_OK == queue_.wait( data ) ) {
                 if( data->call ) {
                     data->call( );
                 } else {
                     on_write( *data );
                 }
+                cache_.push( std::move(data) );
             }
         }
 
         void run_one( )
         {
-            log_data_sptr data;
+            queue_element data;
             bool pop = queue_.pop( data );
             if( pop ) {
                 if( data->call ) {
@@ -126,12 +157,14 @@ namespace etool { namespace logger {
                 } else {
                     on_write( *data );
                 }
+                cache_.push( std::move(data) );
             }
         }
 
         void dispatch( void_call call )
         {
-            auto element = std::make_shared<log_data>( );
+            //auto element = std::make_shared<log_data>( );
+            auto element = cache_.get( );
             element->call.swap(call);
             queue_.push( std::move( element ) );
         }
@@ -159,6 +192,7 @@ namespace etool { namespace logger {
         }
 
         queue_type queue_;
+        cache_type cache_;
     };
 
 }}

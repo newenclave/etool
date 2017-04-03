@@ -143,6 +143,14 @@ namespace etool { namespace queues { namespace condition {
             }
         }
 
+        template<typename CallType>
+        void foreach_unsafe( CallType call )
+        {
+            for( auto &c: queue_ ) {
+                call( c );
+            }
+        }
+
         bool canceled( ) const
         {
             locker_type l(queue_lock_);
