@@ -17,7 +17,7 @@ namespace traits {
         static
         void push( queue_type &q, value_type value )
         {
-            q.push( std::move(value) );
+            q.emplace( std::move(value) );
         }
 
 //        static

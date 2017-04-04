@@ -16,7 +16,7 @@ namespace etool { namespace queues { namespace condition {
     };
 
     template <typename ValueType,
-              typename QueueTrait = traits::simple<ValueType>,
+              template <typename> class QueueTrait = traits::simple,
               typename MutexType = std::mutex,
               typename ConditionalType = std::condition_variable
              >
@@ -24,8 +24,8 @@ namespace etool { namespace queues { namespace condition {
 
     public:
 
-        typedef QueueTrait                      q_traits;
         typedef ValueType                       value_type;
+        typedef QueueTrait<value_type>          q_traits;
         typedef MutexType                       mutex_type;
         typedef std::unique_lock<mutex_type>    locker_type;
         typedef std::condition_variable         conditional_type;

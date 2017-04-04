@@ -1,5 +1,5 @@
-#ifndef RS_SIZEPACK_FIXINT_H
-#define RS_SIZEPACK_FIXINT_H
+#ifndef ETOOL_SIZEPACK_FIXINT_H
+#define ETOOL_SIZEPACK_FIXINT_H
 
 #include <cstdint>
 #include <algorithm>
@@ -29,7 +29,7 @@ namespace etool { namespace sizepack {
         template <typename IterT>
         static bool valid_packed( const IterT &begin, const IterT &end )
         {
-            return valid_length( size_length(begin, end) );
+            return valid_length( packed_length( begin, end ) );
         }
 
         static size_t result_length( size_type )

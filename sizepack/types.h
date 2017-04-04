@@ -1,5 +1,5 @@
-#ifndef RS_SIZEPACK_TYPES_H
-#define RS_SIZEPACK_TYPES_H
+#ifndef ETOOL_SIZEPACK_TYPES_H
+#define ETOOL_SIZEPACK_TYPES_H
 
 #include <cstdint>
 

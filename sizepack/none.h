@@ -1,5 +1,5 @@
-#ifndef RS_SIZEPACK_NONE_H
-#define RS_SIZEPACK_NONE_H
+#ifndef ETOOL_SIZEPACK_NONE_H
+#define ETOOL_SIZEPACK_NONE_H
 
 #include <string>
 #include <algorithm>

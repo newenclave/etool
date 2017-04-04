@@ -1,5 +1,5 @@
-#ifndef RS_SIZEPACK_ZIGZAG_H
-#define RS_SIZEPACK_ZIGZAG_H
+#ifndef ETOOL_SIZEPACK_ZIGZAG_H
+#define ETOOL_SIZEPACK_ZIGZAG_H
 
 #include "etool/sizepack/types.h"
 

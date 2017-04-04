@@ -16,9 +16,9 @@ namespace traits {
         typedef std::vector<value_type> queue_type;
 
         static
-        void push( queue_type &q, const value_type &value )
+        void push( queue_type &q, value_type value )
         {
-            q.push_back( value );
+            q.emplace_back( std::move(value) );
             std::push_heap( q.begin( ), q.end( ), LessType( ) );
         }
 
