@@ -76,13 +76,6 @@ namespace etool { namespace queues { namespace condition {
             queue_cond_.notify_one( );
         }
 
-//        void push( const value_type &new_value )
-//        {
-//            locker_type l(queue_lock_);
-//            q_traits::push( queue_, new_value );
-//            queue_cond_.notify_one( );
-//        }
-
         template <typename Duration>
         result wait_for( value_type &out, const Duration &dur )
         {

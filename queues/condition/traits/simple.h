@@ -20,12 +20,6 @@ namespace traits {
             q.emplace( std::move(value) );
         }
 
-//        static
-//        void push( queue_type &q, const value_type &value )
-//        {
-//            q.push( value );
-//        }
-
         static
         value_type &front( queue_type &q )
         {
