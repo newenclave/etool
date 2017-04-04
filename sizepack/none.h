@@ -22,7 +22,7 @@ namespace etool { namespace sizepack {
         }
 
         template <typename IterT>
-        static size_t size_length( IterT, const IterT & )
+        static size_t packed_length( IterT, const IterT & )
         {
             return 0;
         }
@@ -33,7 +33,7 @@ namespace etool { namespace sizepack {
             return true;
         }
 
-        static size_t packed_length( size_type )
+        static size_t result_length( size_type )
         {
             return max_length;
         }

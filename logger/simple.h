@@ -107,6 +107,7 @@ namespace etool { namespace logger {
 
             //auto element = std::make_shared<log_data>( ); //cache_.get( );
             auto element = cache_.get( );
+            //std::cout << cache_.size( ) << "\n";
 
             element->when        = now( );
             element->lvl         = lev;
@@ -148,7 +149,7 @@ namespace etool { namespace logger {
             }
         }
 
-        void run_one( )
+        bool run_one( )
         {
             queue_element data;
             bool pop = queue_.pop( data );
@@ -160,26 +161,36 @@ namespace etool { namespace logger {
                 }
                 cache_.push( std::move(data) );
             }
+            return pop;
         }
 
         void dispatch( void_call call )
         {
-            //auto element = std::make_shared<log_data>( );
             auto element = cache_.get( );
             element->call.swap(call);
             queue_.push( std::move( element ) );
         }
 
-        template <int Id = 0>
+        template <int Id>
         const std::string &thread_data( ) const
         {
             return get_thread_data<Id>( );
         }
 
-        template <int Id = 0>
-        void set_thread_data( const std::string &data )
+        const std::string &thread_data( ) const
         {
-            get_thread_data<Id>( ).assign( data );
+            return get_thread_data<0>( );
+        }
+
+        template <int Id>
+        void set_thread_data( std::string data )
+        {
+            get_thread_data<Id>( ).swap( std::move(data) );
+        }
+
+        void set_thread_data( std::string data )
+        {
+            get_thread_data<0>( ).swap( data );
         }
 
     private:

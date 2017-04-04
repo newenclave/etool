@@ -21,7 +21,7 @@ namespace etool { namespace sizepack {
         }
 
         template <typename IterT>
-        static size_t size_length( IterT begin, const IterT &end )
+        static size_t packed_length( IterT begin, const IterT &end )
         {
             return std::distance(begin, end) < max_length ? 0 : max_length;
         }
@@ -32,7 +32,7 @@ namespace etool { namespace sizepack {
             return valid_length( size_length(begin, end) );
         }
 
-        static size_t packed_length( size_type input )
+        static size_t result_length( size_type )
         {
             return max_length;
         }

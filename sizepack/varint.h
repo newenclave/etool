@@ -22,7 +22,7 @@ namespace etool { namespace sizepack {
         }
 
         template <typename IterT>
-        static size_t size_length( IterT begin, const IterT &end )
+        static size_t packed_length( IterT begin, const IterT &end )
         {
             size_t       length = 0x00;
             std::uint8_t last   = 0x80;
@@ -40,7 +40,7 @@ namespace etool { namespace sizepack {
             return valid_length( size_length(begin, end) );
         }
 
-        static size_t packed_length( size_type input )
+        static size_t result_length( size_type input )
         {
             size_t res = 0;
             while( input ) ++res, input >>= 7;
@@ -54,7 +54,7 @@ namespace etool { namespace sizepack {
                 res.push_back(static_cast<char>((size & 0x7F) | 0x80));
             }
             res.push_back(static_cast<char>(size));
-            return res;
+            return std::move(res);
         }
 
         static void pack( size_type size, std::string &res )
