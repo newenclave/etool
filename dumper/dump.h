@@ -189,7 +189,7 @@ namespace etool { namespace dumper {
         typedef ui64_to_hex hex_type;
     };
 
-    template <typename T>
+    template <typename T = ui8>
     struct make {
 
         typedef T value_type;
