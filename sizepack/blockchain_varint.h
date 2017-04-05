@@ -18,21 +18,21 @@ namespace etool { namespace sizepack {
         using u32_little = details::byte_order_little<std::uint32_t>;
         using u64_little = details::byte_order_little<std::uint64_t>;
 
-//        enum {
-//            BBP_VARINT16 = 0xFD,
-//            BBP_VARINT32 = 0xFE,
-//            BBP_VARINT64 = 0xFF
-//        } bbp_varint_t;
+        enum prefix_value {
+            PREFIX_VARINT16 = 0xFD,
+            PREFIX_VARINT32 = 0xFE,
+            PREFIX_VARINT64 = 0xFF,
+        };
 
         static
         size_t len_by_prefix( std::uint8_t prefix )
         {
             switch (prefix) {
-            case 0xFF:
+            case PREFIX_VARINT64:
                 return sizeof(std::uint64_t) + 1;
-            case 0xFE:
+            case PREFIX_VARINT32:
                 return sizeof(std::uint32_t) + 1;
-            case 0xFD:
+            case PREFIX_VARINT16:
                 return sizeof(std::uint16_t) + 1;
             default:
                 break;
@@ -84,13 +84,13 @@ namespace etool { namespace sizepack {
                 res[0] = static_cast<std::uint8_t>(size);
                 return 1;
             } else if( size <= 0xFFFF ) {
-                res[0] = static_cast<std::uint8_t>(0xFD);
+                res[0] = static_cast<std::uint8_t>(PREFIX_VARINT16);
                 return u16_little::write( size, &res[1] ) + 1;
             } else if( size <= 0xFFFFFFFF ) {
-                res[0] = static_cast<std::uint8_t>(0xFE);
+                res[0] = static_cast<std::uint8_t>(PREFIX_VARINT32);
                 return u32_little::write( size, &res[1] ) + 1;
             } else {
-                res[0] = static_cast<std::uint8_t>(0xFF);
+                res[0] = static_cast<std::uint8_t>(PREFIX_VARINT64);
                 return u64_little::write( size, &res[1] ) + 1;
             }
         }
@@ -123,10 +123,17 @@ namespace etool { namespace sizepack {
         static size_type unpack( IterT begin, const IterT &end )
         {
             size_type res = 0;
-            size_t shift = 0;
-            size_t len = len_by_prefix( *begin++ );
-            for( ; begin != end; ++begin, --len, shift += 8 ) {
-                res |= static_cast<size_type>(*begin) << shift;
+            size_t shift  = 0;
+            size_t len = len_by_prefix( *begin );
+            if( len == 1 ) {
+                return static_cast<size_type>(*begin);
+            } else {
+                for( ++begin; (begin != end) && (len > 0); ++begin, --len ) {
+                    res |= (static_cast<size_type>(
+                                static_cast<std::uint8_t>(*begin))
+                                    << shift );
+                    shift += 8;
+                }
             }
             return res;
         }
