@@ -16,7 +16,7 @@ namespace etool { namespace details {
     ///////////////////////// u8
     template <>
     struct byte_order<std::uint8_t, endian::BIG> {
-        typedef std::uint8_t value_type;
+        typedef       std::uint8_t  value_type;
 
         value_type value( value_type v )
         {
@@ -41,7 +41,8 @@ namespace etool { namespace details {
 
     template <>
     struct byte_order<std::uint8_t, endian::LITTLE> {
-        typedef std::uint8_t value_type;
+
+        typedef       std::uint8_t  value_type;
 
         value_type value( value_type v )
         {
@@ -55,6 +56,7 @@ namespace etool { namespace details {
             *reinterpret_cast<value_type *>(out) = v;
             return sizeof(value_type);
         }
+
         template <typename U>
         static
         value_type read( const U *out )
@@ -133,7 +135,7 @@ namespace etool { namespace details {
     ///////////////////////// u32
     template <>
     struct byte_order<std::uint32_t, endian::BIG> {
-        typedef std::uint32_t value_type;
+        typedef       std::uint32_t  value_type;
 
         static
         value_type value( value_type v )
@@ -169,7 +171,8 @@ namespace etool { namespace details {
 
     template <>
     struct byte_order<std::uint32_t, endian::LITTLE> {
-        typedef std::uint32_t value_type;
+
+        typedef       std::uint32_t  value_type;
 
         static
         value_type value( value_type v )
@@ -207,7 +210,8 @@ namespace etool { namespace details {
     ///////////////////////// u64
     template <>
     struct byte_order<std::uint64_t, endian::BIG> {
-        typedef std::uint64_t value_type;
+
+        typedef       std::uint64_t value_type;
 
         static
         value_type value( value_type v )
@@ -251,7 +255,8 @@ namespace etool { namespace details {
 
     template <>
     struct byte_order<std::uint64_t, endian::LITTLE> {
-        typedef std::uint64_t value_type;
+
+        typedef       std::uint64_t  value_type;
 
         static
         value_type value( value_type v )
@@ -292,6 +297,12 @@ namespace etool { namespace details {
                     ( static_cast<value_type>(i[0])       ) ;
         }
     };
+
+    template <typename T>
+    using byte_order_little = byte_order<T, endian::LITTLE>;
+
+    template <typename T>
+    using byte_order_big = byte_order<T, endian::BIG>;
 
 }}
 

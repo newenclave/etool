@@ -21,13 +21,15 @@ namespace etool { namespace details {
             return eness[res];
         }
 
-        static bool is_big_endian( )
+        static
+        bool is_big_endian( )
         {
             static const bool res = (get( ) == endian::BIG);
             return res;
         }
 
-        static bool is_little_endian( )
+        static
+        bool is_little_endian( )
         {
             static const bool res = (get( ) == endian::LITTLE);
             return res;
