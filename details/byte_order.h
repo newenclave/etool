@@ -14,8 +14,8 @@ namespace etool { namespace details {
     struct byte_order;
 
     ///////////////////////// u8
-    template <>
-    struct byte_order<std::uint8_t, endian::BIG> {
+    template <endian E>
+    struct byte_order<std::uint8_t, E> {
         typedef       std::uint8_t  value_type;
 
         value_type value( value_type v )
@@ -39,31 +39,31 @@ namespace etool { namespace details {
         }
     };
 
-    template <>
-    struct byte_order<std::uint8_t, endian::LITTLE> {
+//    template <>
+//    struct byte_order<std::uint8_t, endian::LITTLE> {
 
-        typedef       std::uint8_t  value_type;
+//        typedef       std::uint8_t  value_type;
 
-        value_type value( value_type v )
-        {
-            return v;
-        }
+//        value_type value( value_type v )
+//        {
+//            return v;
+//        }
 
-        template <typename U>
-        static
-        size_t write( value_type v, U *out )
-        {
-            *reinterpret_cast<value_type *>(out) = v;
-            return sizeof(value_type);
-        }
+//        template <typename U>
+//        static
+//        size_t write( value_type v, U *out )
+//        {
+//            *reinterpret_cast<value_type *>(out) = v;
+//            return sizeof(value_type);
+//        }
 
-        template <typename U>
-        static
-        value_type read( const U *out )
-        {
-            return *reinterpret_cast<const value_type *>(out);
-        }
-    };
+//        template <typename U>
+//        static
+//        value_type read( const U *out )
+//        {
+//            return *reinterpret_cast<const value_type *>(out);
+//        }
+//    };
 
     ///////////////////////// u16
     template <>
