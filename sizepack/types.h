@@ -2,6 +2,7 @@
 #define ETOOL_SIZEPACK_TYPES_H
 
 #include <cstdint>
+#include "etool/details/byte_order.h"
 
 namespace etool { namespace sizepack {
 
@@ -14,6 +15,9 @@ namespace etool { namespace sizepack {
         typedef std::uint8_t        unsigned_type;
         static const unsigned_type  top_bit         = 0x80;
         static const unsigned_type  top_bit_shift   = 7;
+
+//        typedef details::byte_order_little<unsigned_type> byte_order_little;
+//        typedef details::byte_order_big<unsigned_type>    byte_order_big;
     };
 
     template<>
@@ -22,6 +26,9 @@ namespace etool { namespace sizepack {
         typedef std::uint16_t       unsigned_type;
         static const unsigned_type  top_bit         = 0x8000;
         static const unsigned_type  top_bit_shift   = 15;
+
+//        typedef details::byte_order_little<unsigned_type> byte_order_little;
+//        typedef details::byte_order_big<unsigned_type>    byte_order_big;
     };
 
     template<>
@@ -30,6 +37,9 @@ namespace etool { namespace sizepack {
         typedef std::uint32_t       unsigned_type;
         static const unsigned_type  top_bit         = 0x80000000;
         static const unsigned_type  top_bit_shift   = 31;
+
+//        typedef details::byte_order_little<unsigned_type> byte_order_little;
+//        typedef details::byte_order_big<unsigned_type>    byte_order_big;
     };
 
     template<>
@@ -38,6 +48,9 @@ namespace etool { namespace sizepack {
         typedef std::uint64_t       unsigned_type;
         static const unsigned_type  top_bit         = 0x8000000000000000;
         static const unsigned_type  top_bit_shift   = 63;
+
+//        typedef details::byte_order_little<unsigned_type> byte_order_little;
+//        typedef details::byte_order_big<unsigned_type>    byte_order_big;
     };
 
 }}
