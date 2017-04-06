@@ -103,7 +103,6 @@ namespace etool { namespace sizepack {
         static
         size_t unpack( const void *data, size_t len, size_type *res )
         {
-
             const std::uint8_t *d = static_cast<const std::uint8_t *>(data);
 
             size_type     res_  = 0x00;

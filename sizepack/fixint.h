@@ -92,11 +92,11 @@ namespace etool { namespace sizepack {
         static
         size_t unpack( const void *data, size_t len, size_type *res )
         {
+            typedef const std::uint8_t cu8;
             if( len >= max_length ) {
                 if( res ) {
-                    const std::uint8_t *d =
-                            static_cast<const std::uint8_t *>(data);
-                    *res = unpack( d , d + len );
+                    *res = unpack( static_cast<cu8 *>(data),
+                                   static_cast<cu8 *>(data) + len );
                 }
                 return max_length;
             }
