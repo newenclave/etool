@@ -124,7 +124,7 @@ namespace etool { namespace sizepack {
         {
             size_type res = 0;
             size_t shift  = 0;
-            size_t len = len_by_prefix( *begin );
+            size_t len    = len_by_prefix( *begin );
             if( len == 1 ) {
                 return static_cast<size_type>(*begin);
             } else {
@@ -137,6 +137,44 @@ namespace etool { namespace sizepack {
             }
             return res;
         }
+
+        static
+        size_t unpack( const void *data, size_t length, size_type *res )
+        {
+            const std::uint8_t *d = static_cast<const std::uint8_t *>(data);
+            size_t len = len_by_prefix( *d );
+
+            if( length < len ) {
+                return 0;
+            }
+
+            size_type res_ = 0;
+
+            if( len == 1 ) {
+                res_ = static_cast<size_type>(*d);
+             } else {
+                switch (*d) {
+                case PREFIX_VARINT16:
+                    res_ = u16_little::read( d + 1 );
+                    break;
+                case PREFIX_VARINT32:
+                    res_ = u32_little::read( d + 1 );
+                    break;
+                case PREFIX_VARINT64:
+                    res_ = u64_little::read( d + 1 );
+                    break;
+                default:
+                    break;
+                }
+            }
+
+            if( res ) {
+                *res = res_;
+            }
+
+            return len;
+        }
+
     };
 
 }}

@@ -59,6 +59,15 @@ namespace etool { namespace sizepack {
         {
             return std::distance( begin, end );
         }
+
+        static
+        size_t unpack( const void *, size_t len, size_type *res )
+        {
+            if( res ) {
+                *res = len;
+            }
+            return 0;
+        }
     };
 
 }}

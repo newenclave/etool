@@ -99,6 +99,32 @@ namespace etool { namespace sizepack {
             }
             return res;
         }
+
+        static
+        size_t unpack( const void *data, size_t len, size_type *res )
+        {
+
+            const std::uint8_t *d = static_cast<const std::uint8_t *>(data);
+
+            size_type     res_  = 0x00;
+            std::uint32_t shift = 0x00;
+            std::uint8_t  last  = 0x80;
+            size_t i = 0;
+
+            for( ; i < len; shift += 7, ++i ) {
+                last = d[i];
+                res_ |= ( static_cast<size_type>(last & 0x7F) << shift);
+            }
+
+            if( 0 == (last & 0x80) ) {
+                if( res ) {
+                    *res = res_;
+                }
+                return i;
+            }
+            return 0;
+        }
+
     };
 
 }}

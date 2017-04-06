@@ -235,15 +235,19 @@ namespace etool { namespace dumper {
             }
         }
 
+        template <typename StreamType>
         static
-        void all( const void *input, size_t len, std::ostream &os )
+        void all( const void *input, size_t len, StreamType &&os )
         {
             const char *inp = static_cast<const char *>(input);
-            for( size_t id = 0; id<len; id += info::elements ) {
+            for( size_t id = 0; id < len; id += info::elements ) {
+                if( id ) {
+                    os << "\n";
+                }
                 char buf[info::line_size + 1];
                 line( id, &inp[id], len - id, buf );
                 buf[info::line_size] = '\0';
-                os << buf << "\n";
+                os << &buf[0];
             }
         }
 

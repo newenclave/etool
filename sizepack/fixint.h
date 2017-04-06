@@ -88,6 +88,21 @@ namespace etool { namespace sizepack {
             }
             return res;
         }
+
+        static
+        size_t unpack( const void *data, size_t len, size_type *res )
+        {
+            if( len >= max_length ) {
+                if( res ) {
+                    const std::uint8_t *d =
+                            static_cast<const std::uint8_t *>(data);
+                    *res = unpack( d , d + len );
+                }
+                return max_length;
+            }
+            return 0;
+        }
+
     };
 
 }}
