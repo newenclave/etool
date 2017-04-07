@@ -256,6 +256,28 @@ namespace etool { namespace dumper {
         {
             return info::buffer_size( len );
         }
+
+        static
+        std::string to_hex( const void *input,  size_t len,
+                            std::string postfix = " ",
+                            std::string prefix  = "" )
+        {
+            static const size_t element_buf_len = sizeof(T) * 2 + 1;
+            char buf[element_buf_len];
+            buf[element_buf_len - 1] = '\0';
+            const value_type *p = reinterpret_cast<const value_type *>(input);
+
+            std::string res;
+            for( size_t i=0; i<len; i += sizeof(T), p++ ) {
+                if( i > 0 ) {
+                    res += postfix;
+                }
+                res += prefix;
+                value_info::getX( *p, buf );
+                res.append( &buf[0], &buf[element_buf_len] );
+            }
+            return std::move(res);
+        }
     };
 
 }}
