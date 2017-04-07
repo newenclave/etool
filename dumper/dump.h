@@ -259,7 +259,7 @@ namespace etool { namespace dumper {
 
         static
         std::string to_hex( const void *input,  size_t len,
-                            std::string postfix = " ",
+                            std::string postfix = "",
                             std::string prefix  = "" )
         {
             static const size_t element_buf_len = sizeof(T) * 2 + 1;
