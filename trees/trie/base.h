@@ -7,7 +7,7 @@
 namespace etool { namespace trees { namespace trie {
 
     template <typename KeyT, typename ValueT,
-              template <typename, typename> class NodeT = nodes::map>
+              template <typename, typename> class NodeT = nodes::array>
     class base {
     public:
         using key_type   = KeyT;
