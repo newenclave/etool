@@ -1,21 +1,20 @@
 #ifndef ETOOL_TREES_TRIE_BASE_H
 #define ETOOL_TREES_TRIE_BASE_H
 
-#include "etool/trees/trie/nodes/simple_uptr.h"
+#include "etool/trees/trie/nodes/map.h"
+#include "etool/trees/trie/nodes/array.h"
 
 namespace etool { namespace trees { namespace trie {
 
     template <typename KeyT, typename ValueT,
-              template <typename, typename> class NodeT = nodes::simple_uptr>
+              template <typename, typename> class NodeT = nodes::map>
     class base {
-
-        using node_type = NodeT<KeyT, ValueT>;
-
     public:
-
         using key_type   = KeyT;
         using value_type = ValueT;
+        using node_type  = NodeT<KeyT, ValueT>;
 
+    public:
         base( ) = default;
         base( const base & ) = default;
         base& operator = ( const base & ) = default;
@@ -48,12 +47,12 @@ namespace etool { namespace trees { namespace trie {
 
             value_type &operator *( )
             {
-                return node_->value( );
+                return *node_->value( );
             }
 
             const value_type &operator *( ) const
             {
-                return node_->value( );
+                return *node_->value( );
             }
 
             value_type *operator -> ( )
@@ -77,33 +76,48 @@ namespace etool { namespace trees { namespace trie {
         };
 
         template <typename IterT>
-        void insert( IterT begin, const IterT &end, value_type value )
+        void set( IterT begin, const IterT &end, value_type value )
         {
-            node_type *last = &root_;
-            for( ;begin != end; ++begin ) {
-                last = last->add( *begin );
-            }
-            last->set_final(true);
-            last->set_value(std::move(value));
+            set_s( &root_, begin, end, std::move(value) );
         }
 
         template <typename ContainerT>
-        void insert( const ContainerT &cnt, value_type value )
+        void set( const ContainerT &cnt, value_type value )
         {
-            insert( std::begin(cnt), std::end(cnt), std::move(value) );
+            set( std::begin(cnt), std::end(cnt), std::move(value) );
         }
 
-        void insert( const key_type *ptr, size_t len, value_type value )
+        void set( const key_type *ptr, size_t len, value_type value )
         {
-            insert( ptr, ptr + len, std::move(value) );
+            set( ptr, ptr + len, std::move(value) );
         }
 
         template <typename IterT>
         result_iterator<IterT> get( IterT b, const IterT &e, bool greedy )
         {
+           return std::move( get_s(&root_, b, e, greedy) );
+        }
+
+    private:
+
+        template <typename IterT>
+        static
+        void set_s( node_type *last,
+                    IterT begin, const IterT &end, value_type value )
+        {
+            for( ;begin != end; ++begin ) {
+                last = last->set( *begin );
+            }
+            last->set_value(std::move(value));
+        }
+
+        template <typename IterT>
+        static
+        result_iterator<IterT> get_s( node_type *next_table,
+                                      IterT b, const IterT &e, bool greedy )
+        {
             using result_type = result_iterator<IterT>;
 
-            node_type *next_table = &root_;
             node_type *last_final = nullptr;
 
             if( b == e ) {
@@ -121,7 +135,7 @@ namespace etool { namespace trees { namespace trie {
                     break;
                 }
 
-                if( next_table->final( ) ) {
+                if( next_table->value( ) ) {
 
                     last_final = next_table;
 
@@ -138,8 +152,6 @@ namespace etool { namespace trees { namespace trie {
             return last_final ? result_type(last_final, bb)
                               : result_type(nullptr, e);
         }
-
-    private:
 
         node_type root_;
 
