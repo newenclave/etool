@@ -33,37 +33,37 @@ namespace etool { namespace trees { namespace trie {
             result_iterator & operator = (       result_iterator && ) = default;
 
             result_iterator( )
-                :value_(nullptr)
+                :node_(nullptr)
             { }
 
-            result_iterator( ValueT *val, Iter itr )
-                :value_(val)
+            result_iterator( node_type *node, Iter itr )
+                :node_(node)
                 ,iter_(itr)
             { }
 
             operator bool ( ) const
             {
-                return value_ != nullptr;
+                return node_ != nullptr;
             }
 
             value_type &operator *( )
             {
-                return *value_;
+                return node_->value( );
             }
 
             const value_type &operator *( ) const
             {
-                return *value_;
+                return node_->value( );
             }
 
             value_type *operator -> ( )
             {
-                return value_;
+                return &node_->value( );
             }
 
             const value_type *operator -> ( ) const
             {
-                return value_;
+                return *node_->value( );
             }
 
             Iter iterator( ) const
@@ -72,8 +72,8 @@ namespace etool { namespace trees { namespace trie {
             }
 
         private:
-            ValueT *value_;
-            Iter   iter_;
+            node_type *node_;
+            Iter       iter_;
         };
 
         template <typename IterT>
@@ -107,7 +107,7 @@ namespace etool { namespace trees { namespace trie {
             node_type *last_final = nullptr;
 
             if( b == e ) {
-                return result_type( );
+                return result_type(nullptr, e);
             }
 
             IterT bb = b;
@@ -135,8 +135,8 @@ namespace etool { namespace trees { namespace trie {
             }
 
             b = bb;
-            return last_final ? result_type(&last_final->value( ), bb)
-                              : result_type( );
+            return last_final ? result_type(last_final, bb)
+                              : result_type(nullptr, e);
         }
 
     private:
