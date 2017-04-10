@@ -113,49 +113,6 @@ namespace etool { namespace details {
         }
     };
 
-
-    template <typename U>
-    std::uint32_t read_big( const U *in )
-    {
-        const std::uint8_t *i = reinterpret_cast<const std::uint8_t *>(in);
-        return ( i[0] << 24 ) |
-               ( i[1] << 16 ) |
-               ( i[2] <<  8 ) |
-               ( i[3]       ) ;
-    }
-
-    template <typename U>
-    std::uint32_t read_little( const U *in )
-    {
-        const std::uint8_t *i = reinterpret_cast<const std::uint8_t *>(in);
-        return ( i[3] << 24 ) |
-               ( i[2] << 16 ) |
-               ( i[1] <<  8 ) |
-               ( i[0]       ) ;
-    }
-
-    template <typename U>
-    size_t write_big( std::uint32_t v, U *out )
-    {
-        std::uint8_t *o = reinterpret_cast<std::uint8_t *>(out);
-        o[0] = ( v >> 24 ) & 0xFF;
-        o[1] = ( v >> 16 ) & 0xFF;
-        o[2] = ( v >>  8 ) & 0xFF;
-        o[3] = ( v       ) & 0xFF;
-        return sizeof(v);
-    }
-
-    template <typename U>
-    size_t write_little( std::uint32_t v, U *out )
-    {
-        std::uint8_t *o = reinterpret_cast<std::uint8_t *>(out);
-        o[3] = ( v >> 24 ) & 0xFF;
-        o[2] = ( v >> 16 ) & 0xFF;
-        o[1] = ( v >>  8 ) & 0xFF;
-        o[0] = ( v       ) & 0xFF;
-        return sizeof(v);
-    }
-
 }}
 
 #endif // BYTE_SWAP_H
