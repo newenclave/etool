@@ -14,7 +14,7 @@ namespace etool { namespace details {
         using pointer_type   = value_type *;
         using reference_type = value_type &;
 
-        slice( value_type *value, size_t len )
+        slice( value_type *value, size_type len )
             :val_(value)
             ,len_(len)
         { }
@@ -37,7 +37,8 @@ namespace etool { namespace details {
         static
         slice bind( U *data, S len )
         {
-            return slice<U, S>( data, len ).rebind<value_type, size_type>( );
+            slice<U, S> tmp( data, len );
+            return tmp.rebind<value_type, size_type>( );
         }
 
         template <typename U, typename S = size_type>
@@ -60,6 +61,11 @@ namespace etool { namespace details {
         size_type size( ) const noexcept
         {
             return len_;
+        }
+
+        void resize( size_type new_size ) noexcept
+        {
+            len_ = new_size;
         }
 
         bool empty( ) const noexcept

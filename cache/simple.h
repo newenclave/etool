@@ -52,7 +52,7 @@ namespace etool { namespace cache {
             } else {
                 value_type n = std::move(cache_.front( ));
                 cache_.pop( );
-                return n;
+                return std::move(n);
             }
         }
 
