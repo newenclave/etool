@@ -39,31 +39,35 @@ namespace etool { namespace details {
         }
     };
 
-//    template <>
-//    struct byte_order<std::uint8_t, endian::LITTLE> {
+#if 0 // {
 
-//        typedef       std::uint8_t  value_type;
+    template <>
+    struct byte_order<std::uint8_t, endian::LITTLE> {
 
-//        value_type value( value_type v )
-//        {
-//            return v;
-//        }
+        typedef       std::uint8_t  value_type;
 
-//        template <typename U>
-//        static
-//        size_t write( value_type v, U *out )
-//        {
-//            *reinterpret_cast<value_type *>(out) = v;
-//            return sizeof(value_type);
-//        }
+        value_type value( value_type v )
+        {
+            return v;
+        }
 
-//        template <typename U>
-//        static
-//        value_type read( const U *out )
-//        {
-//            return *reinterpret_cast<const value_type *>(out);
-//        }
-//    };
+        template <typename U>
+        static
+        size_t write( value_type v, U *out )
+        {
+            *reinterpret_cast<value_type *>(out) = v;
+            return sizeof(value_type);
+        }
+
+        template <typename U>
+        static
+        value_type read( const U *out )
+        {
+            return *reinterpret_cast<const value_type *>(out);
+        }
+    };
+
+#endif // }
 
     ///////////////////////// u16
     template <>
@@ -75,8 +79,8 @@ namespace etool { namespace details {
         value_type value( value_type v )
         {
             return etool::details::host_byte_order::is_big_endian( )
-                    ? v
-                    : byte_swap<value_type>::swap( v );
+                 ? v
+                 : byte_swap<value_type>::swap( v );
         }
 
         template <typename U>
@@ -108,8 +112,8 @@ namespace etool { namespace details {
         value_type value( value_type v )
         {
             return etool::details::host_byte_order::is_little_endian( )
-                    ? v
-                    : byte_swap<value_type>::swap( v );
+                 ? v
+                 : byte_swap<value_type>::swap( v );
         }
 
         template <typename U>
@@ -141,8 +145,8 @@ namespace etool { namespace details {
         value_type value( value_type v )
         {
             return etool::details::host_byte_order::is_big_endian( )
-                    ? v
-                    : byte_swap<value_type>::swap( v );
+                 ? v
+                 : byte_swap<value_type>::swap( v );
         }
 
         template <typename U>
@@ -178,8 +182,8 @@ namespace etool { namespace details {
         value_type value( value_type v )
         {
             return etool::details::host_byte_order::is_little_endian( )
-                    ? v
-                    : byte_swap<value_type>::swap( v );
+                 ? v
+                 : byte_swap<value_type>::swap( v );
         }
 
         template <typename U>
@@ -217,8 +221,8 @@ namespace etool { namespace details {
         value_type value( value_type v )
         {
             return etool::details::host_byte_order::is_big_endian( )
-                    ? v
-                    : byte_swap<value_type>::swap( v );
+                 ? v
+                 : byte_swap<value_type>::swap( v );
         }
 
         template <typename U>

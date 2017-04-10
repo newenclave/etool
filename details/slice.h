@@ -33,58 +33,72 @@ namespace etool { namespace details {
             return tmp;
         }
 
-        value_type *begin( )
+        template <typename U, typename S = size_type>
+        static
+        slice bind( U *data, S len )
+        {
+            return slice<U, S>( data, len ).rebind<value_type, size_type>( );
+        }
+
+        template <typename U, typename S = size_type>
+        static
+        slice bind( slice<U, S> other )
+        {
+            return other.rebind<value_type, size_type>( );
+        }
+
+        value_type *begin( ) noexcept
         {
             return val_;
         }
 
-        value_type *end( )
+        value_type *end( ) noexcept
         {
             return val_ + size( );
         }
 
-        size_type size( ) const
+        size_type size( ) const noexcept
         {
             return len_;
         }
 
-        bool empty( ) const
+        bool empty( ) const noexcept
         {
             return len_ == 0;
         }
 
-        pointer_type get( )
+        pointer_type get( ) noexcept
         {
             return val_;
         }
 
-        reference_type operator *( )
+        reference_type operator *( ) noexcept
         {
             return *val_;
         }
 
-        slice &operator += ( size_type len )
+        slice &operator += ( size_type len ) noexcept
         {
             val_ += len;
             len_ -= len;
             return *this;
         }
 
-        slice &operator -= ( size_type len )
+        slice &operator -= ( size_type len ) noexcept
         {
             val_ -= len;
             len_ += len;
             return *this;
         }
 
-        slice &operator ++ ( )
+        slice &operator ++ ( ) noexcept
         {
             val_ ++;
             len_ --;
             return *this;
         }
 
-        slice operator ++ (int)
+        slice operator ++ (int) noexcept
         {
             slice tmp( val_, len_ );
             ++(*this);
