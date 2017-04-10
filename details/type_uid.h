@@ -1,5 +1,5 @@
-#ifndef TYPE_UID_H
-#define TYPE_UID_H
+#ifndef ETOOL_DETAILS_TYPE_UID_H
+#define ETOOL_DETAILS_TYPE_UID_H
 
 #include <cstdint>
 
