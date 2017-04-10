@@ -55,4 +55,4 @@ namespace nodes {
 
 }}}
 
-#endif
+#endif /// ETOOL_TREES_TRIE_NODES_MAP_H

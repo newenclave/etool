@@ -113,5 +113,5 @@ namespace nodes {
 
 }}}
 
-#endif // SIMPLE_ARRAY_H
+#endif // ETOOL_TREES_TRIE_NODES_ARRAY_H
 
