@@ -24,7 +24,7 @@ namespace etool { namespace intervals {
         interval( value_type b, value_type e )
             :begin(b)
             ,end(e)
-            ,flags(INCLUDE_RIGTH)
+            ,flags(INCLUDE_LEFT)
         { }
 
         interval( value_type b, value_type e, std::uint32_t f )
@@ -132,6 +132,12 @@ namespace etool { namespace intervals {
                    flags != INCLUDE_BOTH;
         }
 
+        bool intersect( const interval &other ) const
+        {
+            cmp c;
+            return !c(*this, other) && !c(other, *this);
+        }
+
         struct cmp: public std::binary_function<interval, interval, bool> {
 
             static
@@ -179,7 +185,7 @@ namespace etool { namespace intervals {
 
         value_type      begin;
         value_type      end;
-        std::uint32_t   flags = INCLUDE_RIGTH;
+        std::uint32_t   flags = INCLUDE_LEFT;
     };
 
 }}

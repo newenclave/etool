@@ -84,6 +84,11 @@ namespace etool { namespace intervals {
             return o;
         }
 
+        size_t size( ) const
+        {
+            return cont_.size( );
+        }
+
     private:
 
         template <typename IterT>
@@ -160,9 +165,7 @@ namespace etool { namespace intervals {
 
             if( p.invalid( ) || p.empty( ) ) {
                 return cont.end( );
-            }
-
-            if( res.first.iter == cont.end( ) ) {
+            } else if( res.first.iter == cont.end( ) ) {
                 return cont.emplace( std::move(p) ).first;
             } else {
 
@@ -211,18 +214,15 @@ namespace etool { namespace intervals {
 
             if( p.invalid( ) || p.empty( ) ) {
                 return cont.end( );
-            }
-
-            if( res.first.iter == cont.end( ) ) {
+            } else if( res.first.iter == cont.end( ) ) {
                 return cont.emplace( std::move(p) ).first;
             } else {
 
                 pos first;
                 pos last;
 
-
                 if( res.first.isin ) {
-                    //res.first.iter->out( std::cout ) << "\n";
+
                     std::uint32_t linc = res.first.iter->is_left_included( )
                                        ? INCLUDE_LEFT
                                        : INCLUDE_NONE;
@@ -236,7 +236,6 @@ namespace etool { namespace intervals {
                 }
 
                 if( res.second.isin ) {
-                    //res.second.iter->out( std::cout ) << "\n";
 
                     std::uint32_t linc = p.is_right_included( )
                                        ? INCLUDE_NONE
