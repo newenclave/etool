@@ -1,28 +1,28 @@
-#ifndef ETOOL_INTERVALS_STD_SET_H
-#define ETOOL_INTERVALS_STD_SET_H
+#ifndef ETOOL_INTERVALS_TRAITS_STD_MAP_H
+#define ETOOL_INTERVALS_TRAITS_STD_MAP_H
 
-#include <set>
+#include <map>
 #include "etool/intervals/interval.h"
 
 namespace etool { namespace intervals { namespace traits {
 
-    template <typename ValueT>
-    struct std_set {
+    template <typename KeyT, typename ValueT>
+    struct std_map {
 
-        using value          = ValueT;
-        using position       = intervals::interval<value>;
-        using container      = std::set<position, typename position::cmp>;
+        using key       = KeyT;
+        using value     = ValueT;
+        using position  = intervals::interval<value>;
+        using container = std::map<position, value, typename position::cmp>;
 
         using iterator       = typename container::iterator;
         using const_iterator = typename container::const_iterator;
 
         struct iterator_access {
-
             template <typename IterT>
             static
             auto &get( IterT itr )
             {
-                return *itr;
+                return itr->first;
             }
         };
 
@@ -93,14 +93,13 @@ namespace etool { namespace intervals { namespace traits {
         }
 
         static
-        iterator insert( container &c, position p )
+        iterator insert( container &c, position p, value v )
         {
-            return c.emplace( std::move(p) ).first;
+            return c.emplace(std::make_pair(std::move(p), std::move(v))).first;
         }
 
     };
 
 }}}
 
-
-#endif // STD_SET_H
+#endif // STD_MAP_H

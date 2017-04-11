@@ -1,17 +1,15 @@
 #ifndef ETOOL_INTERVALS_SET_H
 #define ETOOL_INTERVALS_SET_H
 
-
-#include <set>
 #include <cstdint>
 #include <string>
 #include <sstream>
 
 #include "etool/intervals/flags.h"
 #include "etool/intervals/interval.h"
-
-
 #include "etool/intervals/traits/std_set.h"
+
+#include "etool/intervals/operations.h"
 
 namespace etool { namespace intervals {
 
@@ -154,31 +152,14 @@ namespace etool { namespace intervals {
     private:
 
         template <typename IterT>
-        struct iter_bool {
-            iter_bool( IterT i, bool in )
-                :iter(i)
-                ,isin(in)
-            { }
-
-            iter_bool( const iter_bool & )              = default;
-            iter_bool( iter_bool && )                   = default;
-            iter_bool &operator = ( iter_bool && )      = default;
-            iter_bool &operator = ( const iter_bool & ) = default;
-
-            IterT iter;
-            bool  isin = false;
-        };
-
-        using place_pair = std::pair< iter_bool<iterator>,
-                                      iter_bool<iterator> >;
-
-        using const_place_pair = std::pair< iter_bool<const_iterator>,
-                                            iter_bool<const_iterator> >;
+        using iter_bool = operations::iter_bool<IterT>;
 
         template <typename IterT, typename ContT>
         static
-        place_pair locate( ContT &cont, const pos &p )
+        operations::place_pair<IterT> locate( ContT &cont, const pos &p )
         {
+            return operations::locate<trait_type, IterT>( cont, p );
+#if 0
             using iter_bool_ = iter_bool<IterT>;
 
             auto b = trait_type::lower_bound( cont, p );
@@ -205,6 +186,7 @@ namespace etool { namespace intervals {
 
             return std::make_pair( iter_bool_( b, bin ),
                                    iter_bool_( e, ein ) );
+#endif
         }
 
         static
