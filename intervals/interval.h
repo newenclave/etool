@@ -21,6 +21,7 @@ namespace etool { namespace intervals {
         interval( interval && )              = default;
         interval& operator = ( interval && ) = default;
 
+#if 0
         interval( value_type b, value_type e )
             :begin(b)
             ,end(e)
@@ -32,7 +33,19 @@ namespace etool { namespace intervals {
             ,end(e)
             ,flags(f)
         { }
+#else
+        interval( value_type b, value_type e )
+            :begin(std::min(b, e))
+            ,end(std::max(b, e))
+            ,flags(INCLUDE_LEFT)
+        { }
 
+        interval( value_type b, value_type e, std::uint32_t f )
+            :begin(std::min(b, e))
+            ,end(std::max(b, e))
+            ,flags(f)
+        { }
+#endif
         std::uint32_t right_flag( ) const
         {
             return (flags & INCLUDE_RIGTH);
