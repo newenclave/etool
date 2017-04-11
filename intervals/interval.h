@@ -155,10 +155,17 @@ namespace etool { namespace intervals {
                    flags != INCLUDE_BOTH;
         }
 
-        bool intersect( const interval &other ) const
+        bool intersected( const interval &other ) const
         {
             cmp c;
             return !c(*this, other) && !c(other, *this);
+        }
+
+        static
+        bool intersected( const interval &lh, const interval &rh )
+        {
+            cmp c;
+            return !c(lh, rh) && !c(rh, lh);
         }
 
         struct cmp: public std::binary_function<interval, interval, bool> {
