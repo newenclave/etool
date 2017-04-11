@@ -163,11 +163,11 @@ namespace etool { namespace intervals {
 
             auto e = cont.upper_bound( p );
 
-            bin = b->isin( p.left( ) );
+            bin = b->contain( p.left( ) );
 
             if( e != cont.begin( ) ) {
                 auto prev = std::prev( e, 1);
-                if( prev->isin( p.right( ) ) ) {
+                if( prev->contain( p.right( ) ) ) {
                     e = prev;
                     ein = true;
                 }

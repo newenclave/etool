@@ -58,7 +58,7 @@ namespace etool { namespace intervals {
             flags &= (~f);
         }
 
-        bool isin( const value_type &k ) const
+        bool contain( const value_type &k ) const
         {
             bool bleft = is_left_included( )
                        ? cmp::greater_equa( k, begin )
@@ -149,26 +149,26 @@ namespace etool { namespace intervals {
             static
             bool less_equal( const value_type &lh, const value_type &rh )
             {
-                return less( lh, rh ) || equal( lh, rh );
+                return cmp::less( lh, rh ) || cmp::equal( lh, rh );
             }
 
             static
             bool greater( const value_type &lh, const value_type &rh )
             {
-                return rh < lh;
+                return cmp::less( rh, lh ); // viceversa
             }
 
             static
             bool greater_equa( const value_type &lh, const value_type &rh )
             {
-                return greater( lh, rh ) || equal( lh, rh );
+                return cmp::greater( lh, rh ) || equal( lh, rh );
             }
 
             static
             bool equal( const value_type &lh, const value_type &rh )
             {
-                return !interval::cmp::less( lh, rh )
-                    && !interval::cmp::less( rh, lh );
+                return !cmp::less( lh, rh )
+                    && !cmp::less( rh, lh );
             }
 
             bool operator ( )( const interval &lh, const interval &rh ) const
