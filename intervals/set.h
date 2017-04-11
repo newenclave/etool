@@ -10,45 +10,49 @@
 #include "etool/intervals/flags.h"
 #include "etool/intervals/interval.h"
 
+
+#include "etool/intervals/traits/std_set.h"
+
 namespace etool { namespace intervals {
 
-    template <typename T>
+    template <typename T,
+              template <typename> class PosTraitT = traits::std_set>
     class set {
 
     public:
 
         using key_type = T;
-        using pos = interval<key_type>;
+        using trait_type = PosTraitT<key_type>;
+
+        using pos = typename trait_type::position;
 
     private:
 
-        using contnr = std::set<pos, typename pos::cmp>;
+        using contnr = typename trait_type::container;
 
     public:
 
-        using iterator               = typename contnr::iterator;
-        using const_iterator         = typename contnr::const_iterator;
-        using reverse_iterator       = typename contnr::reverse_iterator;
-        using const_reverse_iterator = typename contnr::const_reverse_iterator;
+        using iterator       = typename trait_type::iterator;
+        using const_iterator = typename trait_type::const_iterator;
 
         iterator begin( )
         {
-            return cont_.begin( );
+            return trait_type::begin( cont_ );
         }
 
         iterator end( )
         {
-            return cont_.end( );
+            return trait_type::end( cont_ );
         }
 
         const_iterator begin( ) const
         {
-            return cont_.begin( );
+            return trait_type::cbegin( cont_ );
         }
 
         const_iterator end( ) const
         {
-            return cont_.end( );
+            return trait_type::cend( cont_ );
         }
 
         iterator find( key_type k )
@@ -139,12 +143,12 @@ namespace etool { namespace intervals {
 
         size_t size( ) const
         {
-            return cont_.size( );
+            return trait_type::size( cont_ );
         }
 
         void clear( )
         {
-            cont_.clear( );
+            trait_type::clear( cont_ );
         }
 
     private:
@@ -173,13 +177,13 @@ namespace etool { namespace intervals {
 
         template <typename IterT, typename ContT>
         static
-        place_pair locate( ContT &cont, pos p )
+        place_pair locate( ContT &cont, const pos &p )
         {
             using iter_bool_ = iter_bool<IterT>;
 
-            auto b = cont.lower_bound( p );
+            auto b = trait_type::lower_bound( cont, p );
 
-            if( b == cont.end( ) ) {
+            if( b == trait_type::end( cont ) ) {
                 return std::make_pair( iter_bool_( b, false ),
                                        iter_bool_( b, false ) );
             }
@@ -187,11 +191,11 @@ namespace etool { namespace intervals {
             bool bin = false;
             bool ein = false;
 
-            auto e = cont.upper_bound( p );
+            auto e = trait_type::upper_bound( cont, p );
 
             bin = b->contain( p.left( ) );
 
-            if( e != cont.begin( ) ) {
+            if( e != trait_type::begin( cont ) ) {
                 auto prev = std::prev( e, 1);
                 if( prev->contain( p.right( ) ) ) {
                     e = prev;
@@ -207,14 +211,14 @@ namespace etool { namespace intervals {
         iterator find( contnr &cont, const key_type &k )
         {
             auto res = locate<iterator>( cont, pos( k, k, INCLUDE_BOTH ) );
-            return res.first.isin ? res.first.iter : cont.end( );
+            return res.first.isin ? res.first.iter : trait_type::end(cont);
         }
 
         static
         const_iterator find( const contnr &cont, const key_type &k )
         {
             auto res = locate<const_iterator>( cont, pos( k, k ) );
-            return res.first.isin ? res.first.iter : cont.end( );
+            return res.first.isin ? res.first.iter : trait_type::end(cont);
         }
 
         iterator merge( contnr &cont, pos p )
@@ -222,23 +226,23 @@ namespace etool { namespace intervals {
             auto res = locate<iterator>( cont, p );
 
             if( p.invalid( ) || p.empty( ) ) {
-                return cont.end( );
-            } else if( res.first.iter == cont.end( ) ) {
-                return cont.emplace( std::move(p) ).first;
+                return trait_type::end( cont );
+            } else if( res.first.iter == trait_type::end( cont ) ) {
+                return trait_type::insert( cont, std::move(p) );
             } else {
 
                 bool fin  = res.first.isin;
                 bool lin  = res.second.isin;
 
-                auto fpos = res.first.iter;
-                auto lpos = res.second.iter;
+                iterator left_pos  = res.first.iter;
+                iterator right_pos = res.second.iter;
 
-                pos new_val = pos( fin ? fpos->left( )  : p.left( ),
-                                   lin ? lpos->right( ) : p.right( ),
+                pos new_val = pos( fin ? left_pos->left( )   : p.left( ),
+                                   lin ? right_pos->right( ) : p.right( ),
                                    INCLUDE_NONE );
 
                 if( fin ) {
-                    new_val.set_flag( fpos->is_left_included( )
+                    new_val.set_flag( left_pos->is_left_included( )
                                       ? INCLUDE_LEFT
                                       : INCLUDE_NONE );
                 } else {
@@ -248,7 +252,7 @@ namespace etool { namespace intervals {
                 }
 
                 if( lin ) {
-                    new_val.set_flag( lpos->is_right_included( )
+                    new_val.set_flag( right_pos->is_right_included( )
                                       ? INCLUDE_RIGTH
                                       : INCLUDE_NONE );
                 } else {
@@ -258,11 +262,11 @@ namespace etool { namespace intervals {
                 }
 
                 if( res.second.isin ) {
-                    ++res.second.iter;
+                    ++right_pos;
                 }
 
-                cont.erase( res.first.iter, res.second.iter );
-                return cont.emplace( new_val ).first;
+                trait_type::erase( cont, left_pos, right_pos );
+                return trait_type::insert( cont, std::move(new_val) );
             }
         }
 
@@ -271,9 +275,9 @@ namespace etool { namespace intervals {
             auto res = locate<iterator>( cont, p );
 
             if( p.invalid( ) || p.empty( ) ) {
-                return cont.end( );
-            } else if( res.first.iter == cont.end( ) ) {
-                return cont.emplace( std::move(p) ).first;
+                return trait_type::end( cont );
+            } else if( res.first.iter == trait_type::end( cont ) ) {
+                return trait_type::insert( cont, std::move(p) );
             } else {
 
                 pos first;
@@ -309,16 +313,16 @@ namespace etool { namespace intervals {
                     ++res.second.iter;
                 }
 
-                cont.erase( res.first.iter, res.second.iter );
+                 trait_type::erase( cont, res.first.iter, res.second.iter );
 
                 if( res.first.isin && !first.empty( ) ) {
-                    cont.emplace( first );
+                    trait_type::insert( cont, std::move(first) );
                 }
 
-                iterator ret = cont.emplace( p ).first;
+                iterator ret = trait_type::insert( cont, p );
 
                 if( res.second.isin && !last.empty( ) ) {
-                    cont.emplace( last );
+                    trait_type::insert( cont, std::move(last) );
                 }
 
                 return ret;
@@ -329,10 +333,10 @@ namespace etool { namespace intervals {
         {
             auto res = locate<iterator>( cont, p );
 
-            if( p.invalid( ) || p.empty( ) ) {
-                return cont.end( );
-            } else if( res.first.iter == cont.end( ) ) {
-                return cont.end( );
+            if( p.invalid( ) || p.is_both_excluded( ) ) {
+                return trait_type::end( cont );
+            } else if( res.first.iter == trait_type::end( cont ) ) {
+                return trait_type::end( cont );
             } else {
 
                 pos first;
@@ -368,14 +372,16 @@ namespace etool { namespace intervals {
                     ++res.second.iter;
                 }
 
-                iterator ret = cont.erase( res.first.iter, res.second.iter );
+                iterator ret = trait_type::erase( cont,
+                                                  res.first.iter,
+                                                  res.second.iter );
 
                 if( res.first.isin && !first.empty( ) ) {
-                    cont.emplace( first );
+                    trait_type::insert( cont, std::move(first) );
                 }
 
                 if( res.second.isin && !last.empty( ) ) {
-                    ret = cont.emplace( last ).first;
+                    ret = trait_type::insert( cont, std::move(last) );
                 }
 
                 return ret;

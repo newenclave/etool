@@ -33,6 +33,12 @@ namespace etool { namespace intervals {
             ,end(e)
             ,flags(f)
         { }
+
+        bool valid( ) const
+        {
+            return cmp::less_equal( left( ), right( ) );
+        }
+
 #else
         interval( value_type b, value_type e )
             :begin(std::min(b, e))
@@ -45,43 +51,59 @@ namespace etool { namespace intervals {
             ,end(std::max(b, e))
             ,flags(f)
         { }
+
+        constexpr
+        bool valid( ) const noexcept
+        {
+            return true;
+        }
 #endif
-        std::uint32_t right_flag( ) const
+        std::uint32_t right_flag( ) const noexcept
         {
             return (flags & INCLUDE_RIGTH);
         }
 
-        bool is_right_included( ) const
+        bool is_right_included( ) const noexcept
         {
             return right_flag( ) != 0;
         }
 
-        std::uint32_t left_flag( ) const
+        std::uint32_t left_flag( ) const noexcept
         {
             return (flags & INCLUDE_LEFT);
         }
 
-        bool is_left_included( ) const
+        bool is_left_included( ) const noexcept
         {
             return left_flag( ) != 0;
         }
 
-        void set_flags( std::uint32_t f )
+        bool is_both_included( ) const noexcept
+        {
+            return (flags & INCLUDE_BOTH) == INCLUDE_BOTH;
+        }
+
+        bool is_both_excluded( ) const noexcept
+        {
+            return flags == INCLUDE_NONE;
+        }
+
+        void set_flags( std::uint32_t f ) noexcept
         {
             flags = f;
         }
 
-        void set_flag( std::uint32_t f )
+        void set_flag( std::uint32_t f ) noexcept
         {
             flags |= f;
         }
 
-        void reset_flag( std::uint32_t f )
+        void reset_flag( std::uint32_t f ) noexcept
         {
             flags &= (~f);
         }
 
-        bool contain( const value_type &k ) const
+        bool contain( const value_type &k ) const noexcept
         {
             bool bleft = is_left_included( )
                        ? cmp::greater_equa( k, begin )
@@ -96,12 +118,12 @@ namespace etool { namespace intervals {
             return false;
         }
 
-        value_type &right( )
+        value_type &right( ) noexcept
         {
             return end;
         }
 
-        value_type &left( )
+        value_type &left( ) noexcept
         {
             return begin;
         }
@@ -139,30 +161,24 @@ namespace etool { namespace intervals {
             return right( ) - left( );
         }
 
-        bool valid( ) const
-        {
-            return cmp::less_equal( left( ), right( ) );
-        }
-
-        bool invalid( ) const
+        bool invalid( ) const noexcept
         {
             return !valid( );
         }
 
-        bool empty( ) const
+        bool empty( ) const noexcept
         {
             return cmp::equal( right( ), left( ) ) &&
                    flags != INCLUDE_BOTH;
         }
 
-        bool intersected( const interval &other ) const
+        bool intersected( const interval &other ) const noexcept
         {
-            cmp c;
-            return !c(*this, other) && !c(other, *this);
+            return intersected(*this, other);
         }
 
         static
-        bool intersected( const interval &lh, const interval &rh )
+        bool intersected( const interval &lh, const interval &rh ) noexcept
         {
             cmp c;
             return !c(lh, rh) && !c(rh, lh);
