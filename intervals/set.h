@@ -8,185 +8,17 @@
 #include <sstream>
 
 #include "etool/intervals/flags.h"
+#include "etool/intervals/interval.h"
 
 namespace etool { namespace intervals {
 
     template <typename T>
     class set {
+
     public:
+
         using key_type = T;
-
-        class pos {
-
-        public:
-
-            pos( )                     = default;
-            pos( const pos & )         = default;
-            pos( pos && )              = default;
-            pos& operator = ( pos && ) = default;
-
-            pos( key_type b, key_type e )
-                :begin(b)
-                ,end(e)
-                ,flags(INCLUDE_RIGTH)
-            { }
-
-            pos( key_type b, key_type e, std::uint32_t f )
-                :begin(b)
-                ,end(e)
-                ,flags(f)
-            { }
-
-            bool is_right_included( ) const
-            {
-                return (flags & INCLUDE_RIGTH) != 0;
-            }
-
-            bool is_left_included( ) const
-            {
-                return (flags & INCLUDE_LEFT) != 0;
-            }
-
-            void set_flags( std::uint32_t f )
-            {
-                flags = f;
-            }
-
-            void set_flag( std::uint32_t f )
-            {
-                flags |= f;
-            }
-
-            void reset_flag( std::uint32_t f )
-            {
-                flags &= (~f);
-            }
-
-            bool isin( const key_type &k ) const
-            {
-                bool bleft = is_left_included( )
-                            ? cmp::greater_equa( k, begin )
-                            : cmp::greater( k,begin );
-
-                if( bleft ) {
-                    bool bright = is_right_included( )
-                               ? cmp::less_equal( k, end )
-                               : cmp::less( k, end );
-                    return bright;
-                }
-                return false;
-            }
-
-            key_type &right( )
-            {
-                return end;
-            }
-
-            key_type &left( )
-            {
-                return begin;
-            }
-
-            const key_type &right( ) const
-            {
-                return end;
-            }
-
-            const key_type &left( ) const
-            {
-                return begin;
-            }
-
-            std::ostream &out( std::ostream &oss ) const
-            {
-                static const char lbracket[2] = {'(', '['};
-                static const char rbracket[2] = {')', ']'};
-                oss << lbracket[is_left_included( )]
-                    << left( ) << ", " << right( )
-                    << rbracket[is_right_included( )]
-                       ;
-                return oss;
-            }
-
-            std::string to_string(  ) const
-            {
-                std::ostringstream oss;
-                out(oss);
-                return std::move(oss.str( ));
-            }
-
-            key_type length( ) const
-            {
-                return right( ) - left( );
-            }
-
-            bool valid( ) const
-            {
-                return cmp::less_equal( left( ), right( ) );
-            }
-
-            bool invalid( ) const
-            {
-                return !valid( );
-            }
-
-            bool empty( ) const
-            {
-                return cmp::equal( right( ), left( ) ) &&
-                      flags != INCLUDE_BOTH;
-            }
-
-            struct cmp: public std::binary_function<pos, pos, bool> {
-
-                static
-                bool less( const key_type &lh, const key_type &rh )
-                {
-                    return lh < rh;
-                }
-
-                static
-                bool less_equal( const key_type &lh, const key_type &rh )
-                {
-                    return less( lh, rh ) || equal( lh, rh );
-                }
-
-                static
-                bool greater( const key_type &lh, const key_type &rh )
-                {
-                    return rh < lh;
-                }
-
-                static
-                bool greater_equa( const key_type &lh, const key_type &rh )
-                {
-                    return greater( lh, rh ) || equal( lh, rh );
-                }
-
-                static
-                bool equal( const key_type &lh, const key_type &rh )
-                {
-                    return !pos::cmp::less( lh, rh )
-                        && !pos::cmp::less( rh, lh );
-                }
-
-                bool operator ( )( const pos &lh, const pos &rh ) const
-                {
-                    if( lh.is_right_included( ) && rh.is_left_included( ) ) {
-                        return pos::cmp::less( lh.right( ), rh.left( ) );
-                    } else {
-                        return pos::cmp::less_equal( lh.right( ), rh.left( ) );
-                    }
-                }
-            };
-
-            friend struct cmp;
-
-        private:
-
-            key_type        begin;
-            key_type        end;
-            std::uint32_t   flags = INCLUDE_RIGTH;
-        };
+        using pos = interval<key_type>;
 
     private:
 
@@ -334,18 +166,18 @@ namespace etool { namespace intervals {
                 return cont.emplace( std::move(p) ).first;
             } else {
 
-                bool fin = res.first.isin;
-                bool lin = res.second.isin;
+                bool fin  = res.first.isin;
+                bool lin  = res.second.isin;
 
-                auto &fpos = *res.first.iter;
-                auto &lpos = *res.second.iter;
+                auto fpos = res.first.iter;
+                auto lpos = res.second.iter;
 
-                pos new_val = pos( fin ? fpos.left( ) : p.left( ),
-                                   lin ? lpos.right( ) : p.right( ),
+                pos new_val = pos( fin ? fpos->left( )  : p.left( ),
+                                   lin ? lpos->right( ) : p.right( ),
                                    INCLUDE_NONE );
 
                 if( fin ) {
-                    new_val.set_flag( fpos.is_left_included( )
+                    new_val.set_flag( fpos->is_left_included( )
                                       ? INCLUDE_LEFT
                                       : INCLUDE_NONE );
                 } else {
@@ -355,7 +187,7 @@ namespace etool { namespace intervals {
                 }
 
                 if( lin ) {
-                    new_val.set_flag( lpos.is_right_included( )
+                    new_val.set_flag( lpos->is_right_included( )
                                       ? INCLUDE_RIGTH
                                       : INCLUDE_NONE );
                 } else {
@@ -435,6 +267,7 @@ namespace etool { namespace intervals {
                 return ret;
             }
         }
+
         contnr cont_;
     };
 
