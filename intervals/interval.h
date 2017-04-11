@@ -21,7 +21,7 @@ namespace etool { namespace intervals {
         interval( interval && )              = default;
         interval& operator = ( interval && ) = default;
 
-#if 0
+#if 1
         interval( value_type b, value_type e )
             :begin(b)
             ,end(e)
@@ -201,6 +201,12 @@ namespace etool { namespace intervals {
                 } else {
                     return interval::cmp::less_equal( lh.right( ), rh.left( ) );
                 }
+            }
+
+            bool operator ( )( const value_type &lh,
+                               const value_type &rh ) const
+            {
+                return cmp::less( lh, rh );
             }
         };
 
