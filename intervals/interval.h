@@ -33,14 +33,24 @@ namespace etool { namespace intervals {
             ,flags(f)
         { }
 
+        std::uint32_t right_flag( ) const
+        {
+            return (flags & INCLUDE_RIGTH);
+        }
+
         bool is_right_included( ) const
         {
-            return (flags & INCLUDE_RIGTH) != 0;
+            return right_flag( ) != 0;
+        }
+
+        std::uint32_t left_flag( ) const
+        {
+            return (flags & INCLUDE_LEFT);
         }
 
         bool is_left_included( ) const
         {
-            return (flags & INCLUDE_LEFT) != 0;
+            return left_flag( ) != 0;
         }
 
         void set_flags( std::uint32_t f )

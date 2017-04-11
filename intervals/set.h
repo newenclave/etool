@@ -103,6 +103,27 @@ namespace etool { namespace intervals {
             return insert( cont_, pos(lft, rght, flags) );
         }
 
+        iterator cut( pos p )
+        {
+            return cut( cont_, p );
+        }
+
+        iterator cut( const key_type &lft, const key_type &rght )
+        {
+            return cut( cont_, pos(lft, rght) );
+        }
+
+        iterator cut( const key_type &uniq  )
+        {
+            return cut( cont_, pos(uniq, uniq, intervals::INCLUDE_BOTH) );
+        }
+
+        iterator cut( const key_type &lft, const key_type &rght,
+                      std::uint32_t flags )
+        {
+            return cut( cont_, pos(lft, rght, flags) );
+        }
+
         std::ostream &out( std::ostream &o ) const
         {
             bool start = true;
@@ -119,6 +140,11 @@ namespace etool { namespace intervals {
         size_t size( ) const
         {
             return cont_.size( );
+        }
+
+        void clear( )
+        {
+            cont_.clear( );
         }
 
     private:
@@ -299,6 +325,62 @@ namespace etool { namespace intervals {
             }
         }
 
+        iterator cut( contnr &cont, pos p )
+        {
+            auto res = locate<iterator>( cont, p );
+
+            if( p.invalid( ) || p.empty( ) ) {
+                return cont.end( );
+            } else if( res.first.iter == cont.end( ) ) {
+                return cont.end( );
+            } else {
+
+                pos first;
+                pos last;
+
+                if( res.first.isin ) {
+
+                    std::uint32_t linc = res.first.iter->is_left_included( )
+                                       ? INCLUDE_LEFT
+                                       : INCLUDE_NONE;
+
+                    std::uint32_t rinc = p.is_left_included( )
+                                       ? INCLUDE_NONE
+                                       : INCLUDE_RIGTH;
+
+                    first = pos( res.first.iter->left( ), p.left( ),
+                                 linc | rinc );
+                }
+
+                if( res.second.isin ) {
+
+                    std::uint32_t linc = p.is_right_included( )
+                                       ? INCLUDE_NONE
+                                       : INCLUDE_LEFT;
+
+                    std::uint32_t rinc = res.second.iter->is_right_included( )
+                                       ? INCLUDE_RIGTH
+                                       : INCLUDE_NONE;
+
+                    last = pos( p.right( ), res.second.iter->right( ),
+                                linc | rinc );
+
+                    ++res.second.iter;
+                }
+
+                iterator ret = cont.erase( res.first.iter, res.second.iter );
+
+                if( res.first.isin && !first.empty( ) ) {
+                    cont.emplace( first );
+                }
+
+                if( res.second.isin && !last.empty( ) ) {
+                    ret = cont.emplace( last ).first;
+                }
+
+                return ret;
+            }
+        }
         contnr cont_;
     };
 
