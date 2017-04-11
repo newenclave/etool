@@ -29,11 +29,10 @@ namespace etool { namespace intervals {
         template <typename ItrT>
         using place_pair = std::pair< iter_bool<ItrT>, iter_bool<ItrT> >;
 
-        template <typename TraitT, typename IterT>
+        template <typename TraitT, typename IterT, typename ContT>
         static
         place_pair<IterT>
-        locate( typename TraitT::container &cont,
-                const typename TraitT::position &p )
+        locate( ContT &cont, const typename TraitT::position &p )
         {
             using trait_type = TraitT;
             using iter       = IterT;
