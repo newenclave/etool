@@ -66,9 +66,41 @@ namespace etool { namespace intervals {
             return merge( cont_, p );
         }
 
+        iterator merge( const key_type &lft, const key_type &rght )
+        {
+            return merge( cont_, pos(lft, rght) );
+        }
+
+        iterator merge( const key_type &uniq )
+        {
+            return merge( cont_, pos(uniq, uniq, intervals::INCLUDE_BOTH ) );
+        }
+
+        iterator merge( const key_type &lft, const key_type &rght,
+                        std::uint32_t flags )
+        {
+            return merge( cont_, pos(lft, rght, flags) );
+        }
+
         iterator insert( pos p )
         {
             return insert( cont_, p );
+        }
+
+        iterator insert( const key_type &lft, const key_type &rght )
+        {
+            return insert( cont_, pos(lft, rght) );
+        }
+
+        iterator insert( const key_type &uniq  )
+        {
+            return insert( cont_, pos(uniq, uniq, intervals::INCLUDE_BOTH) );
+        }
+
+        iterator insert( const key_type &lft, const key_type &rght,
+                         std::uint32_t flags )
+        {
+            return insert( cont_, pos(lft, rght, flags) );
         }
 
         std::ostream &out( std::ostream &o ) const
