@@ -7,6 +7,7 @@
 #include "etool/intervals/interval.h"
 #include "etool/intervals/operations.h"
 #include "etool/intervals/traits/std_map.h"
+#include "etool/intervals/traits/vector_map.h"
 
 namespace etool { namespace intervals {
 

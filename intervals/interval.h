@@ -228,13 +228,19 @@ namespace etool { namespace intervals {
                     && !cmp::less( rh, lh );
             }
 
-            bool operator ( )( const interval &lh, const interval &rh ) const
+            static
+            bool less( const interval &lh, const interval &rh )
             {
                 if( lh.is_right_included( ) && rh.is_left_included( ) ) {
                     return interval::cmp::less( lh.right( ), rh.left( ) );
                 } else {
                     return interval::cmp::less_equal( lh.right( ), rh.left( ) );
                 }
+            }
+
+            bool operator ( )( const interval &lh, const interval &rh ) const
+            {
+                return cmp::less( lh, rh );
             }
 
             bool operator ( )( const value_type &lh,

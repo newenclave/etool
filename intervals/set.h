@@ -8,6 +8,7 @@
 #include "etool/intervals/flags.h"
 #include "etool/intervals/interval.h"
 #include "etool/intervals/traits/std_set.h"
+#include "etool/intervals/traits/vector_set.h"
 
 #include "etool/intervals/operations.h"
 
