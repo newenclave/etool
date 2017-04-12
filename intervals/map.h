@@ -123,10 +123,16 @@ namespace etool { namespace intervals {
 
         std::ostream &out( std::ostream &o ) const
         {
+            return out(o, " ");
+        }
+
+        template <typename T>
+        std::ostream &out( std::ostream &o, T gap ) const
+        {
             bool start = true;
             for( auto &n: *this ) {
                 if( !start ) {
-                    o << " ";
+                    o << gap;
                 }
                 start = false;
                 n.first.out(o) << " -> " << n.second;

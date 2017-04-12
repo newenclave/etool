@@ -13,13 +13,13 @@
 
 namespace etool { namespace intervals {
 
-    template <typename T,
+    template <typename KeyT,
               template <typename> class PosTraitT = traits::std_set>
     class set {
 
     public:
 
-        using key_type = T;
+        using key_type   = KeyT;
         using trait_type = PosTraitT<key_type>;
 
         using pos = typename trait_type::position;
@@ -128,10 +128,16 @@ namespace etool { namespace intervals {
 
         std::ostream &out( std::ostream &o ) const
         {
+            return out(o, " ");
+        }
+
+        template <typename T>
+        std::ostream &out( std::ostream &o, T gap ) const
+        {
             bool start = true;
             for( auto &n: *this ) {
                 if( !start ) {
-                    o << " ";
+                    o << gap;
                 }
                 start = false;
                 n.out(o);
