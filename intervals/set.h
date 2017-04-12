@@ -11,12 +11,13 @@
 #include "etool/intervals/traits/vector_set.h"
 
 #include "etool/intervals/operations.h"
+#include "etool/intervals/common.h"
 
 namespace etool { namespace intervals {
 
     template <typename KeyT,
               template <typename> class PosTraitT = traits::std_set>
-    class set {
+    class set: public common<PosTraitT<KeyT> > {
 
     public:
 
@@ -27,8 +28,9 @@ namespace etool { namespace intervals {
 
     private:
 
-        using container = typename trait_type::container;
-        using my_oper   = operations<trait_type>;
+        using container  = typename trait_type::container;
+        using my_oper    = operations<trait_type>;
+        using super_type = common<trait_type>;
 
     public:
 
@@ -36,127 +38,78 @@ namespace etool { namespace intervals {
         using const_iterator = typename trait_type::const_iterator;
 
         template<typename IterT>
-        using container_slice = typename
-                                my_oper::template container_slice<IterT>;
-
-        iterator begin( )
-        {
-            return trait_type::begin( cont_ );
-        }
-
-        iterator end( )
-        {
-            return trait_type::end( cont_ );
-        }
-
-        const_iterator begin( ) const
-        {
-            return trait_type::cbegin( cont_ );
-        }
-
-        const_iterator end( ) const
-        {
-            return trait_type::cend( cont_ );
-        }
-
-        iterator find( const key_type &k )
-        {
-            return find( cont_, k );
-        }
-
-        const_iterator find( const key_type &k ) const
-        {
-            return find( cont_, k );
-        }
+        using container_slice = typename super_type::
+                                template container_slice<IterT>;
 
         iterator merge( position p )
         {
-            return merge( cont_, p );
+            return merge( cont( ), p );
         }
 
         iterator merge( const key_type &lft, const key_type &rght )
         {
-            return merge( cont_, position(lft, rght) );
+            return merge( cont( ), position(lft, rght) );
         }
 
         iterator merge( const key_type &uniq )
         {
-            return merge( cont_, position( uniq, uniq,
+            return merge( cont( ), position( uniq, uniq,
                                            intervals::INCLUDE_BOTH ) );
         }
 
         iterator merge( const key_type &lft, const key_type &rght,
                         std::uint32_t flags )
         {
-            return merge( cont_, position(lft, rght, flags) );
+            return merge( cont( ), position(lft, rght, flags) );
         }
 
         iterator insert( position p )
         {
-            return insert( cont_, p );
+            return insert( cont( ), p );
         }
 
         iterator insert( const key_type &lft, const key_type &rght )
         {
-            return insert( cont_, position(lft, rght) );
+            return insert( cont( ), position(lft, rght) );
         }
 
         iterator insert( const key_type &uniq  )
         {
-            return insert( cont_, position( uniq, uniq,
+            return insert( cont( ), position( uniq, uniq,
                                             intervals::INCLUDE_BOTH) );
         }
 
         iterator insert( const key_type &lft, const key_type &rght,
                          std::uint32_t flags )
         {
-            return insert( cont_, position(lft, rght, flags) );
+            return insert( cont( ), position(lft, rght, flags) );
         }
 
         iterator cut( position p )
         {
-            return cut( cont_, p );
+            return cut( cont( ), p );
         }
 
         iterator cut( const key_type &lft, const key_type &rght )
         {
-            return cut( cont_, position(lft, rght) );
+            return cut( cont( ), position(lft, rght) );
         }
 
         iterator cut( const key_type &uniq  )
         {
-            return cut( cont_, position(uniq, uniq, intervals::INCLUDE_BOTH) );
+            return cut( cont( ), position( uniq, uniq,
+                                           intervals::INCLUDE_BOTH) );
         }
 
         iterator cut( const key_type &lft, const key_type &rght,
                       std::uint32_t flags )
         {
-            return cut( cont_, position(lft, rght, flags) );
+            return cut( cont( ), position(lft, rght, flags) );
         }
 
         std::ostream &out( std::ostream &o ) const
         {
             return out(o, " ");
-        }
-
-        container_slice<iterator> intersection( const position &p )
-        {
-            return my_oper::template intersection<iterator>( cont_, p );
-        }
-
-        container_slice<iterator>
-        intersection( const key_type &lft, const key_type &rght )
-        {
-            return my_oper::template
-                   intersection<iterator>( cont_, position( lft, rght ) );
-        }
-
-        container_slice<iterator>
-        intersection( const key_type &lft, const key_type &rght,
-                      std::uint32_t flgs )
-        {
-            return my_oper::template
-                   intersection<iterator>( cont_, position( lft, rght, flgs ) );
         }
 
         template <typename T>
@@ -173,51 +126,24 @@ namespace etool { namespace intervals {
             return o;
         }
 
-        size_t size( ) const
-        {
-            return trait_type::size( cont_ );
-        }
-
-        void clear( )
-        {
-            trait_type::clear( cont_ );
-        }
-
     private:
 
-        template <typename IterT>
-        using iter_bool = typename my_oper::template iter_bool<IterT>;
+        container &cont( )
+        {
+            return this->get_container( );
+        }
 
-        template <typename IterT>
-        using place_pair = typename my_oper::template place_pair<IterT>;
+        const container &cont( ) const
+        {
+            return this->get_container( );
+        }
 
         using iter_access = typename trait_type::iterator_access;
-
-        template <typename IterT, typename ContT>
-        static
-        place_pair<IterT> locate( ContT &cont, const position &p )
-        {
-            return my_oper::template locate<IterT>( cont, p );
-        }
-
-        static
-        iterator find( container &cont, const key_type &k )
-        {
-            auto res = locate<iterator>( cont, position( k, k, INCLUDE_BOTH ) );
-            return res.first.inside ? res.first.iter : trait_type::end(cont);
-        }
-
-        static
-        const_iterator find( const container &cont, const key_type &k )
-        {
-            auto res = locate<const_iterator>( cont, position( k, k ) );
-            return res.first.inside ? res.first.iter : trait_type::end(cont);
-        }
 
         static
         iterator merge( container &cont, position p )
         {
-            auto res = locate<iterator>( cont, p );
+            auto res = super_type::template locate<iterator>( cont, p );
 
             if( p.invalid( ) || p.empty( ) ) {
                 return trait_type::end( cont );
@@ -279,7 +205,7 @@ namespace etool { namespace intervals {
         static
         iterator insert( container &cont, position p )
         {
-            auto res = locate<iterator>( cont, p );
+            auto res = super_type::template locate<iterator>( cont, p );
 
             if( p.invalid( ) || p.empty( ) ) {
                 return trait_type::end( cont );
@@ -341,7 +267,7 @@ namespace etool { namespace intervals {
         static
         iterator cut( container &cont, position p )
         {
-            auto res = locate<iterator>( cont, p );
+            auto res = super_type::template locate<iterator>( cont, p );
 
             if( p.invalid( ) || p.is_both_excluded( ) ) {
                 return trait_type::end( cont );
@@ -398,8 +324,6 @@ namespace etool { namespace intervals {
                 return ret;
             }
         }
-
-        container cont_;
     };
 
 }}

@@ -6,11 +6,11 @@
 
 namespace etool { namespace intervals { namespace traits {
 
-    template <typename ValueT>
+    template <typename KeyT>
     struct std_set {
 
-        using value          = ValueT;
-        using position       = intervals::interval<value>;
+        using key            = KeyT;
+        using position       = intervals::interval<key>;
         using container      = std::set<position, typename position::cmp>;
 
         using iterator       = typename container::iterator;
@@ -87,9 +87,15 @@ namespace etool { namespace intervals { namespace traits {
         }
 
         static
-        iterator erase( container &c, iterator from, iterator to )
+        iterator erase( container &c, const_iterator from, const_iterator to )
         {
             return c.erase( from, to );
+        }
+
+        static
+        iterator erase( container &c, const_iterator from )
+        {
+            return c.erase( from );
         }
 
         static

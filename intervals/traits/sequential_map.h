@@ -118,6 +118,12 @@ namespace etool { namespace intervals { namespace traits {
             return c.erase( from, to );
         }
 
+        static
+        iterator erase( container &c, const_iterator from )
+        {
+            return c.erase( from );
+        }
+
 //        static
 //        iterator insert( container &c, position p, value v )
 //        {

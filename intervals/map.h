@@ -9,11 +9,13 @@
 #include "etool/intervals/traits/std_map.h"
 #include "etool/intervals/traits/vector_map.h"
 
+#include "etool/intervals/common.h"
+
 namespace etool { namespace intervals {
 
     template <typename KeyT, typename ValueT,
               template <typename, typename> class PosTraitT = traits::std_map>
-    class map {
+    class map: public common<PosTraitT<KeyT, ValueT> > {
 
     public:
         using key_type = KeyT;
@@ -22,7 +24,8 @@ namespace etool { namespace intervals {
 
     private:
 
-        using my_oper = operations<trait_type>;
+        using my_oper    = operations<trait_type>;
+        using super_type = common<trait_type>;
 
     public:
 
@@ -32,43 +35,13 @@ namespace etool { namespace intervals {
         using const_iterator = typename trait_type::const_iterator;
 
         template<typename IterT>
-        using container_slice = typename
-                                my_oper::template container_slice<IterT>;
-
-        iterator find( const key_type &k )
-        {
-            return find( cont_, k );
-        }
-
-        const_iterator find( const key_type &k ) const
-        {
-            return find( cont_, k );
-        }
-
-        iterator begin( )
-        {
-            return trait_type::begin( cont_ );
-        }
-
-        iterator end( )
-        {
-            return trait_type::end( cont_ );
-        }
-
-        const_iterator begin( ) const
-        {
-            return trait_type::cbegin( cont_ );
-        }
-
-        const_iterator end( ) const
-        {
-            return trait_type::cend( cont_ );
-        }
+        using container_slice = typename super_type::
+                                template container_slice<IterT>;
 
         /////////// MERGE ///////////////
         iterator merge( position p, value_type val )
         {
-            return merge( cont_, std::move(p), std::move(val) );
+            return merge( cont( ), std::move(p), std::move(val) );
         }
 
         iterator merge( const key_type &lft, const key_type &rght,
@@ -85,13 +58,13 @@ namespace etool { namespace intervals {
         iterator merge( const key_type &lft, const key_type &rght,
                         std::uint32_t flags, value_type val )
         {
-            return merge( cont_, position(lft, rght, flags), std::move(val) );
+            return merge( cont( ), position(lft, rght, flags), std::move(val) );
         }
 
         /////////// INSERT ///////////////
         iterator insert( position p, value_type val )
         {
-            return insert( cont_, std::move(p), std::move(val) );
+            return insert( cont( ), std::move(p), std::move(val) );
         }
 
         iterator insert( const key_type &lft, const key_type &rght,
@@ -108,13 +81,13 @@ namespace etool { namespace intervals {
         iterator insert( const key_type &lft, const key_type &rght,
                         std::uint32_t flags, value_type val )
         {
-            return insert( cont_, position(lft, rght, flags), std::move(val) );
+            return insert( cont( ), position(lft, rght, flags), std::move(val) );
         }
 
         /////////// CUT ///////////////
         iterator cut( position p )
         {
-            return cut( cont_, std::move(p) );
+            return cut( cont( ), std::move(p) );
         }
 
         iterator cut( const key_type &lft, const key_type &rght )
@@ -130,12 +103,22 @@ namespace etool { namespace intervals {
         iterator cut( const key_type &lft, const key_type &rght,
                       std::uint32_t flags )
         {
-            return cut( cont_, position(lft, rght, flags) );
+            return cut( cont( ), position(lft, rght, flags) );
         }
 
         std::ostream &out( std::ostream &o ) const
         {
             return out(o, " ");
+        }
+
+        iterator erase( const_iterator place )
+        {
+            return trait_type::erase( cont( ), place );
+        }
+
+        iterator erase( const_iterator from, const_iterator to )
+        {
+            return trait_type::erase( cont( ), from, to );
         }
 
         template <typename T>
@@ -152,26 +135,16 @@ namespace etool { namespace intervals {
             return o;
         }
 
-        size_t size( ) const
-        {
-            return trait_type::size( cont_ );
-        }
-
-        void clear( )
-        {
-            trait_type::clear( cont_ );
-        }
-
         container_slice<iterator> intersection( const position &p )
         {
-            return my_oper::template intersection<iterator>( cont_, p );
+            return my_oper::template intersection<iterator>( cont( ), p );
         }
 
         container_slice<iterator>
         intersection( const key_type &lft, const key_type &rght )
         {
             return my_oper::template
-                   intersection<iterator>( cont_, position( lft, rght ) );
+                   intersection<iterator>( cont( ), position( lft, rght ) );
         }
 
         container_slice<iterator>
@@ -179,13 +152,13 @@ namespace etool { namespace intervals {
                       std::uint32_t flgs )
         {
             return my_oper::template
-                   intersection<iterator>( cont_, position( lft, rght, flgs ) );
+                   intersection<iterator>( cont( ), position( lft, rght, flgs ) );
         }
 
         value_type &operator [ ]( const key_type &k )
         {
-            auto f = find( k );
-            if( f == end( ) ) {
+            auto f = this->find( k );
+            if( f == this->end( ) ) {
                 f = insert( k, value_type( ) );
             }
             return f->second;
@@ -194,7 +167,7 @@ namespace etool { namespace intervals {
         value_type &operator [ ]( const position &k )
         {
             auto f = find( k );
-            if( f == end( ) ) {
+            if( f == this->end( ) ) {
                 f = insert( k, value_type( ) );
             }
             return f->second;
@@ -202,39 +175,22 @@ namespace etool { namespace intervals {
 
     private:
 
-        template <typename IterT>
-        using iter_bool = typename my_oper::template iter_bool<IterT>;
+        container &cont( )
+        {
+            return this->get_container( );
+        }
 
-        template <typename IterT>
-        using place_pair = typename my_oper::template place_pair<IterT>;
+        const container &cont( ) const
+        {
+            return this->get_container( );
+        }
 
         using iter_access = typename trait_type::iterator_access;
-
-        template <typename IterT, typename ContT>
-        static
-        place_pair<IterT> locate( ContT &cont, const position &p )
-        {
-            return my_oper::template locate<IterT>( cont, p );
-        }
-
-        static
-        iterator find( container &cont, const key_type &k )
-        {
-            auto res = locate<iterator>( cont, position( k, k, INCLUDE_BOTH ) );
-            return res.first.inside ? res.first.iter : trait_type::end(cont);
-        }
-
-        static
-        const_iterator find( const container &cont, const key_type &k )
-        {
-            auto res = locate<const_iterator>( cont, position( k, k ) );
-            return res.first.inside ? res.first.iter : trait_type::end(cont);
-        }
 
         static
         iterator merge( container &cont, position p, value_type val )
         {
-            auto res = locate<iterator>( cont, p );
+            auto res = super_type::template locate<iterator>( cont, p );
 
             if( p.invalid( ) || p.empty( ) ) {
                 return trait_type::end( cont );
@@ -298,7 +254,7 @@ namespace etool { namespace intervals {
         static
         iterator insert( container &cont, position p, value_type v )
         {
-            auto res = locate<iterator>( cont, p );
+            auto res = super_type::template locate<iterator>( cont, p );
 
             if( p.invalid( ) || p.empty( ) ) {
                 return trait_type::end( cont );
@@ -383,7 +339,7 @@ namespace etool { namespace intervals {
         static
         iterator cut( container &cont, position p )
         {
-            auto res = locate<iterator>( cont, p );
+            auto res = super_type::template locate<iterator>( cont, p );
 
             if( p.invalid( ) || p.is_both_excluded( ) ) {
                 return trait_type::end( cont );
@@ -461,8 +417,6 @@ namespace etool { namespace intervals {
                 return ret;
             }
         }
-
-        container cont_;
     };
 
 }}

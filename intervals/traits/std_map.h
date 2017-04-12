@@ -93,6 +93,12 @@ namespace etool { namespace intervals { namespace traits {
         }
 
         static
+        iterator erase( container &c, const_iterator from )
+        {
+            return c.erase( from );
+        }
+
+        static
         iterator insert( container &c, position p, value v )
         {
             return c.emplace(std::make_pair(std::move(p), std::move(v))).first;
