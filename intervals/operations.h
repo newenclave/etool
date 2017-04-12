@@ -37,11 +37,17 @@ namespace etool { namespace intervals {
         using place_pair = std::pair< iter_bool<ItrT>, iter_bool<ItrT> >;
 
         template <typename ItrT>
-        struct iterator_pair {
+        struct container_slice {
 
             using iterator = ItrT;
 
-            iterator_pair( iterator b, iterator e )
+            container_slice(  ) = default;
+            container_slice( container_slice&& ) = default;
+            container_slice( const container_slice& ) = default;
+            container_slice& operator = ( container_slice && ) = default;
+            container_slice& operator = ( const container_slice & ) = default;
+
+            container_slice( iterator b, iterator e )
                 :data(std::move(b), std::move(e))
             { }
 
@@ -128,15 +134,15 @@ namespace etool { namespace intervals {
 
         template <typename IterT, typename ContT>
         static
-        iterator_pair<IterT>
+        container_slice<IterT>
         intersection( ContT &cont, const position &p )
         {
             auto res = locate<IterT>( cont, p );
             if( res.second.inside ) {
                 std::advance( res.second.iter, 1 );
             }
-            return iterator_pair<IterT>( std::move(res.first.iter),
-                                         std::move(res.second.iter) );
+            return container_slice<IterT>( std::move(res.first.iter),
+                                           std::move(res.second.iter) );
         }
 
     };

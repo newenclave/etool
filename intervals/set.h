@@ -36,7 +36,8 @@ namespace etool { namespace intervals {
         using const_iterator = typename trait_type::const_iterator;
 
         template<typename IterT>
-        using iterator_pair = typename my_oper::template iterator_pair<IterT>;
+        using container_slice = typename
+                                my_oper::template container_slice<IterT>;
 
         iterator begin( )
         {
@@ -138,19 +139,19 @@ namespace etool { namespace intervals {
             return out(o, " ");
         }
 
-        iterator_pair<iterator> intersection( const position &p )
+        container_slice<iterator> intersection( const position &p )
         {
             return my_oper::template intersection<iterator>( cont_, p );
         }
 
-        iterator_pair<iterator>
+        container_slice<iterator>
         intersection( const key_type &lft, const key_type &rght )
         {
             return my_oper::template
                    intersection<iterator>( cont_, position( lft, rght ) );
         }
 
-        iterator_pair<iterator>
+        container_slice<iterator>
         intersection( const key_type &lft, const key_type &rght,
                       std::uint32_t flgs )
         {

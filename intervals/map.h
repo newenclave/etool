@@ -14,15 +14,26 @@ namespace etool { namespace intervals {
     template <typename KeyT, typename ValueT,
               template <typename, typename> class PosTraitT = traits::std_map>
     class map {
+
     public:
         using key_type = KeyT;
         using value_type = ValueT;
         using trait_type = PosTraitT<key_type, value_type>;
 
+    private:
+
+        using my_oper = operations<trait_type>;
+
+    public:
+
         using position       = typename trait_type::position;
         using container      = typename trait_type::container;
         using iterator       = typename trait_type::iterator;
         using const_iterator = typename trait_type::const_iterator;
+
+        template<typename IterT>
+        using container_slice = typename
+                                my_oper::template container_slice<IterT>;
 
         iterator find( const key_type &k )
         {
@@ -151,6 +162,26 @@ namespace etool { namespace intervals {
             trait_type::clear( cont_ );
         }
 
+        container_slice<iterator> intersection( const position &p )
+        {
+            return my_oper::template intersection<iterator>( cont_, p );
+        }
+
+        container_slice<iterator>
+        intersection( const key_type &lft, const key_type &rght )
+        {
+            return my_oper::template
+                   intersection<iterator>( cont_, position( lft, rght ) );
+        }
+
+        container_slice<iterator>
+        intersection( const key_type &lft, const key_type &rght,
+                      std::uint32_t flgs )
+        {
+            return my_oper::template
+                   intersection<iterator>( cont_, position( lft, rght, flgs ) );
+        }
+
         value_type &operator [ ]( const key_type &k )
         {
             auto f = find( k );
@@ -170,8 +201,6 @@ namespace etool { namespace intervals {
         }
 
     private:
-
-        using my_oper = operations<trait_type>;
 
         template <typename IterT>
         using iter_bool = typename my_oper::template iter_bool<IterT>;
