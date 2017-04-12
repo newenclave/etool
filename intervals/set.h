@@ -368,6 +368,7 @@ namespace etool { namespace intervals {
                 return ret;
             }
         }
+
         container cont_;
     };
 

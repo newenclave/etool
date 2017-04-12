@@ -13,6 +13,8 @@ namespace etool { namespace intervals {
 
         using trait_type = TraitT;
 
+        using position = typename trait_type::position;
+
         template <typename IterT>
         struct iter_bool {
             iter_bool( IterT i, bool in, bool bo )
@@ -55,7 +57,7 @@ namespace etool { namespace intervals {
         template <typename IterT, typename ContT>
         static
         place_pair<IterT>
-        locate( ContT &cont, const typename TraitT::position &p )
+        locate( ContT &cont, const position &p )
         {
             using iter       = IterT;
             using iter_acc   = typename trait_type::iterator_access;
