@@ -12,8 +12,8 @@ namespace etool { namespace intervals { namespace traits {
 
     template <typename ValueT>
     struct vector_set_info {
-        using value     = ValueT;
-        using position  = intervals::interval<value>;
+        using key       = ValueT;
+        using position  = intervals::interval<key>;
         using container = std::vector<position>;
     };
 

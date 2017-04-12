@@ -11,7 +11,7 @@ namespace etool { namespace intervals { namespace traits {
     template <typename ContainerInfo>
     struct sequential_set {
 
-        using value          = typename ContainerInfo::value;
+        using key            = typename ContainerInfo::key;
         using position       = typename ContainerInfo::position;
         using container      = typename ContainerInfo::container;
 
@@ -91,7 +91,7 @@ namespace etool { namespace intervals { namespace traits {
         }
 
         static
-        iterator erase( container &c, iterator from, iterator to )
+        iterator erase( container &c, const_iterator from, const_iterator to )
         {
             return c.erase( from, to );
         }
