@@ -103,6 +103,17 @@ namespace etool { namespace intervals {
             flags &= (~f);
         }
 
+        bool left_neighbor( const interval &ol )
+        {
+            return cmp::equal( left( ), ol.right( ) )
+                && (left_flag( ) + ol.right( ) > 0) ;
+        }
+
+        bool right_neighbor( const interval &ol )
+        {
+            return ol.left_neighbor( *this );
+        }
+
         bool contain( const value_type &k ) const noexcept
         {
             bool bleft = is_left_included( )

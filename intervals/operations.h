@@ -8,13 +8,16 @@
 
 namespace etool { namespace intervals {
 
+    template <typename TraitT>
     struct operations {
+
+        using trait_type = TraitT;
 
         template <typename IterT>
         struct iter_bool {
             iter_bool( IterT i, bool in )
                 :iter(i)
-                ,isin(in)
+                ,inside(in)
             { }
 
             iter_bool( const iter_bool & )              = default;
@@ -23,18 +26,18 @@ namespace etool { namespace intervals {
             iter_bool &operator = ( const iter_bool & ) = default;
 
             IterT iter;
-            bool  isin = false;
+            bool  inside = false;
+            bool  border = false;
         };
 
         template <typename ItrT>
         using place_pair = std::pair< iter_bool<ItrT>, iter_bool<ItrT> >;
 
-        template <typename TraitT, typename IterT, typename ContT>
+        template <typename IterT, typename ContT>
         static
         place_pair<IterT>
         locate( ContT &cont, const typename TraitT::position &p )
         {
-            using trait_type = TraitT;
             using iter       = IterT;
             using iter_acc   = typename trait_type::iterator_access;
             using iter_bool_ = iter_bool<iter>;
@@ -51,11 +54,11 @@ namespace etool { namespace intervals {
 
             auto e = trait_type::upper_bound( cont, p );
 
-            bin = iter_acc::get(b).contain( p.left( ) );
+            bin = iter_acc::get(b)->contain( p.left( ) );
 
             if( e != trait_type::begin( cont ) ) {
                 auto prev = std::prev( e, 1);
-                if( iter_acc::get(prev).contain( p.right( ) ) ) {
+                if( iter_acc::get(prev)->contain( p.right( ) ) ) {
                     e = prev;
                     ein = true;
                 }

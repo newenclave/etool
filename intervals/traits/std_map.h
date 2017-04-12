@@ -19,10 +19,9 @@ namespace etool { namespace intervals { namespace traits {
 
         struct iterator_access {
             template <typename IterT>
-            static
-            auto &get( IterT itr )
+            const position *get( IterT itr )
             {
-                return itr->first;
+                return &itr->first;
             }
         };
 
