@@ -23,7 +23,7 @@ namespace etool { namespace intervals {
         using key_type   = KeyT;
         using trait_type = PosTraitT<key_type>;
 
-        using pos = typename trait_type::position;
+        using position = typename trait_type::position;
 
     private:
 
@@ -64,67 +64,69 @@ namespace etool { namespace intervals {
             return find( cont_, k );
         }
 
-        iterator merge( pos p )
+        iterator merge( position p )
         {
             return merge( cont_, p );
         }
 
         iterator merge( const key_type &lft, const key_type &rght )
         {
-            return merge( cont_, pos(lft, rght) );
+            return merge( cont_, position(lft, rght) );
         }
 
         iterator merge( const key_type &uniq )
         {
-            return merge( cont_, pos(uniq, uniq, intervals::INCLUDE_BOTH ) );
+            return merge( cont_, position( uniq, uniq,
+                                           intervals::INCLUDE_BOTH ) );
         }
 
         iterator merge( const key_type &lft, const key_type &rght,
                         std::uint32_t flags )
         {
-            return merge( cont_, pos(lft, rght, flags) );
+            return merge( cont_, position(lft, rght, flags) );
         }
 
-        iterator insert( pos p )
+        iterator insert( position p )
         {
             return insert( cont_, p );
         }
 
         iterator insert( const key_type &lft, const key_type &rght )
         {
-            return insert( cont_, pos(lft, rght) );
+            return insert( cont_, position(lft, rght) );
         }
 
         iterator insert( const key_type &uniq  )
         {
-            return insert( cont_, pos(uniq, uniq, intervals::INCLUDE_BOTH) );
+            return insert( cont_, position( uniq, uniq,
+                                            intervals::INCLUDE_BOTH) );
         }
 
         iterator insert( const key_type &lft, const key_type &rght,
                          std::uint32_t flags )
         {
-            return insert( cont_, pos(lft, rght, flags) );
+            return insert( cont_, position(lft, rght, flags) );
         }
 
-        iterator cut( pos p )
+        iterator cut( position p )
         {
             return cut( cont_, p );
         }
 
         iterator cut( const key_type &lft, const key_type &rght )
         {
-            return cut( cont_, pos(lft, rght) );
+            return cut( cont_, position(lft, rght) );
         }
 
         iterator cut( const key_type &uniq  )
         {
-            return cut( cont_, pos(uniq, uniq, intervals::INCLUDE_BOTH) );
+            return cut( cont_, position(uniq, uniq, intervals::INCLUDE_BOTH) );
         }
 
         iterator cut( const key_type &lft, const key_type &rght,
                       std::uint32_t flags )
         {
-            return cut( cont_, pos(lft, rght, flags) );
+            return cut( cont_, position(lft, rght, flags) );
         }
 
         std::ostream &out( std::ostream &o ) const
@@ -170,7 +172,7 @@ namespace etool { namespace intervals {
 
         template <typename IterT, typename ContT>
         static
-        place_pair<IterT> locate( ContT &cont, const pos &p )
+        place_pair<IterT> locate( ContT &cont, const position &p )
         {
             return my_oper::template locate<IterT>( cont, p );
         }
@@ -178,19 +180,19 @@ namespace etool { namespace intervals {
         static
         iterator find( container &cont, const key_type &k )
         {
-            auto res = locate<iterator>( cont, pos( k, k, INCLUDE_BOTH ) );
+            auto res = locate<iterator>( cont, position( k, k, INCLUDE_BOTH ) );
             return res.first.inside ? res.first.iter : trait_type::end(cont);
         }
 
         static
         const_iterator find( const container &cont, const key_type &k )
         {
-            auto res = locate<const_iterator>( cont, pos( k, k ) );
+            auto res = locate<const_iterator>( cont, position( k, k ) );
             return res.first.inside ? res.first.iter : trait_type::end(cont);
         }
 
         static
-        iterator merge( container &cont, pos p )
+        iterator merge( container &cont, position p )
         {
             auto res = locate<iterator>( cont, p );
 
@@ -218,7 +220,7 @@ namespace etool { namespace intervals {
                 auto left_pos  = iter_access::get(res.first.iter);
                 auto right_pos = iter_access::get(res.second.iter);
 
-                pos new_val = pos( fin ? left_pos->left( )   : p.left( ),
+                position new_val = position( fin ? left_pos->left( )   : p.left( ),
                                    lin ? right_pos->right( ) : p.right( ),
                                    INCLUDE_NONE );
 
@@ -253,7 +255,7 @@ namespace etool { namespace intervals {
         }
 
         static
-        iterator insert( container &cont, pos p )
+        iterator insert( container &cont, position p )
         {
             auto res = locate<iterator>( cont, p );
 
@@ -264,8 +266,8 @@ namespace etool { namespace intervals {
                                                 std::move(p) );
             } else {
 
-                pos first;
-                pos last;
+                position first;
+                position last;
 
                 if( res.first.inside ) {
 
@@ -277,7 +279,7 @@ namespace etool { namespace intervals {
                                        ? INCLUDE_NONE
                                        : INCLUDE_RIGTH;
 
-                    first = pos( res.first.iter->left( ), p.left( ),
+                    first = position( res.first.iter->left( ), p.left( ),
                                  linc | rinc );
                 }
 
@@ -291,7 +293,7 @@ namespace etool { namespace intervals {
                                        ? INCLUDE_RIGTH
                                        : INCLUDE_NONE;
 
-                    last = pos( p.right( ), res.second.iter->right( ),
+                    last = position( p.right( ), res.second.iter->right( ),
                                 linc | rinc );
 
                     ++res.second.iter;
@@ -315,7 +317,7 @@ namespace etool { namespace intervals {
         }
 
         static
-        iterator cut( container &cont, pos p )
+        iterator cut( container &cont, position p )
         {
             auto res = locate<iterator>( cont, p );
 
@@ -325,8 +327,8 @@ namespace etool { namespace intervals {
                 return trait_type::end( cont );
             } else {
 
-                pos first;
-                pos last;
+                position first;
+                position last;
 
                 if( res.first.inside ) {
 
@@ -338,8 +340,8 @@ namespace etool { namespace intervals {
                                        ? INCLUDE_NONE
                                        : INCLUDE_RIGTH;
 
-                    first = pos( res.first.iter->left( ), p.left( ),
-                                 linc | rinc );
+                    first = position( res.first.iter->left( ), p.left( ),
+                                      linc | rinc );
                 }
 
                 if( res.second.inside ) {
@@ -352,8 +354,8 @@ namespace etool { namespace intervals {
                                        ? INCLUDE_RIGTH
                                        : INCLUDE_NONE;
 
-                    last = pos( p.right( ), res.second.iter->right( ),
-                                linc | rinc );
+                    last = position( p.right( ), res.second.iter->right( ),
+                                     linc | rinc );
 
                     ++res.second.iter;
                 }
