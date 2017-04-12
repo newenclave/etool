@@ -244,8 +244,9 @@ namespace etool { namespace intervals {
                     ++res.second.iter;
                 }
 
-                trait_type::erase( cont, res.first.iter, res.second.iter );
-                return trait_type::insert( cont, std::move(new_val) );
+                auto t = trait_type::erase( cont, res.first.iter,
+                                            res.second.iter );
+                return trait_type::insert_hint( cont, t, std::move(new_val) );
             }
         }
 
@@ -293,16 +294,17 @@ namespace etool { namespace intervals {
                     ++res.second.iter;
                 }
 
-                 trait_type::erase( cont, res.first.iter, res.second.iter );
+                 auto t = trait_type::erase( cont, res.first.iter,
+                                             res.second.iter );
 
                 if( res.first.inside && !first.empty( ) ) {
-                    trait_type::insert( cont, std::move(first) );
+                    t = trait_type::insert_hint( cont, t, std::move(first) );
                 }
 
-                iterator ret = trait_type::insert( cont, p );
+                iterator ret = trait_type::insert_hint( cont, t, p );
 
                 if( res.second.inside && !last.empty( ) ) {
-                    trait_type::insert( cont, std::move(last) );
+                    trait_type::insert_hint( cont, ret, std::move(last) );
                 }
 
                 return ret;
@@ -356,13 +358,14 @@ namespace etool { namespace intervals {
                 iterator ret = trait_type::erase( cont,
                                                   res.first.iter,
                                                   res.second.iter );
+                auto t = ret;
 
                 if( res.first.inside && !first.empty( ) ) {
-                    trait_type::insert( cont, std::move(first) );
+                    t = trait_type::insert_hint( cont, t, std::move(first) );
                 }
 
                 if( res.second.inside && !last.empty( ) ) {
-                    ret = trait_type::insert( cont, std::move(last) );
+                    ret = trait_type::insert_hint( cont, t, std::move(last) );
                 }
 
                 return ret;

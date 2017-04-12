@@ -98,6 +98,12 @@ namespace etool { namespace intervals { namespace traits {
             return c.emplace( std::move(p) ).first;
         }
 
+        static
+        iterator insert_hint( container &c, iterator h, position p )
+        {
+            return c.emplace_hint( h, std::move(p) );
+        }
+
     };
 
 }}}

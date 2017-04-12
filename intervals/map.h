@@ -257,9 +257,11 @@ namespace etool { namespace intervals {
                     ++res.second.iter;
                 }
 
-                trait_type::erase( cont, res.first.iter, res.second.iter );
-                return trait_type::insert( cont, std::move(new_val),
-                                                 std::move(val) );
+                auto t = trait_type::erase( cont, res.first.iter,
+                                            res.second.iter );
+                return trait_type::insert_hint( cont, t,
+                                                std::move(new_val),
+                                                std::move(val) );
             }
         }
 
@@ -324,19 +326,23 @@ namespace etool { namespace intervals {
                     ++res.second.iter;
                 }
 
-                 trait_type::erase( cont, res.first.iter, res.second.iter );
+                 auto t = trait_type::erase( cont, res.first.iter,
+                                             res.second.iter );
 
                 if( res.first.inside && !first.empty( ) ) {
-                    trait_type::insert( cont, std::move(first),
-                                        std::move(*fvalue) );
+                    t = trait_type::insert_hint( cont, t,
+                                                 std::move(first),
+                                                 std::move(*fvalue) );
                 }
 
-                iterator ret = trait_type::insert( cont, std::move(p),
-                                                   std::move(v) );
+                iterator ret = trait_type::insert_hint( cont, t,
+                                                        std::move(p),
+                                                        std::move(v) );
 
                 if( res.second.inside && !last.empty( ) ) {
-                    trait_type::insert( cont, std::move(last),
-                                        std::move(*lvalue) );
+                    trait_type::insert_hint( cont, ret,
+                                             std::move(last),
+                                             std::move(*lvalue) );
                 }
 
                 return ret;
@@ -407,14 +413,18 @@ namespace etool { namespace intervals {
                                                   res.first.iter,
                                                   res.second.iter );
 
+                auto t = ret;
+
                 if( res.first.inside && !first.empty( ) ) {
-                    trait_type::insert( cont, std::move(first),
-                                        std::move(*fvalue) );
+                    t = trait_type::insert_hint( cont, t,
+                                                 std::move(first),
+                                                 std::move(*fvalue) );
                 }
 
                 if( res.second.inside && !last.empty( ) ) {
-                    ret = trait_type::insert( cont, std::move(last),
-                                              std::move(*lvalue) );
+                    ret = trait_type::insert_hint( cont, t,
+                                                   std::move(last),
+                                                   std::move(*lvalue) );
                 }
 
                 return ret;
