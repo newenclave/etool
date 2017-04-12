@@ -103,13 +103,13 @@ namespace etool { namespace intervals {
             flags &= (~f);
         }
 
-        bool left_neighbor( const interval &ol )
+        bool left_neighbor( const interval &ol ) const noexcept
         {
             return cmp::equal( left( ), ol.right( ) )
                 && (left_flag( ) + ol.right( ) > 0) ;
         }
 
-        bool right_neighbor( const interval &ol )
+        bool right_neighbor( const interval &ol ) const noexcept
         {
             return ol.left_neighbor( *this );
         }

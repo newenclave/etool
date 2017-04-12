@@ -186,9 +186,20 @@ namespace etool { namespace intervals {
 
             if( p.invalid( ) || p.empty( ) ) {
                 return trait_type::end( cont );
-            } else if( res.first.iter == trait_type::end( cont ) ) {
+            } else if( res.first.iter == trait_type::end( cont ) &&
+                      !res.first.border ) {
                 return trait_type::insert( cont, std::move(p) );
             } else {
+
+                if( res.first.border ) {
+                    res.first.iter = std::prev(res.first.iter);
+                    res.first.inside = true;
+                }
+
+                if( res.second.border ) {
+                    res.second.iter = std::next(res.second.iter);
+                    res.second.inside = true;
+                }
 
                 bool fin  = res.first.inside;
                 bool lin  = res.second.inside;

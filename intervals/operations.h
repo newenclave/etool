@@ -15,9 +15,10 @@ namespace etool { namespace intervals {
 
         template <typename IterT>
         struct iter_bool {
-            iter_bool( IterT i, bool in )
+            iter_bool( IterT i, bool in, bool bo )
                 :iter(i)
                 ,inside(in)
+                ,border(bo)
             { }
 
             iter_bool( const iter_bool & )              = default;
@@ -33,6 +34,24 @@ namespace etool { namespace intervals {
         template <typename ItrT>
         using place_pair = std::pair< iter_bool<ItrT>, iter_bool<ItrT> >;
 
+
+        template <typename ItrT>
+        static
+        bool has_left_border( ItrT &itr, const typename TraitT::position &p )
+        {
+            using iter_acc = typename trait_type::iterator_access;
+            ItrT prev = std::prev(itr, 1);
+            return p.left_neighbor(*iter_acc::get(prev));
+        }
+
+        template <typename ItrT>
+        static
+        bool has_right_border( ItrT &itr, const typename TraitT::position &p )
+        {
+            using iter_acc = typename trait_type::iterator_access;
+            return p.right_neighbor(*iter_acc::get(itr));
+        }
+
         template <typename IterT, typename ContT>
         static
         place_pair<IterT>
@@ -45,14 +64,25 @@ namespace etool { namespace intervals {
             auto b = trait_type::lower_bound( cont, p );
 
             if( b == trait_type::end( cont ) ) {
-                return std::make_pair( iter_bool_( b, false ),
-                                       iter_bool_( b, false ) );
+                bool border = false;
+                if( b != trait_type::begin( cont ) ) {
+                    border = has_left_border(b, p);
+                }
+                return std::make_pair( iter_bool_( b, false, border ),
+                                       iter_bool_( b, false, false ) );
             }
 
             bool bin = false;
             bool ein = false;
 
+            bool bor = false;
+            bool eor = false;
+
             auto e = trait_type::upper_bound( cont, p );
+
+            if( b != trait_type::begin(cont) ) {
+                bor = has_left_border( b, p );
+            }
 
             bin = iter_acc::get(b)->contain( p.left( ) );
 
@@ -64,8 +94,12 @@ namespace etool { namespace intervals {
                 }
             }
 
-            return std::make_pair( iter_bool_( b, bin ),
-                                   iter_bool_( e, ein ) );
+            if( e != trait_type::end(cont) ) {
+                eor = has_right_border( e, p );
+            }
+
+            return std::make_pair( iter_bool_( b, bin, bor ),
+                                   iter_bool_( e, ein, eor ) );
         }
 
     };
