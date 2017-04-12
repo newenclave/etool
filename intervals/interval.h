@@ -107,7 +107,7 @@ namespace etool { namespace intervals {
         bool left_neighbor( const interval &ol ) const noexcept
         {
             return cmp::equal( left( ), ol.right( ) )
-                && (left_flag( ) + ol.right( ) > 0) ;
+                && (left_flag( ) + ol.right_flag( ) > 0) ;
         }
 
         bool right_neighbor( const interval &ol ) const noexcept
@@ -128,16 +128,6 @@ namespace etool { namespace intervals {
                 return bright;
             }
             return false;
-        }
-
-        value_type &right( ) noexcept
-        {
-            return end;
-        }
-
-        value_type &left( ) noexcept
-        {
-            return begin;
         }
 
         const value_type &right( ) const
