@@ -42,14 +42,14 @@ namespace etool { namespace intervals {
 
 #else
         interval( value_type b, value_type e )
-            :begin(std::min(b, e))
-            ,end(std::max(b, e))
+            :begin(cmp::min(b, e))
+            ,end(cmp::max(b, e))
             ,flags(INCLUDE_LEFT)
         { }
 
         interval( value_type b, value_type e, std::uint32_t f )
-            :begin(std::min(b, e))
-            ,end(std::max(b, e))
+            :begin(cmp::min(b, e))
+            ,end(cmp::max(b, e))
             ,flags(f)
         { }
 
@@ -197,6 +197,18 @@ namespace etool { namespace intervals {
         }
 
         struct cmp: public std::binary_function<interval, interval, bool> {
+
+            static
+            value_type &min( value_type &lh, value_type &rh )
+            {
+                return less( lh, rh ) ? lh : rh;
+            }
+
+            static
+            value_type &max( value_type &lh, value_type &rh )
+            {
+                return greater( lh, rh ) ? lh : rh;
+            }
 
             static
             bool less( const value_type &lh, const value_type &rh )
