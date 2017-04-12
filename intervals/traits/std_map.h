@@ -11,7 +11,7 @@ namespace etool { namespace intervals { namespace traits {
 
         using key       = KeyT;
         using value     = ValueT;
-        using position  = intervals::interval<value>;
+        using position  = intervals::interval<key>;
         using container = std::map<position, value, typename position::cmp>;
 
         using iterator       = typename container::iterator;
@@ -19,6 +19,7 @@ namespace etool { namespace intervals { namespace traits {
 
         struct iterator_access {
             template <typename IterT>
+            static
             const position *get( IterT itr )
             {
                 return &itr->first;
