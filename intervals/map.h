@@ -134,6 +134,34 @@ namespace etool { namespace intervals {
             return o;
         }
 
+        size_t size( ) const
+        {
+            return trait_type::size( cont_ );
+        }
+
+        void clear( )
+        {
+            trait_type::clear( cont_ );
+        }
+
+        value_type &operator [ ]( const key_type &k )
+        {
+            auto f = find( k );
+            if( f == end( ) ) {
+                f = insert( k, value_type( ) );
+            }
+            return f->second;
+        }
+
+        value_type &operator [ ]( const pos &k )
+        {
+            auto f = find( k );
+            if( f == end( ) ) {
+                f = insert( k, value_type( ) );
+            }
+            return f->second;
+        }
+
     private:
 
         using my_oper = operations<trait_type>;
