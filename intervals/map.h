@@ -216,12 +216,11 @@ namespace etool { namespace intervals {
             } else {
 
                 if( res.first.border ) {
-                    res.first.iter = std::prev(res.first.iter);
+                    std::advance(res.first.iter, -1);
                     res.first.inside = true;
                 }
 
                 if( res.second.border ) {
-                    res.second.iter = std::next(res.second.iter);
                     res.second.inside = true;
                 }
 
@@ -256,7 +255,7 @@ namespace etool { namespace intervals {
                 }
 
                 if( res.second.inside ) {
-                    ++res.second.iter;
+                    std::advance(res.second.iter, +1);
                 }
 
                 auto t = trait_type::erase( cont, res.first.iter,

@@ -37,6 +37,29 @@ namespace etool { namespace intervals {
         using place_pair = std::pair< iter_bool<ItrT>, iter_bool<ItrT> >;
 
         template <typename ItrT>
+        struct iterator_pair {
+
+            using iterator = ItrT;
+
+            iterator_pair( iterator b, iterator e )
+                :data(std::move(b), std::move(e))
+            { }
+
+            iterator begin( )
+            {
+                return data.first;
+            }
+
+            iterator end( )
+            {
+                return data.second;
+            }
+
+        private:
+            std::pair<iterator, iterator> data;
+        };
+
+        template <typename ItrT>
         static
         bool has_left_border( ItrT &itr, const typename TraitT::position &p )
         {
@@ -101,6 +124,19 @@ namespace etool { namespace intervals {
 
             return std::make_pair( iter_bool_( b, bin, bor ),
                                    iter_bool_( e, ein, eor ) );
+        }
+
+        template <typename IterT, typename ContT>
+        static
+        iterator_pair<IterT>
+        intersection( ContT &cont, const position &p )
+        {
+            auto res = locate<IterT>( cont, p );
+            if( res.second.inside ) {
+                std::advance( res.second.iter, 1 );
+            }
+            return iterator_pair<IterT>( std::move(res.first.iter),
+                                         std::move(res.second.iter) );
         }
 
     };

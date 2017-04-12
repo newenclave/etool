@@ -28,11 +28,15 @@ namespace etool { namespace intervals {
     private:
 
         using container = typename trait_type::container;
+        using my_oper   = operations<trait_type>;
 
     public:
 
         using iterator       = typename trait_type::iterator;
         using const_iterator = typename trait_type::const_iterator;
+
+        template<typename IterT>
+        using iterator_pair = typename my_oper::template iterator_pair<IterT>;
 
         iterator begin( )
         {
@@ -134,6 +138,26 @@ namespace etool { namespace intervals {
             return out(o, " ");
         }
 
+        iterator_pair<iterator> intersection( const position &p )
+        {
+            return my_oper::template intersection<iterator>( cont_, p );
+        }
+
+        iterator_pair<iterator>
+        intersection( const key_type &lft, const key_type &rght )
+        {
+            return my_oper::template
+                   intersection<iterator>( cont_, position( lft, rght ) );
+        }
+
+        iterator_pair<iterator>
+        intersection( const key_type &lft, const key_type &rght,
+                      std::uint32_t flgs )
+        {
+            return my_oper::template
+                   intersection<iterator>( cont_, position( lft, rght, flgs ) );
+        }
+
         template <typename T>
         std::ostream &out( std::ostream &o, T gap ) const
         {
@@ -159,8 +183,6 @@ namespace etool { namespace intervals {
         }
 
     private:
-
-        using my_oper = operations<trait_type>;
 
         template <typename IterT>
         using iter_bool = typename my_oper::template iter_bool<IterT>;
@@ -205,12 +227,11 @@ namespace etool { namespace intervals {
             } else {
 
                 if( res.first.border ) {
-                    res.first.iter = std::prev(res.first.iter);
+                    std::advance(res.first.iter, -1);
                     res.first.inside = true;
                 }
 
                 if( res.second.border ) {
-                    res.second.iter = std::next(res.second.iter);
                     res.second.inside = true;
                 }
 
@@ -220,9 +241,9 @@ namespace etool { namespace intervals {
                 auto left_pos  = iter_access::get(res.first.iter);
                 auto right_pos = iter_access::get(res.second.iter);
 
-                position new_val = position( fin ? left_pos->left( )   : p.left( ),
-                                   lin ? right_pos->right( ) : p.right( ),
-                                   INCLUDE_NONE );
+                position new_val( fin ? left_pos->left( )   : p.left( ),
+                                  lin ? right_pos->right( ) : p.right( ),
+                                  INCLUDE_NONE );
 
                 if( fin ) {
                     new_val.set_flag( left_pos->is_left_included( )
@@ -245,7 +266,7 @@ namespace etool { namespace intervals {
                 }
 
                 if( res.second.inside ) {
-                    ++res.second.iter;
+                    std::advance(res.second.iter, +1);
                 }
 
                 auto t = trait_type::erase( cont, res.first.iter,
