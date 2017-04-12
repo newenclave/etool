@@ -210,7 +210,8 @@ namespace etool { namespace intervals {
                 return trait_type::end( cont );
             } else if( res.first.iter == trait_type::end( cont ) &&
                       !res.first.border ) {
-                return trait_type::insert( cont, std::move(p), std::move(val) );
+                return trait_type::insert_hint( cont, res.first.iter,
+                                                std::move(p), std::move(val) );
             } else {
 
                 if( res.first.border ) {
@@ -273,7 +274,8 @@ namespace etool { namespace intervals {
             if( p.invalid( ) || p.empty( ) ) {
                 return trait_type::end( cont );
             } else if( res.first.iter == trait_type::end( cont ) ) {
-                return trait_type::insert( cont, std::move(p), std::move(v) );
+                return trait_type::insert_hint( cont, res.first.iter,
+                                                std::move(p), std::move(v) );
             } else {
 
                 pos first;
