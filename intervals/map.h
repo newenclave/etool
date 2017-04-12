@@ -18,7 +18,7 @@ namespace etool { namespace intervals {
     class map: public common<PosTraitT<KeyT, ValueT> > {
 
     public:
-        using key_type = KeyT;
+        using key_type   = KeyT;
         using value_type = ValueT;
         using trait_type = PosTraitT<key_type, value_type>;
 
