@@ -213,6 +213,8 @@ namespace etool { namespace intervals {
             static
             bool less( const value_type &lh, const value_type &rh )
             {
+//                static const std::less<value_type> lesser;
+//                return lesser(lh, rh);
                 return lh < rh;
             }
 
