@@ -20,9 +20,9 @@ namespace etool { namespace intervals { namespace traits {
 
             template <typename IterT>
             static constexpr
-            IterT &get( IterT &itr )
+            const position *get( IterT &itr )
             {
-                return itr;
+                return &(*itr);
             }
         };
 
