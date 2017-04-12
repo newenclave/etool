@@ -36,7 +36,6 @@ namespace etool { namespace intervals {
         template <typename ItrT>
         using place_pair = std::pair< iter_bool<ItrT>, iter_bool<ItrT> >;
 
-
         template <typename ItrT>
         static
         bool has_left_border( ItrT &itr, const typename TraitT::position &p )
