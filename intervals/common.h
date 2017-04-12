@@ -24,17 +24,6 @@ namespace etool { namespace intervals {
         using container_slice = typename
                                 my_oper::template container_slice<IterT>;
 
-    protected:
-
-        ~common( ) = default;
-        common(  ) = default;
-        common( common && ) = default;
-        common( const common & ) = default;
-        common& operator = ( common && ) = default;
-        common& operator = ( const common & ) = default;
-
-    public:
-
         iterator begin( )
         {
             return trait_type::begin( cont_ );
@@ -105,6 +94,13 @@ namespace etool { namespace intervals {
         }
 
     protected:
+
+        ~common( ) = default;
+        common(  ) = default;
+        common( common && ) = default;
+        common( const common & ) = default;
+        common& operator = ( common && ) = default;
+        common& operator = ( const common & ) = default;
 
         container &get_container( )
         {
