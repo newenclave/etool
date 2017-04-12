@@ -16,10 +16,11 @@ namespace etool { namespace intervals {
 
         using value_type = ValueT;
 
-        interval( )                          = default;
-        interval( const interval & )         = default;
-        interval( interval && )              = default;
-        interval& operator = ( interval && ) = default;
+        interval             ( )                    = default;
+        interval             ( const interval & )   = default;
+        interval &operator = ( const interval & )   = default;
+        interval             ( interval && )        = default;
+        interval& operator = ( interval && )        = default;
 
 #if 1
         interval( value_type b, value_type e )
