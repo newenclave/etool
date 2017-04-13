@@ -50,10 +50,7 @@ namespace etool { namespace sizepack {
         static std::string pack( size_type size )
         {
             std::string res;
-            for( ; size > 0x7F; size >>= 7 ) {
-                res.push_back(static_cast<char>((size & 0x7F) | 0x80));
-            }
-            res.push_back(static_cast<char>(size));
+            append( size, res );
             return std::move(res);
         }
 

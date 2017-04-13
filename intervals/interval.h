@@ -142,8 +142,8 @@ namespace etool { namespace intervals {
 
         std::ostream &out( std::ostream &oss ) const
         {
-            static const char lbracket[2] = {'(', '['};
-            static const char rbracket[2] = {')', ']'};
+            static const char lbracket[2] = { '(', '[' };
+            static const char rbracket[2] = { ')', ']' };
             oss << lbracket[is_left_included( )]
                 << left( ) << ", " << right( )
                 << rbracket[is_right_included( )]
