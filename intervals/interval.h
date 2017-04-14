@@ -336,20 +336,25 @@ namespace etool { namespace intervals {
             static const char lbracket[2] = { '(', '[' };
             static const char rbracket[2] = { ')', ']' };
 
-            static const char *inf = "inf";
+            static const char *minf = "-inf";
+            static const char *pinf = "+inf";
 
             oss << lbracket[is_left_close( )];
 
-            if( is_left_inf( ) ) {
-                oss << '-' << inf;
+            if( left_flags( ) & INF_MINUS_LEFT ) {
+                oss << minf;
+            } else if( left_flags( ) & INF_PLUS_LEFT ) {
+                oss << pinf;
             } else {
                 oss << left( );
             }
 
             oss << ", ";
 
-            if( is_right_inf( ) ) {
-                oss << '+' << inf;
+            if( right_flags( ) & INF_MINUS_RIGHT ) {
+                oss << minf;
+            } else if( right_flags( ) & INF_PLUS_RIGHT ) {
+                oss << pinf;
             } else {
                 oss << right( );
             }
