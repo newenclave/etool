@@ -106,11 +106,6 @@ namespace etool { namespace intervals {
             return cut( cont( ), position(lft, rght, flags) );
         }
 
-        std::ostream &out( std::ostream &o ) const
-        {
-            return out(o, " ");
-        }
-
         iterator erase( const_iterator place )
         {
             return trait_type::erase( cont( ), place );
@@ -121,8 +116,14 @@ namespace etool { namespace intervals {
             return trait_type::erase( cont( ), from, to );
         }
 
-        template <typename T>
-        std::ostream &out( std::ostream &o, T gap ) const
+        template <typename OutT>
+        OutT &out( OutT &o ) const
+        {
+            return out(o, " ");
+        }
+
+        template <typename OutT, typename T>
+        OutT &out( OutT &o, T gap ) const
         {
             bool start = true;
             for( auto &n: *this ) {
