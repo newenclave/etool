@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "etool/intervals/interval.h"
-#include "etool/intervals/operations.h"
 #include "etool/intervals/traits/std_map.h"
 #include "etool/intervals/traits/vector_map.h"
 
@@ -24,7 +23,6 @@ namespace etool { namespace intervals {
 
     private:
 
-        using my_oper    = operations<trait_type>;
         using super_type = common<trait_type>;
 
     public:
@@ -138,13 +136,13 @@ namespace etool { namespace intervals {
 
         container_slice<iterator> intersection( const position &p )
         {
-            return my_oper::template intersection<iterator>( cont( ), p );
+            return super_type::template intersection<iterator>( cont( ), p );
         }
 
         container_slice<iterator>
         intersection( const key_type &lft, const key_type &rght )
         {
-            return my_oper::template
+            return super_type::template
                    intersection<iterator>( cont( ), position( lft, rght ) );
         }
 
@@ -152,8 +150,9 @@ namespace etool { namespace intervals {
         intersection( const key_type &lft, const key_type &rght,
                       std::uint32_t flgs )
         {
-            return my_oper::template
-                   intersection<iterator>( cont( ), position( lft, rght, flgs ) );
+            return super_type::template
+                   intersection<iterator>( cont( ),
+                                           position( lft, rght, flgs ) );
         }
 
         value_type &operator [ ]( const key_type &k )

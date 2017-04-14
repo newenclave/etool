@@ -10,7 +10,6 @@
 #include "etool/intervals/traits/std_set.h"
 #include "etool/intervals/traits/vector_set.h"
 
-#include "etool/intervals/operations.h"
 #include "etool/intervals/common.h"
 
 namespace etool { namespace intervals {
@@ -29,7 +28,6 @@ namespace etool { namespace intervals {
     private:
 
         using container  = typename trait_type::container;
-        using my_oper    = operations<trait_type>;
         using super_type = common<trait_type>;
 
     public:

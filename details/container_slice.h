@@ -32,26 +32,26 @@ namespace etool { namespace details {
         }
 
         template <typename Distance>
-        container_slice &operator += ( Distance len ) noexcept
+        container_slice &operator += ( Distance len )
         {
             std::advance(data.first, len);
             return *this;
         }
 
         template <typename Distance>
-        container_slice &operator -= ( Distance len ) noexcept
+        container_slice &operator -= ( Distance len )
         {
             std::advance(data.first, -len);
             return *this;
         }
 
-        container_slice &operator ++ ( ) noexcept
+        container_slice &operator ++ ( )
         {
             ++data.first;
             return *this;
         }
 
-        container_slice operator ++ (int) noexcept
+        container_slice operator ++ (int)
         {
             container_slice tmp( begin( ), end( ) );
             ++(*this);
