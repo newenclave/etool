@@ -38,14 +38,14 @@ namespace etool { namespace details {
         slice bind( U *data, S len )
         {
             slice<U, S> tmp( data, len );
-            return tmp.rebind<value_type, size_type>( );
+            return tmp.template rebind<value_type, size_type>( );
         }
 
         template <typename U, typename S = size_type>
         static
         slice bind( slice<U, S> other )
         {
-            return other.rebind<value_type, size_type>( );
+            return other.template rebind<value_type, size_type>( );
         }
 
         value_type *begin( ) noexcept
