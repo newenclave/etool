@@ -147,6 +147,16 @@ namespace etool { namespace intervals {
             return false;
         }
 
+        bool contain_left( const interval &ol ) const noexcept
+        {
+            return ol.is_left_inf( ) || contain( ol.left( ) );
+        }
+
+        bool contain_right( const interval &ol ) const noexcept
+        {
+            return ol.is_right_inf( ) || contain( ol.right( ) );
+        }
+
         const value_type &right( ) const
         {
             return end;
