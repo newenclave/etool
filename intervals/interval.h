@@ -28,6 +28,7 @@ namespace etool { namespace intervals {
                                                 INF_BOTH ) );
             }
 
+            static
             interval_type open( value_type left, value_type right )
             {
                 return std::move(interval_type( std::move(left),
@@ -35,6 +36,7 @@ namespace etool { namespace intervals {
                                                 INCLUDE_NONE ) );
             }
 
+            static
             interval_type closed( value_type left, value_type right )
             {
                 return std::move(interval_type( std::move(left),
@@ -42,6 +44,7 @@ namespace etool { namespace intervals {
                                                 INCLUDE_BOTH ) );
             }
 
+            static
             interval_type degenerate( value_type left )
             {
                 value_type right = left;
@@ -49,47 +52,55 @@ namespace etool { namespace intervals {
                                          std::move(right) ));
             }
 
+            static
             interval_type left_open( value_type left )
             {
                 return interval_type( std::move(left),
                                       value_type( ), INF_PLUS_RIGHT );
             }
 
+            static
             interval_type left_open( value_type left, value_type right )
             {
                 return interval_type( std::move(left), std::move(right),
                                       INCLUDE_RIGTH );
             }
 
+            static
             interval_type right_open( value_type right )
             {
                 return interval_type( value_type( ),
                                       std::move(right), INF_MINUS_LEFT );
             }
 
+            static
             interval_type right_open( value_type left, value_type right )
             {
                 return interval_type( std::move(left), std::move(right),
                                       INCLUDE_LEFT );
             }
 
+            static
             interval_type left_closed( value_type left )
             {
                 return interval_type( std::move(left), value_type( ),
                                       INF_PLUS_RIGHT | INCLUDE_LEFT );
             }
 
+            static
             interval_type left_closed( value_type left, value_type right  )
             {
                 return right_open( std::move(left), std::move(right) );
             }
 
+            static
             interval_type right_closed( value_type right )
             {
                 return interval<ValueT>( value_type( ), std::move(right),
                                          INF_MINUS_LEFT | INCLUDE_RIGTH );
             }
 
+            static
             interval_type right_closed( value_type left, value_type right )
             {
                 return left_open( std::move(left), std::move(right) );
@@ -388,85 +399,6 @@ namespace etool { namespace intervals {
         value_type      end;
         std::uint32_t   flags = INCLUDE_LEFT;
     };
-
-    template <typename ValueT>
-    interval<ValueT> infinite( )
-    {
-        return std::move(interval<ValueT>( ValueT( ), ValueT( ), INF_BOTH ) );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> open( ValueT left, ValueT right )
-    {
-        return std::move(interval<ValueT>( std::move(left), std::move(right),
-                                           INCLUDE_NONE ) );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> closed( ValueT left, ValueT right )
-    {
-        return std::move(interval<ValueT>( std::move(left), std::move(right),
-                                           INCLUDE_BOTH ) );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> degenerate( ValueT left )
-    {
-        ValueT right = left;
-        return std::move(closed( std::move(left), std::move(right) ));
-    }
-
-    template <typename ValueT>
-    interval<ValueT> left_open( ValueT left )
-    {
-        return interval<ValueT>( std::move(left), ValueT( ), INF_PLUS_RIGHT );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> left_open( ValueT left, ValueT right )
-    {
-        return interval<ValueT>( std::move(left), std::move(right),
-                                 INCLUDE_RIGTH );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> right_open( ValueT right )
-    {
-        return interval<ValueT>( ValueT( ), std::move(right), INF_MINUS_LEFT );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> right_open( ValueT left, ValueT right )
-    {
-        return interval<ValueT>( std::move(left), std::move(right),
-                                 INCLUDE_LEFT );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> left_closed( ValueT left )
-    {
-        return interval<ValueT>( std::move(left), ValueT( ),
-                                 INF_PLUS_RIGHT | INCLUDE_LEFT );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> left_closed( ValueT left, ValueT right  )
-    {
-        return right_open( std::move(left), std::move(right) );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> right_closed( ValueT right )
-    {
-        return interval<ValueT>( ValueT( ), std::move(right),
-                                 INF_MINUS_LEFT | INCLUDE_RIGTH );
-    }
-
-    template <typename ValueT>
-    interval<ValueT> right_closed( ValueT left, ValueT right )
-    {
-        return left_open( std::move(left), std::move(right) );
-    }
 
 }}
 
