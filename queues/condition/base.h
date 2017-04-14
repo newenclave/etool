@@ -137,7 +137,7 @@ namespace etool { namespace queues { namespace condition {
         }
 
         template<typename CallType>
-        void foreach_unsafe( CallType call )
+        void for_each_unsafe( CallType call )
         {
             for( auto &c: queue_ ) {
                 call( c );
@@ -145,10 +145,10 @@ namespace etool { namespace queues { namespace condition {
         }
 
         template<typename CallType>
-        void foreach( CallType call )
+        void for_each( CallType call )
         {
             locker_type l(queue_lock_);
-            foreach_unsafe( std::move(call) );
+            for_each_unsafe( std::move(call) );
         }
 
         bool canceled( ) const

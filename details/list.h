@@ -5,7 +5,7 @@
 
 namespace etool { namespace details {
 
-    //// NOT STL LIST!!!
+    //// This IS NOT STL LIST!!!
     template <typename T>
     class list {
 

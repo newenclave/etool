@@ -66,7 +66,6 @@ namespace etool { namespace logger {
 //        using cache_type = cache::none<log_data>;
 //        using cache_type = cache::simple<log_data>;
 
-
         using queue_element = typename cache_type::value_type;
 
         ETOOL_OBSERVER_DEFINE( on_write, void(const log_data &) );
@@ -107,7 +106,6 @@ namespace etool { namespace logger {
 
             //auto element = std::make_shared<log_data>( ); //cache_.get( );
             auto element = cache_.get( );
-            //std::cout << cache_.size( ) << "\n";
 
             element->when        = now( );
             element->lvl         = lev;
