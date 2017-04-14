@@ -12,9 +12,162 @@ namespace etool { namespace intervals {
     template <typename ValueT>
     class interval {
 
+        using value_type = ValueT;
+
     public:
 
-        using value_type = ValueT;
+        struct factory {
+
+            using value_type    = interval::value_type;
+            using interval_type = interval<value_type>;
+
+            static
+            interval_type infinite( )
+            {
+                return std::move(interval_type( value_type( ), value_type( ),
+                                                INF_BOTH ) );
+            }
+
+            interval_type open( value_type left, value_type right )
+            {
+                return std::move(interval_type( std::move(left),
+                                                std::move(right),
+                                                INCLUDE_NONE ) );
+            }
+
+            interval_type closed( value_type left, value_type right )
+            {
+                return std::move(interval_type( std::move(left),
+                                                std::move(right),
+                                                INCLUDE_BOTH ) );
+            }
+
+            interval_type degenerate( value_type left )
+            {
+                value_type right = left;
+                return std::move(closed( std::move(left),
+                                         std::move(right) ));
+            }
+
+            interval_type left_open( value_type left )
+            {
+                return interval_type( std::move(left),
+                                      value_type( ), INF_PLUS_RIGHT );
+            }
+
+            interval_type left_open( value_type left, value_type right )
+            {
+                return interval_type( std::move(left), std::move(right),
+                                      INCLUDE_RIGTH );
+            }
+
+            interval_type right_open( value_type right )
+            {
+                return interval_type( value_type( ),
+                                      std::move(right), INF_MINUS_LEFT );
+            }
+
+            interval_type right_open( value_type left, value_type right )
+            {
+                return interval_type( std::move(left), std::move(right),
+                                      INCLUDE_LEFT );
+            }
+
+            interval_type left_closed( value_type left )
+            {
+                return interval_type( std::move(left), value_type( ),
+                                      INF_PLUS_RIGHT | INCLUDE_LEFT );
+            }
+
+            interval_type left_closed( value_type left, value_type right  )
+            {
+                return right_open( std::move(left), std::move(right) );
+            }
+
+            interval_type right_closed( value_type right )
+            {
+                return interval<ValueT>( value_type( ), std::move(right),
+                                         INF_MINUS_LEFT | INCLUDE_RIGTH );
+            }
+
+            interval_type right_closed( value_type left, value_type right )
+            {
+                return left_open( std::move(left), std::move(right) );
+            }
+        };
+
+        struct cmp: public std::binary_function<interval, interval, bool> {
+
+            static
+            value_type &min( value_type &lh, value_type &rh )
+            {
+                return less( lh, rh ) ? lh : rh;
+            }
+
+            static
+            value_type &max( value_type &lh, value_type &rh )
+            {
+                return greater( lh, rh ) ? lh : rh;
+            }
+
+            static
+            bool less( const value_type &lh, const value_type &rh )
+            {
+//                static const std::less<value_type> lesser;
+//                return lesser(lh, rh);
+                return lh < rh;
+            }
+
+            static
+            bool less_equal( const value_type &lh, const value_type &rh )
+            {
+                return cmp::less( lh, rh ) || cmp::equal( lh, rh );
+            }
+
+            static
+            bool greater( const value_type &lh, const value_type &rh )
+            {
+                return cmp::less( rh, lh ); // viceversa
+            }
+
+            static
+            bool greater_equa( const value_type &lh, const value_type &rh )
+            {
+                return cmp::greater( lh, rh ) || equal( lh, rh );
+            }
+
+            static
+            bool equal( const value_type &lh, const value_type &rh )
+            {
+                return !cmp::less( lh, rh )
+                    && !cmp::less( rh, lh );
+            }
+
+            static
+            bool less( const interval &lh, const interval &rh )
+            {
+                if( lh.is_right_inf( ) || rh.is_left_inf( ) ) {
+                    return false;
+                } else if( lh.is_right_close( ) && rh.is_left_close( ) ) {
+                    return interval::cmp::less( lh.right( ), rh.left( ) );
+                } else {
+                    return interval::cmp::less_equal( lh.right( ), rh.left( ) );
+                }
+            }
+
+            bool operator ( )( const interval &lh, const interval &rh ) const
+            {
+                return cmp::less( lh, rh );
+            }
+
+            bool operator ( )( const value_type &lh,
+                               const value_type &rh ) const
+            {
+                return cmp::less( lh, rh );
+            }
+        };
+
+    public:
 
         interval             ( )                    = default;
         interval             ( const interval & )   = default;
@@ -61,12 +214,12 @@ namespace etool { namespace intervals {
 #endif
         bool has_inf( ) const noexcept
         {
-            return (flags & (INF_LEFT | INF_RIGHT) ) != 0;
+            return (flags & (INF_MINUS_LEFT | INF_PLUS_RIGHT) ) != 0;
         }
 
         std::uint32_t right_flags( ) const noexcept
         {
-            return (flags & (INCLUDE_RIGTH | INF_RIGHT) );
+            return (flags & (INCLUDE_RIGTH | INF_PLUS_RIGHT) );
         }
 
         bool is_right_close( ) const noexcept
@@ -76,12 +229,12 @@ namespace etool { namespace intervals {
 
         bool is_right_inf( ) const noexcept
         {
-            return (flags & INF_RIGHT) != 0;
+            return (flags & INF_PLUS_RIGHT) != 0;
         }
 
         std::uint32_t left_flags( ) const noexcept
         {
-            return (flags & (INCLUDE_LEFT | INF_LEFT));
+            return (flags & (INCLUDE_LEFT | INF_MINUS_LEFT));
         }
 
         bool is_left_close( ) const noexcept
@@ -91,7 +244,7 @@ namespace etool { namespace intervals {
 
         bool is_left_inf( ) const noexcept
         {
-            return (flags & INF_LEFT) != 0;
+            return (flags & INF_MINUS_LEFT) != 0;
         }
 
         bool is_both_close( ) const noexcept
@@ -229,84 +382,12 @@ namespace etool { namespace intervals {
             return !c(lh, rh) && !c(rh, lh);
         }
 
-        struct cmp: public std::binary_function<interval, interval, bool> {
-
-            static
-            value_type &min( value_type &lh, value_type &rh )
-            {
-                return less( lh, rh ) ? lh : rh;
-            }
-
-            static
-            value_type &max( value_type &lh, value_type &rh )
-            {
-                return greater( lh, rh ) ? lh : rh;
-            }
-
-            static
-            bool less( const value_type &lh, const value_type &rh )
-            {
-//                static const std::less<value_type> lesser;
-//                return lesser(lh, rh);
-                return lh < rh;
-            }
-
-            static
-            bool less_equal( const value_type &lh, const value_type &rh )
-            {
-                return cmp::less( lh, rh ) || cmp::equal( lh, rh );
-            }
-
-            static
-            bool greater( const value_type &lh, const value_type &rh )
-            {
-                return cmp::less( rh, lh ); // viceversa
-            }
-
-            static
-            bool greater_equa( const value_type &lh, const value_type &rh )
-            {
-                return cmp::greater( lh, rh ) || equal( lh, rh );
-            }
-
-            static
-            bool equal( const value_type &lh, const value_type &rh )
-            {
-                return !cmp::less( lh, rh )
-                    && !cmp::less( rh, lh );
-            }
-
-            static
-            bool less( const interval &lh, const interval &rh )
-            {
-                if( lh.is_right_inf( ) || rh.is_left_inf( ) ) {
-                    return false;
-                } else if( lh.is_right_close( ) && rh.is_left_close( ) ) {
-                    return interval::cmp::less( lh.right( ), rh.left( ) );
-                } else {
-                    return interval::cmp::less_equal( lh.right( ), rh.left( ) );
-                }
-            }
-
-            bool operator ( )( const interval &lh, const interval &rh ) const
-            {
-                return cmp::less( lh, rh );
-            }
-
-            bool operator ( )( const value_type &lh,
-                               const value_type &rh ) const
-            {
-                return cmp::less( lh, rh );
-            }
-        };
-
     private:
 
         value_type      begin;
         value_type      end;
         std::uint32_t   flags = INCLUDE_LEFT;
     };
-
 
     template <typename ValueT>
     interval<ValueT> infinite( )
@@ -338,7 +419,7 @@ namespace etool { namespace intervals {
     template <typename ValueT>
     interval<ValueT> left_open( ValueT left )
     {
-        return interval<ValueT>( std::move(left), ValueT( ), INF_RIGHT );
+        return interval<ValueT>( std::move(left), ValueT( ), INF_PLUS_RIGHT );
     }
 
     template <typename ValueT>
@@ -351,7 +432,7 @@ namespace etool { namespace intervals {
     template <typename ValueT>
     interval<ValueT> right_open( ValueT right )
     {
-        return interval<ValueT>( ValueT( ), std::move(right), INF_LEFT );
+        return interval<ValueT>( ValueT( ), std::move(right), INF_MINUS_LEFT );
     }
 
     template <typename ValueT>
@@ -365,7 +446,7 @@ namespace etool { namespace intervals {
     interval<ValueT> left_closed( ValueT left )
     {
         return interval<ValueT>( std::move(left), ValueT( ),
-                                 INF_RIGHT | INCLUDE_LEFT );
+                                 INF_PLUS_RIGHT | INCLUDE_LEFT );
     }
 
     template <typename ValueT>
@@ -378,7 +459,7 @@ namespace etool { namespace intervals {
     interval<ValueT> right_closed( ValueT right )
     {
         return interval<ValueT>( ValueT( ), std::move(right),
-                                 INF_LEFT | INCLUDE_RIGTH );
+                                 INF_MINUS_LEFT | INCLUDE_RIGTH );
     }
 
     template <typename ValueT>
