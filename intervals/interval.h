@@ -25,7 +25,7 @@ namespace etool { namespace intervals {
             interval_type infinite( )
             {
                 return std::move(interval_type( value_type( ), value_type( ),
-                                                INF_BOTH ) );
+                                                SIDE_BOTH_INF ) );
             }
 
             static
@@ -33,7 +33,7 @@ namespace etool { namespace intervals {
             {
                 return std::move(interval_type( std::move(left),
                                                 std::move(right),
-                                                INCLUDE_NONE ) );
+                                                SIDE_BOTH_OPEN ) );
             }
 
             static
@@ -41,7 +41,7 @@ namespace etool { namespace intervals {
             {
                 return std::move(interval_type( std::move(left),
                                                 std::move(right),
-                                                INCLUDE_BOTH ) );
+                                                SIDE_BOTH_CLOSE ) );
             }
 
             static
@@ -56,35 +56,43 @@ namespace etool { namespace intervals {
             interval_type left_open( value_type left )
             {
                 return interval_type( std::move(left),
-                                      value_type( ), INF_PLUS_RIGHT );
+                                      value_type( ),
+                                      SIDE_RIGHT_INF |
+                                      SIDE_RIGHT_OPEN |
+                                      SIDE_LEFT_OPEN );
             }
 
             static
             interval_type left_open( value_type left, value_type right )
             {
                 return interval_type( std::move(left), std::move(right),
-                                      INCLUDE_RIGTH );
+                                      SIDE_LEFT_OPEN | SIDE_RIGHT_CLOSE );
             }
 
             static
             interval_type right_open( value_type right )
             {
                 return interval_type( value_type( ),
-                                      std::move(right), INF_MINUS_LEFT );
+                                      std::move(right),
+                                      SIDE_LEFT_INF |
+                                      SIDE_LEFT_OPEN |
+                                      SIDE_RIGHT_OPEN );
             }
 
             static
             interval_type right_open( value_type left, value_type right )
             {
                 return interval_type( std::move(left), std::move(right),
-                                      INCLUDE_LEFT );
+                                      SIDE_RIGHT_OPEN | SIDE_LEFT_CLOSE );
             }
 
             static
             interval_type left_closed( value_type left )
             {
                 return interval_type( std::move(left), value_type( ),
-                                      INF_PLUS_RIGHT | INCLUDE_LEFT );
+                                      SIDE_LEFT_CLOSE |
+                                      SIDE_RIGHT_OPEN |
+                                      SIDE_RIGHT_INF );
             }
 
             static
@@ -97,7 +105,9 @@ namespace etool { namespace intervals {
             interval_type right_closed( value_type right )
             {
                 return interval<ValueT>( value_type( ), std::move(right),
-                                         INF_MINUS_LEFT | INCLUDE_RIGTH );
+                                         SIDE_LEFT_INF |
+                                         SIDE_LEFT_OPEN |
+                                         SIDE_RIGHT_CLOSE );
             }
 
             static
@@ -106,6 +116,60 @@ namespace etool { namespace intervals {
                 return left_open( std::move(left), std::move(right) );
             }
         };
+
+        class side_info {
+
+        public:
+            side_info( const value_type &val, std::uint32_t flags )
+                :val_(val)
+                ,flags_(flags)
+            { }
+
+            const value_type &value( ) const
+            {
+                return val_;
+            }
+
+            bool is_minus_inf( ) const
+            {
+                return (flags_ & SIDE_LEFT_INF) != 0;
+            }
+
+            bool is_plus_inf( ) const
+            {
+                return (flags_ & SIDE_RIGHT_INF) != 0;
+            }
+
+            bool is_close( ) const
+            {
+                return flags_ == 0;
+            }
+
+            bool is_open( ) const
+            {
+                return !is_close( );
+            }
+
+            static
+            bool less( const side_info &lh, const side_info &rh )
+            {
+                if( lh.is_minus_inf( ) ) {
+                    return !rh.is_minus_inf( );
+                } else if( rh.is_minus_inf( ) ) {
+                    return false;
+                } else if( lh.is_open( ) ) {
+                    return interval::cmp::less_equal( lh.value( ),
+                                                      rh.value( ) );
+                } else {
+                    return interval::cmp::less( lh.value( ), rh.value( ) );
+                }
+            }
+
+        private:
+            const value_type &val_;
+            std::uint32_t     flags_;
+        };
+
 
         struct cmp: public std::binary_function<interval, interval, bool> {
 
@@ -178,6 +242,7 @@ namespace etool { namespace intervals {
             }
         };
 
+
     public:
 
         interval             ( )                    = default;
@@ -188,15 +253,22 @@ namespace etool { namespace intervals {
 
 #if 1
         interval( value_type b, value_type e )
-            :begin(b)
-            ,end(e)
-            ,flags(INCLUDE_LEFT)
+            :left_(b)
+            ,right_(e)
+            ,flags(SIDE_RIGHT_OPEN)
         { }
 
         interval( value_type b, value_type e, std::uint32_t f )
-            :begin(b)
-            ,end(e)
+            :left_(b)
+            ,right_(e)
             ,flags(f)
+        { }
+
+        interval( value_type b, value_type e,
+                 std::uint32_t lf, std::uint32_t rf)
+            :left_(b)
+            ,right_(e)
+            ,flags((rf & SIDE_MASK) | (lf << SIDE_SHIFT))
         { }
 
         bool valid( ) const
@@ -208,7 +280,7 @@ namespace etool { namespace intervals {
         interval( value_type b, value_type e )
             :begin(cmp::min(b, e))
             ,end(cmp::max(b, e))
-            ,flags(INCLUDE_LEFT)
+            ,flags(SIDE_LEFT_CLOSE)
         { }
 
         interval( value_type b, value_type e, std::uint32_t f )
@@ -223,49 +295,60 @@ namespace etool { namespace intervals {
             return true;
         }
 #endif
+
+        side_info left_side( ) const
+        {
+            return side_info(left_, flags);
+        }
+
+        side_info right_side( ) const
+        {
+            return side_info(right_, flags);
+        }
+
         bool has_inf( ) const noexcept
         {
-            return (flags & (INF_MINUS_LEFT | INF_PLUS_RIGHT) ) != 0;
+            return (flags & (SIDE_LEFT_IMIN | SIDE_RIGHT_IMAX) ) != 0;
         }
 
         std::uint32_t right_flags( ) const noexcept
         {
-            return (flags & (INCLUDE_RIGTH | INF_PLUS_RIGHT) );
+            return ( flags & SIDE_MASK );
         }
 
         bool is_right_close( ) const noexcept
         {
-            return right_flags( ) == INCLUDE_RIGTH;
+            return right_flags( ) == SIDE_CLOSE;
         }
 
         bool is_right_inf( ) const noexcept
         {
-            return (flags & INF_PLUS_RIGHT) != 0;
+            return (flags & SIDE_RIGHT_INF) != 0;
         }
 
         std::uint32_t left_flags( ) const noexcept
         {
-            return (flags & (INCLUDE_LEFT | INF_MINUS_LEFT));
+            return ( flags >> SIDE_SHIFT );
         }
 
         bool is_left_close( ) const noexcept
         {
-            return left_flags( ) == INCLUDE_LEFT;
+            return left_flags( ) == SIDE_CLOSE;
         }
 
         bool is_left_inf( ) const noexcept
         {
-            return (flags & INF_MINUS_LEFT) != 0;
+            return (flags & SIDE_LEFT_INF) != 0;
         }
 
         bool is_both_close( ) const noexcept
         {
-            return (flags & INCLUDE_BOTH) == INCLUDE_BOTH;
+            return flags == SIDE_BOTH_CLOSE; /// 0
         }
 
         bool is_both_open( ) const noexcept
         {
-            return flags == INCLUDE_NONE;
+            return (flags & SIDE_BOTH_OPEN) == SIDE_BOTH_OPEN;
         }
 
         void set_flags( std::uint32_t f ) noexcept
@@ -286,7 +369,7 @@ namespace etool { namespace intervals {
         bool left_neighbor( const interval &ol ) const noexcept
         {
             return cmp::equal( left( ), ol.right( ) )
-                && (left_flags( ) + ol.right_flags( ) > 0) ;
+                && (is_left_close( ) || ol.is_right_close( )) ;
         }
 
         bool right_neighbor( const interval &ol ) const noexcept
@@ -298,14 +381,14 @@ namespace etool { namespace intervals {
         {
             bool bleft = is_left_inf( )
                     || ( is_left_close( )
-                       ? cmp::greater_equa( k, begin )
-                       : cmp::greater( k, begin ) );
+                       ? cmp::greater_equa( k, left_ )
+                       : cmp::greater( k, left_ ) );
 
             if( bleft ) {
                 bool bright = is_right_inf( )
                          || ( is_right_close( )
-                            ? cmp::less_equal( k, end )
-                            : cmp::less( k, end ) );
+                            ? cmp::less_equal( k, right_ )
+                            : cmp::less( k, right_ ) );
                 return bright;
             }
             return false;
@@ -323,12 +406,12 @@ namespace etool { namespace intervals {
 
         const value_type &right( ) const
         {
-            return end;
+            return right_;
         }
 
         const value_type &left( ) const
         {
-            return begin;
+            return left_;
         }
 
         std::ostream &out( std::ostream &oss ) const
@@ -341,9 +424,9 @@ namespace etool { namespace intervals {
 
             oss << lbracket[is_left_close( )];
 
-            if( left_flags( ) & INF_MINUS_LEFT ) {
+            if( left_flags( ) & SIDE_MIN_INF ) {
                 oss << minf;
-            } else if( left_flags( ) & INF_PLUS_LEFT ) {
+            } else if( left_flags( ) & SIDE_MAX_INF ) {
                 oss << pinf;
             } else {
                 oss << left( );
@@ -351,9 +434,9 @@ namespace etool { namespace intervals {
 
             oss << ", ";
 
-            if( right_flags( ) & INF_MINUS_RIGHT ) {
+            if( right_flags( ) & SIDE_MIN_INF ) {
                 oss << minf;
-            } else if( right_flags( ) & INF_PLUS_RIGHT ) {
+            } else if( right_flags( ) & SIDE_MAX_INF ) {
                 oss << pinf;
             } else {
                 oss << right( );
@@ -383,7 +466,8 @@ namespace etool { namespace intervals {
         bool empty( ) const noexcept
         {
             return !has_inf( )
-                && (cmp::equal( right( ), left( ) ) && flags != INCLUDE_BOTH);
+                && (cmp::equal( right( ), left( ) )
+                    && (flags != SIDE_BOTH_CLOSE) );
         }
 
         bool intersected( const interval &other ) const noexcept
@@ -400,10 +484,17 @@ namespace etool { namespace intervals {
 
     private:
 
-        value_type      begin;
-        value_type      end;
-        std::uint32_t   flags = INCLUDE_LEFT;
+        value_type      left_;
+        value_type      right_;
+        std::uint32_t   flags = SIDE_RIGHT_OPEN;
     };
+
+    template <typename ValueT>
+    inline
+    std::ostream & operator << ( std::ostream &o, const interval<ValueT> &val )
+    {
+        return val.out(o);
+    }
 
 }}
 

@@ -165,7 +165,8 @@ namespace etool { namespace intervals {
         static
         iterator find( container &cont, const key &k )
         {
-            auto res = locate<iterator>( cont, position( k, k, INCLUDE_BOTH ) );
+            auto res = locate<iterator>( cont,
+                                         position( k, k, SIDE_BOTH_CLOSE ) );
             return res.first.inside ? res.first.iter : trait_type::end(cont);
         }
 

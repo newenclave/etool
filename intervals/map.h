@@ -50,7 +50,8 @@ namespace etool { namespace intervals {
 
         iterator merge( const key_type &uniq, value_type val )
         {
-            return merge( position(uniq, uniq, INCLUDE_BOTH), std::move(val) );
+            return merge( position(uniq, uniq, SIDE_BOTH_CLOSE),
+                          std::move(val) );
         }
 
         iterator merge( const key_type &lft, const key_type &rght,
@@ -73,13 +74,15 @@ namespace etool { namespace intervals {
 
         iterator insert( const key_type &uniq, value_type val )
         {
-            return insert( position(uniq, uniq, INCLUDE_BOTH), std::move(val) );
+            return insert( position(uniq, uniq, SIDE_BOTH_CLOSE),
+                                    std::move(val) );
         }
 
         iterator insert( const key_type &lft, const key_type &rght,
                         std::uint32_t flags, value_type val )
         {
-            return insert( cont( ), position(lft, rght, flags), std::move(val) );
+            return insert( cont( ), position(lft, rght, flags),
+                           std::move(val) );
         }
 
         /////////// CUT ///////////////
@@ -95,7 +98,7 @@ namespace etool { namespace intervals {
 
         iterator cut( const key_type &uniq )
         {
-            return cut( position(uniq, uniq, INCLUDE_BOTH) );
+            return cut( position(uniq, uniq, SIDE_BOTH_CLOSE) );
         }
 
         iterator cut( const key_type &lft, const key_type &rght,
@@ -217,7 +220,7 @@ namespace etool { namespace intervals {
 
                 position new_val( fin ? left_pos->left( )   : p.left( ),
                                   lin ? right_pos->right( ) : p.right( ),
-                                  INCLUDE_NONE );
+                                  SIDE_BOTH_CLOSE );
 
                 if( fin ) {
                     new_val.set_flag( left_pos->left_flags( ) );
@@ -268,8 +271,8 @@ namespace etool { namespace intervals {
 
                     std::uint32_t rinc =
                             p.is_left_close( )
-                          ? INCLUDE_NONE
-                          : INCLUDE_RIGTH;
+                          ? SIDE_RIGHT_OPEN
+                          : SIDE_RIGHT_CLOSE;
 
                     first = position( iter_access::get(res.first.iter)->left( ),
                                  p.left( ),
@@ -282,8 +285,8 @@ namespace etool { namespace intervals {
                 if( res.second.inside ) {
 
                     std::uint32_t linc = p.is_right_close( )
-                                       ? INCLUDE_NONE
-                                       : INCLUDE_LEFT;
+                                       ? SIDE_LEFT_OPEN
+                                       : SIDE_LEFT_CLOSE;
 
                     std::uint32_t rinc =
                         iter_access::get(res.second.iter)->right_flags( );
@@ -346,8 +349,8 @@ namespace etool { namespace intervals {
                           iter_access::get(res.first.iter)->left_flags( );
 
                     std::uint32_t rinc = p.is_left_close( )
-                                       ? INCLUDE_NONE
-                                       : INCLUDE_RIGTH;
+                                       ? SIDE_RIGHT_CLOSE
+                                       : SIDE_RIGHT_OPEN;
 
                     first = position( iter_access::get(res.first.iter)->left( ),
                                  p.left( ),
@@ -361,8 +364,8 @@ namespace etool { namespace intervals {
 
                     std::uint32_t linc =
                          p.is_right_close( )
-                       ? INCLUDE_NONE
-                       : INCLUDE_LEFT;
+                       ? SIDE_LEFT_OPEN
+                       : SIDE_LEFT_CLOSE;
 
                     std::uint32_t rinc =
                          iter_access::get(res.second.iter)->right_flags( );

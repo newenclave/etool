@@ -51,8 +51,7 @@ namespace etool { namespace intervals {
 
         iterator merge( const key_type &uniq )
         {
-            return merge( cont( ), position( uniq, uniq,
-                                           intervals::INCLUDE_BOTH ) );
+            return merge( cont( ), position( uniq, uniq, SIDE_BOTH_CLOSE ) );
         }
 
         iterator merge( const key_type &lft, const key_type &rght,
@@ -73,8 +72,7 @@ namespace etool { namespace intervals {
 
         iterator insert( const key_type &uniq  )
         {
-            return insert( cont( ), position( uniq, uniq,
-                                            intervals::INCLUDE_BOTH) );
+            return insert( cont( ), position( uniq, uniq, SIDE_BOTH_CLOSE) );
         }
 
         iterator insert( const key_type &lft, const key_type &rght,
@@ -95,8 +93,7 @@ namespace etool { namespace intervals {
 
         iterator cut( const key_type &uniq  )
         {
-            return cut( cont( ), position( uniq, uniq,
-                                           intervals::INCLUDE_BOTH) );
+            return cut( cont( ), position( uniq, uniq, SIDE_BOTH_CLOSE ) );
         }
 
         iterator cut( const key_type &lft, const key_type &rght,
@@ -169,7 +166,7 @@ namespace etool { namespace intervals {
 
                 position new_val( fin ? left_pos->left( )   : p.left( ),
                                   lin ? right_pos->right( ) : p.right( ),
-                                  INCLUDE_NONE );
+                                  SIDE_BOTH_CLOSE );
 
                 if( fin ) {
                     new_val.set_flag( left_pos->left_flags( ) );
@@ -213,23 +210,23 @@ namespace etool { namespace intervals {
                     std::uint32_t linc = res.first.iter->left_flags( );
 
                     std::uint32_t rinc = p.is_left_close( )
-                                       ? INCLUDE_NONE
-                                       : INCLUDE_RIGTH;
+                                       ? SIDE_OPEN
+                                       : SIDE_CLOSE;
 
                     first = position( res.first.iter->left( ), p.left( ),
-                                      linc | rinc );
+                                      linc, rinc );
                 }
 
                 if( res.second.inside ) {
 
                     std::uint32_t linc = p.is_right_close( )
-                                       ? INCLUDE_NONE
-                                       : INCLUDE_LEFT;
+                                       ? SIDE_OPEN
+                                       : SIDE_CLOSE;
 
                     std::uint32_t rinc = res.second.iter->right_flags( );
 
                     last = position( p.right( ), res.second.iter->right( ),
-                                     linc | rinc );
+                                     linc, rinc );
 
                     ++res.second.iter;
                 }
@@ -270,23 +267,23 @@ namespace etool { namespace intervals {
                     std::uint32_t linc = res.first.iter->left_flags( );
 
                     std::uint32_t rinc = p.is_left_close( )
-                                       ? INCLUDE_NONE
-                                       : INCLUDE_RIGTH;
+                                       ? SIDE_OPEN
+                                       : SIDE_CLOSE;
 
                     first = position( res.first.iter->left( ), p.left( ),
-                                      linc | rinc );
+                                      linc, rinc );
                 }
 
                 if( res.second.inside ) {
 
                     std::uint32_t linc = p.is_right_close( )
-                                       ? INCLUDE_NONE
-                                       : INCLUDE_LEFT;
+                                       ? SIDE_OPEN
+                                       : SIDE_CLOSE;
 
                     std::uint32_t rinc = res.second.iter->right_flags( );
 
                     last = position( p.right( ), res.second.iter->right( ),
-                                     linc | rinc );
+                                     linc, rinc );
 
                     ++res.second.iter;
                 }
