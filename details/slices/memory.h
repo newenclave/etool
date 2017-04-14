@@ -1,12 +1,12 @@
-#ifndef ETOOL_DETAILS_MEM_SLICE_H
-#define ETOOL_DETAILS_MEM_SLICE_H
+#ifndef ETOOL_DETAILS_SLICES_MEMORY_H
+#define ETOOL_DETAILS_SLICES_MEMORY_H
 
 #include <cstdint>
 
 namespace etool { namespace details {
 
     template <typename ValueType, typename SizeType = std::size_t>
-    class mem_slice {
+    class memory {
     public:
 
         using value_type     = ValueType;
@@ -14,41 +14,41 @@ namespace etool { namespace details {
         using pointer_type   = value_type *;
         using reference_type = value_type &;
 
-        mem_slice( value_type *value, size_type len )
+        memory( value_type *value, size_type len )
             :val_(value)
             ,len_(len)
         { }
 
-        mem_slice( value_type *begin, value_type *end )
+        memory( value_type *begin, value_type *end )
             :val_(begin)
             ,len_(static_cast<size_type>(end - begin))
         { }
 
-        mem_slice             (                   )  = default;
-        mem_slice             ( const mem_slice & )  = default;
-        mem_slice             ( mem_slice &&      )  = default;
-        mem_slice &operator = ( mem_slice &&      )  = default;
-        mem_slice &operator = ( const mem_slice & )  = default;
+        memory             (                   )  = default;
+        memory             ( const memory & )  = default;
+        memory             ( memory &&      )  = default;
+        memory &operator = ( memory &&      )  = default;
+        memory &operator = ( const memory & )  = default;
 
         template <typename U, typename S = size_type>
-        mem_slice<U, S> rebind( )
+        memory<U, S> rebind( )
         {
             S new_size = (sizeof(value_type) * len_) / sizeof(U);
-            mem_slice<U, S> tmp( reinterpret_cast<U *>(val_), new_size );
+            memory<U, S> tmp( reinterpret_cast<U *>(val_), new_size );
             return tmp;
         }
 
         template <typename U, typename S = size_type>
         static
-        mem_slice bind( U *data, S len )
+        memory bind( U *data, S len )
         {
-            mem_slice<U, S> tmp( data, len );
+            memory<U, S> tmp( data, len );
             return tmp.template rebind<value_type, size_type>( );
         }
 
         template <typename U, typename S = size_type>
         static
-        mem_slice bind( mem_slice<U, S> other )
+        memory bind( memory<U, S> other )
         {
             return other.template rebind<value_type, size_type>( );
         }
@@ -88,44 +88,44 @@ namespace etool { namespace details {
             return *val_;
         }
 
-        mem_slice &operator += ( size_type len ) noexcept
+        memory &operator += ( size_type len ) noexcept
         {
             val_ += len;
             len_ -= len;
             return *this;
         }
 
-        mem_slice &operator -= ( size_type len ) noexcept
+        memory &operator -= ( size_type len ) noexcept
         {
             val_ -= len;
             len_ += len;
             return *this;
         }
 
-        mem_slice &operator ++ ( ) noexcept
+        memory &operator ++ ( ) noexcept
         {
             val_ ++;
             len_ --;
             return *this;
         }
 
-        mem_slice operator ++ (int) noexcept
+        memory operator ++ (int) noexcept
         {
-            mem_slice tmp( val_, len_ );
+            memory tmp( val_, len_ );
             ++(*this);
             return tmp;
         }
 
-        mem_slice &operator -- ( ) noexcept
+        memory &operator -- ( ) noexcept
         {
             val_ --;
             len_ ++;
             return *this;
         }
 
-        mem_slice operator -- (int) noexcept
+        memory operator -- (int) noexcept
         {
-            mem_slice tmp( val_, len_ );
+            memory tmp( val_, len_ );
             --(*this);
             return tmp;
         }

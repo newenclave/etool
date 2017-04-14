@@ -1,5 +1,5 @@
-#ifndef ETOOL_DETAILS_CONTAINER_SLICE_H
-#define ETOOL_DETAILS_CONTAINER_SLICE_H
+#ifndef ETOOL_DETAILS_SLICES_CONTAINER_H
+#define ETOOL_DETAILS_SLICES_CONTAINER_H
 
 #include  <utility>
 #include  <algorithm>
@@ -7,17 +7,17 @@
 namespace etool { namespace details {
 
     template <typename ItrT>
-    struct container_slice {
+    struct container {
 
         using iterator = ItrT;
 
-        container_slice(                                      ) = default;
-        container_slice( container_slice&&                    ) = default;
-        container_slice( const container_slice&               ) = default;
-        container_slice& operator = ( container_slice &&      ) = default;
-        container_slice& operator = ( const container_slice & ) = default;
+        container(                                      ) = default;
+        container( container&&                    ) = default;
+        container( const container&               ) = default;
+        container& operator = ( container &&      ) = default;
+        container& operator = ( const container & ) = default;
 
-        container_slice( iterator b, iterator e )
+        container( iterator b, iterator e )
             :data(std::move(b), std::move(e))
         { }
 
@@ -32,28 +32,28 @@ namespace etool { namespace details {
         }
 
         template <typename Distance>
-        container_slice &operator += ( Distance len )
+        container &operator += ( Distance len )
         {
             std::advance(data.first, len);
             return *this;
         }
 
         template <typename Distance>
-        container_slice &operator -= ( Distance len )
+        container &operator -= ( Distance len )
         {
             std::advance(data.first, -len);
             return *this;
         }
 
-        container_slice &operator ++ ( )
+        container &operator ++ ( )
         {
             ++data.first;
             return *this;
         }
 
-        container_slice operator ++ (int)
+        container operator ++ (int)
         {
-            container_slice tmp( begin( ), end( ) );
+            container tmp( begin( ), end( ) );
             ++(*this);
             return tmp;
         }
