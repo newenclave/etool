@@ -1,9 +1,9 @@
-#ifndef ETOOL_DETAILS_SLICES_MEMORY_H
-#define ETOOL_DETAILS_SLICES_MEMORY_H
+#ifndef ETOOL_SLICES_MEMORY_H
+#define ETOOL_SLICES_MEMORY_H
 
 #include <cstdint>
 
-namespace etool { namespace details {
+namespace etool { namespace slices {
 
     template <typename ValueType, typename SizeType = std::size_t>
     class memory {

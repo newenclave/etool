@@ -1,10 +1,10 @@
-#ifndef ETOOL_DETAILS_SLICES_CONTAINER_H
-#define ETOOL_DETAILS_SLICES_CONTAINER_H
+#ifndef ETOOL_SLICES_CONTAINER_H
+#define ETOOL_SLICES_CONTAINER_H
 
 #include  <utility>
 #include  <algorithm>
 
-namespace etool { namespace details {
+namespace etool { namespace slices {
 
     template <typename ItrT>
     struct container {
