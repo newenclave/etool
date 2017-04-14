@@ -11,7 +11,7 @@ namespace etool { namespace slices {
 
         using iterator = ItrT;
 
-        container(                                      ) = default;
+        container(                                ) = default;
         container( container&&                    ) = default;
         container( const container&               ) = default;
         container& operator = ( container &&      ) = default;

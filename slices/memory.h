@@ -24,7 +24,7 @@ namespace etool { namespace slices {
             ,len_(static_cast<size_type>(end - begin))
         { }
 
-        memory             (                   )  = default;
+        memory             (                )  = default;
         memory             ( const memory & )  = default;
         memory             ( memory &&      )  = default;
         memory &operator = ( memory &&      )  = default;
