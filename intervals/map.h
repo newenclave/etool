@@ -220,23 +220,15 @@ namespace etool { namespace intervals {
                                   INCLUDE_NONE );
 
                 if( fin ) {
-                    new_val.set_flag( left_pos->is_left_included( )
-                                      ? INCLUDE_LEFT
-                                      : INCLUDE_NONE );
+                    new_val.set_flag( left_pos->left_flags( ) );
                 } else {
-                    new_val.set_flag( p.is_left_included( )
-                                      ? INCLUDE_LEFT
-                                      : INCLUDE_NONE );
+                    new_val.set_flag( p.left_flags( ) );
                 }
 
                 if( lin ) {
-                    new_val.set_flag( right_pos->is_right_included( )
-                                      ? INCLUDE_RIGTH
-                                      : INCLUDE_NONE );
+                    new_val.set_flag( right_pos->right_flags( ) );
                 } else {
-                    new_val.set_flag( p.is_right_included( )
-                                      ? INCLUDE_RIGTH
-                                      : INCLUDE_NONE );
+                    new_val.set_flag( p.right_flags( ) );
                 }
 
                 if( res.second.inside ) {
@@ -272,12 +264,10 @@ namespace etool { namespace intervals {
                 if( res.first.inside ) {
 
                     std::uint32_t linc =
-                           iter_access::get(res.first.iter)->is_left_included( )
-                         ? INCLUDE_LEFT
-                         : INCLUDE_NONE;
+                            iter_access::get(res.first.iter)->left_flags( );
 
                     std::uint32_t rinc =
-                            p.is_left_included( )
+                            p.is_left_close( )
                           ? INCLUDE_NONE
                           : INCLUDE_RIGTH;
 
@@ -291,15 +281,12 @@ namespace etool { namespace intervals {
 
                 if( res.second.inside ) {
 
-                    std::uint32_t linc =
-                        p.is_right_included( )
-                      ? INCLUDE_NONE
-                      : INCLUDE_LEFT;
+                    std::uint32_t linc = p.is_right_close( )
+                                       ? INCLUDE_NONE
+                                       : INCLUDE_LEFT;
 
                     std::uint32_t rinc =
-                        iter_access::get(res.second.iter)->is_right_included( )
-                      ? INCLUDE_RIGTH
-                      : INCLUDE_NONE;
+                        iter_access::get(res.second.iter)->right_flags( );
 
                     last = position( p.right( ),
                                 iter_access::get(res.second.iter)->right( ),
@@ -341,7 +328,7 @@ namespace etool { namespace intervals {
         {
             auto res = super_type::template locate<iterator>( cont, p );
 
-            if( p.invalid( ) || p.is_both_excluded( ) ) {
+            if( p.invalid( ) || p.is_both_close( ) ) {
                 return trait_type::end( cont );
             } else if( res.first.iter == trait_type::end( cont ) ) {
                 return trait_type::end( cont );
@@ -356,14 +343,11 @@ namespace etool { namespace intervals {
                 if( res.first.inside ) {
 
                     std::uint32_t linc =
-                          iter_access::get(res.first.iter)->is_left_included( )
-                        ? INCLUDE_LEFT
-                        : INCLUDE_NONE;
+                          iter_access::get(res.first.iter)->left_flags( );
 
-                    std::uint32_t rinc =
-                          p.is_left_included( )
-                        ? INCLUDE_NONE
-                        : INCLUDE_RIGTH;
+                    std::uint32_t rinc = p.is_left_close( )
+                                       ? INCLUDE_NONE
+                                       : INCLUDE_RIGTH;
 
                     first = position( iter_access::get(res.first.iter)->left( ),
                                  p.left( ),
@@ -376,14 +360,12 @@ namespace etool { namespace intervals {
                 if( res.second.inside ) {
 
                     std::uint32_t linc =
-                         p.is_right_included( )
+                         p.is_right_close( )
                        ? INCLUDE_NONE
                        : INCLUDE_LEFT;
 
                     std::uint32_t rinc =
-                         iter_access::get(res.second.iter)->is_right_included( )
-                       ? INCLUDE_RIGTH
-                       : INCLUDE_NONE;
+                         iter_access::get(res.second.iter)->right_flags( );
 
                     last = position( p.right( ),
                                 iter_access::get(res.second.iter)->right( ),
