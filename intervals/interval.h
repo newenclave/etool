@@ -167,7 +167,7 @@ namespace etool { namespace intervals {
             oss << lbracket[is_left_close( )];
 
             if( is_left_inf( ) ) {
-                oss << "-" << inf;
+                oss << '-' << inf;
             } else {
                 oss << left( );
             }
@@ -175,7 +175,7 @@ namespace etool { namespace intervals {
             oss << ", ";
 
             if( is_right_inf( ) ) {
-                oss << inf;
+                oss << '+' << inf;
             } else {
                 oss << right( );
             }
