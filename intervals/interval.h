@@ -132,12 +132,12 @@ namespace etool { namespace intervals {
 
             bool is_minus_inf( ) const
             {
-                return (flags_ & SIDE_LEFT_INF) != 0;
+                return (flags_ & SIDE_MIN_INF) != 0;
             }
 
             bool is_plus_inf( ) const
             {
-                return (flags_ & SIDE_RIGHT_INF) != 0;
+                return (flags_ & SIDE_MAX_INF) != 0;
             }
 
             bool is_close( ) const
@@ -297,12 +297,12 @@ namespace etool { namespace intervals {
 
         side_info left_side( ) const
         {
-            return side_info(left_, flags);
+            return side_info(left_, left_flags( ));
         }
 
         side_info right_side( ) const
         {
-            return side_info(right_, flags);
+            return side_info(right_, right_flags( ));
         }
 
         bool has_inf( ) const noexcept
