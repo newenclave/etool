@@ -259,13 +259,15 @@ namespace etool { namespace intervals {
 
             if( loc.first.inside ) {
 
-                std::uint32_t linc = loc.first.iter->left_flags( );
+                std::uint32_t linc =
+                        iterator_access::get(loc.first.iter)->left_flags( );
 
                 std::uint32_t rinc = pos.is_left_close( )
                                    ? SIDE_OPEN
                                    : SIDE_CLOSE;
 
-                first = position( loc.first.iter->left( ), pos.left( ),
+                first = position( iterator_access::get(loc.first.iter)->left( ),
+                                  pos.left( ),
                                   linc, rinc );
             }
 
@@ -275,10 +277,12 @@ namespace etool { namespace intervals {
                                    ? SIDE_OPEN
                                    : SIDE_CLOSE;
 
-                std::uint32_t rinc = loc.second.iter->right_flags( );
+                std::uint32_t rinc =
+                        iterator_access::get(loc.second.iter)->right_flags( );
 
-                last = position( pos.right( ), loc.second.iter->right( ),
-                                 linc, rinc );
+                last = position( pos.right( ),
+                             iterator_access::get(loc.second.iter)->right( ),
+                             linc, rinc );
 
                 std::advance( loc.second.iter, +1 );
             }
