@@ -13,13 +13,13 @@
 namespace etool { namespace intervals {
 
     template <typename KeyT, typename ValueT,
-              template <typename, typename> class PosTraitT = traits::std_map>
-    class map: public common<PosTraitT<KeyT, ValueT> > {
+              typename PosTraitT = traits::std_map<KeyT, ValueT> >
+    class map: public common<PosTraitT> {
 
     public:
         using key_type   = KeyT;
         using value_type = ValueT;
-        using trait_type = PosTraitT<key_type, value_type>;
+        using trait_type = PosTraitT;
 
     private:
 
@@ -31,6 +31,7 @@ namespace etool { namespace intervals {
         using container      = typename trait_type::container;
         using iterator       = typename trait_type::iterator;
         using const_iterator = typename trait_type::const_iterator;
+        using factory        = typename position::factory;
 
         template<typename IterT>
         using container_slice = typename super_type::
@@ -50,8 +51,7 @@ namespace etool { namespace intervals {
 
         iterator merge( const key_type &uniq, value_type val )
         {
-            return merge( position(uniq, uniq, SIDE_BOTH_CLOSE),
-                          std::move(val) );
+            return merge( factory::degenerate(uniq), std::move(val) );
         }
 
         iterator merge( const key_type &lft, const key_type &rght,
@@ -74,8 +74,7 @@ namespace etool { namespace intervals {
 
         iterator insert( const key_type &uniq, value_type val )
         {
-            return insert( position(uniq, uniq, SIDE_BOTH_CLOSE),
-                                    std::move(val) );
+            return insert( factory::degenerate(uniq), std::move(val) );
         }
 
         iterator insert( const key_type &lft, const key_type &rght,
@@ -98,7 +97,7 @@ namespace etool { namespace intervals {
 
         iterator cut( const key_type &uniq )
         {
-            return cut( position(uniq, uniq, SIDE_BOTH_CLOSE) );
+            return cut( factory::degenerate(uniq) );
         }
 
         iterator cut( const key_type &lft, const key_type &rght,
@@ -218,9 +217,9 @@ namespace etool { namespace intervals {
                 auto left_pos  = iter_access::get(res.first.iter);
                 auto right_pos = iter_access::get(res.second.iter);
 
-                position new_val( fin ? left_pos->left( )   : p.left( ),
-                                  lin ? right_pos->right( ) : p.right( ),
-                                  SIDE_BOTH_CLOSE );
+                position new_val =
+                        factory::close( fin ? left_pos->left( )   : p.left( ),
+                                        lin ? right_pos->right( ) : p.right( ));
 
                 if( fin ) {
                     new_val.set_flag( left_pos->left_flags( ) );
@@ -258,57 +257,29 @@ namespace etool { namespace intervals {
                                                 std::move(p), std::move(v) );
             } else {
 
-                position first;
-                position last;
+                auto first_last = super_type::template
+                                  make_first_last<iterator>( res, p );
 
                 std::unique_ptr<value_type> fvalue;
                 std::unique_ptr<value_type> lvalue;
 
                 if( res.first.inside ) {
-
-                    std::uint32_t linc =
-                            iter_access::get(res.first.iter)->left_flags( );
-
-                    std::uint32_t rinc =
-                            p.is_left_close( )
-                          ? SIDE_RIGHT_OPEN
-                          : SIDE_RIGHT_CLOSE;
-
-                    first = position( iter_access::get(res.first.iter)->left( ),
-                                 p.left( ),
-                                 linc | rinc );
-
-                    /// do not use std::move!
                     fvalue.reset(new value_type(res.first.iter->second));
                 }
 
                 if( res.second.inside ) {
-
-                    std::uint32_t linc = p.is_right_close( )
-                                       ? SIDE_LEFT_OPEN
-                                       : SIDE_LEFT_CLOSE;
-
-                    std::uint32_t rinc =
-                        iter_access::get(res.second.iter)->right_flags( );
-
-                    last = position( p.right( ),
-                                iter_access::get(res.second.iter)->right( ),
-                                linc | rinc );
-
                     /// Ok. here
 
-                    lvalue.reset(
-                            new value_type(std::move(res.second.iter->second)));
-
-                    ++res.second.iter;
+                    lvalue.reset( new value_type( std::move(std::prev(
+                                                  res.second.iter)->second)));
                 }
 
                  auto t = trait_type::erase( cont, res.first.iter,
                                              res.second.iter );
 
-                if( res.first.inside && !first.empty( ) ) {
+                if( res.first.inside && !first_last.first.empty( ) ) {
                     t = trait_type::insert_hint( cont, t,
-                                                 std::move(first),
+                                                 std::move(first_last.first),
                                                  std::move(*fvalue) );
                 }
 
@@ -316,9 +287,9 @@ namespace etool { namespace intervals {
                                                         std::move(p),
                                                         std::move(v) );
 
-                if( res.second.inside && !last.empty( ) ) {
+                if( res.second.inside && !first_last.second.empty( ) ) {
                     trait_type::insert_hint( cont, ret,
-                                             std::move(last),
+                                             std::move(first_last.second),
                                              std::move(*lvalue) );
                 }
 
@@ -337,48 +308,21 @@ namespace etool { namespace intervals {
                 return trait_type::end( cont );
             } else {
 
-                position first;
-                position last;
+                auto first_last = super_type::template
+                                  make_first_last<iterator>( res, p );
 
                 std::unique_ptr<value_type> fvalue;
                 std::unique_ptr<value_type> lvalue;
 
                 if( res.first.inside ) {
-
-                    std::uint32_t linc =
-                          iter_access::get(res.first.iter)->left_flags( );
-
-                    std::uint32_t rinc = p.is_left_close( )
-                                       ? SIDE_RIGHT_CLOSE
-                                       : SIDE_RIGHT_OPEN;
-
-                    first = position( iter_access::get(res.first.iter)->left( ),
-                                 p.left( ),
-                                 linc | rinc );
-
                     /// do not use std::move!
                     fvalue.reset(new value_type(res.first.iter->second));
                 }
 
                 if( res.second.inside ) {
-
-                    std::uint32_t linc =
-                         p.is_right_close( )
-                       ? SIDE_LEFT_OPEN
-                       : SIDE_LEFT_CLOSE;
-
-                    std::uint32_t rinc =
-                         iter_access::get(res.second.iter)->right_flags( );
-
-                    last = position( p.right( ),
-                                iter_access::get(res.second.iter)->right( ),
-                                linc | rinc );
-
                     /// ok here
-                    lvalue.reset(
-                            new value_type(std::move(res.second.iter->second)));
-
-                    ++res.second.iter;
+                    lvalue.reset( new value_type( std::move( std::prev(
+                                                  res.second.iter)->second)));
                 }
 
                 iterator ret = trait_type::erase( cont,
@@ -387,15 +331,15 @@ namespace etool { namespace intervals {
 
                 auto t = ret;
 
-                if( res.first.inside && !first.empty( ) ) {
+                if( res.first.inside && !first_last.first.empty( ) ) {
                     t = trait_type::insert_hint( cont, t,
-                                                 std::move(first),
+                                                 std::move(first_last.first),
                                                  std::move(*fvalue) );
                 }
 
-                if( res.second.inside && !last.empty( ) ) {
+                if( res.second.inside && !first_last.second.empty( ) ) {
                     ret = trait_type::insert_hint( cont, t,
-                                                   std::move(last),
+                                                   std::move(first_last.second),
                                                    std::move(*lvalue) );
                 }
 

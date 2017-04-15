@@ -17,9 +17,11 @@ namespace etool { namespace intervals {
         using key             = typename trait_type::key;
         using position        = typename trait_type::position;
         using container       = typename trait_type::container;
+        using iterator_access = typename trait_type::iterator_access;
+
         using iterator        = typename container::iterator;
         using const_iterator  = typename container::const_iterator;
-        using iterator_access = typename trait_type::iterator_access;
+        using factory         = typename position::factory;
 
     public:
 
@@ -51,7 +53,6 @@ namespace etool { namespace intervals {
         private:
             std::pair<iterator, iterator> data;
         };
-
 
         iterator begin( )
         {
@@ -162,11 +163,12 @@ namespace etool { namespace intervals {
 
         using iter_access = typename trait_type::iterator_access;
 
+        using position_pair = std::pair<position, position>;
+
         static
         iterator find( container &cont, const key &k )
         {
-            auto res = locate<iterator>( cont,
-                                         position( k, k, SIDE_BOTH_CLOSE ) );
+            auto res = locate<iterator>( cont, factory::degenerate( k ) );
             return res.first.inside ? res.first.iter : trait_type::end(cont);
         }
 
@@ -246,6 +248,44 @@ namespace etool { namespace intervals {
             return std::make_pair( iter_bool_( b, bin, bor ),
                                    iter_bool_( e, ein, eor ) );
         }
+
+        template <typename IterT>
+        static
+        position_pair make_first_last( place_pair<IterT> &loc,
+                                       const position &pos )
+        {
+            position first;
+            position last;
+
+            if( loc.first.inside ) {
+
+                std::uint32_t linc = loc.first.iter->left_flags( );
+
+                std::uint32_t rinc = pos.is_left_close( )
+                                   ? SIDE_OPEN
+                                   : SIDE_CLOSE;
+
+                first = position( loc.first.iter->left( ), pos.left( ),
+                                  linc, rinc );
+            }
+
+            if( loc.second.inside ) {
+
+                std::uint32_t linc = pos.is_right_close( )
+                                   ? SIDE_OPEN
+                                   : SIDE_CLOSE;
+
+                std::uint32_t rinc = loc.second.iter->right_flags( );
+
+                last = position( pos.right( ), loc.second.iter->right( ),
+                                 linc, rinc );
+
+                std::advance( loc.second.iter, +1 );
+            }
+
+            return std::make_pair(first, last);
+        }
+
 
         template <typename IterT, typename ContT>
         static

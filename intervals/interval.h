@@ -170,7 +170,6 @@ namespace etool { namespace intervals {
             std::uint32_t     flags_;
         };
 
-
         struct cmp: public std::binary_function<interval, interval, bool> {
 
             static
