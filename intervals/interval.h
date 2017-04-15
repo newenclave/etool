@@ -120,6 +120,7 @@ namespace etool { namespace intervals {
         class side_info {
 
         public:
+
             side_info( const value_type &val, std::uint32_t flags )
                 :val_(val)
                 ,flags_(flags)
@@ -142,7 +143,7 @@ namespace etool { namespace intervals {
 
             bool is_close( ) const
             {
-                return flags_ == 0;
+                return flags_ == SIDE_CLOSE;
             }
 
             bool is_open( ) const
@@ -151,12 +152,31 @@ namespace etool { namespace intervals {
             }
 
             static
+            bool less_( const side_info &lh, const side_info &rh )
+            {
+                if( rh.is_plus_inf( ) ) {
+                    return !lh.is_plus_inf( );
+                } else if( lh.is_minus_inf( ) ) {
+                    return !rh.is_minus_inf( );
+                } else if( rh.is_minus_inf( ) ) {
+                    return false;
+                } else if( lh.is_open( ) ) {
+                    return interval::cmp::less_equal( lh.value( ),
+                                                      rh.value( ) );
+                } else {
+                    return interval::cmp::less( lh.value( ), rh.value( ) );
+                }
+            }
+
+            static
             bool less( const side_info &lh, const side_info &rh )
             {
                 if( lh.is_minus_inf( ) ) {
                     return !rh.is_minus_inf( );
-                } else if( rh.is_minus_inf( ) ) {
+                } else if( lh.is_plus_inf( ) || rh.is_minus_inf( ) ) {
                     return false;
+                } else if( rh.is_plus_inf( ) ) {
+                    return true;
                 } else if( lh.is_open( ) ) {
                     return interval::cmp::less_equal( lh.value( ),
                                                       rh.value( ) );
