@@ -349,11 +349,11 @@ namespace etool { namespace intervals {
 
         bool has_inf( ) const noexcept
         {
-            return (left_flags( )  == SIDE_MIN_INF)
-                || (left_flags( )  == SIDE_MAX_INF)
+            return (flags<left_type>( )  == SIDE_MIN_INF)
+                || (flags<left_type>( )  == SIDE_MAX_INF)
 
-                || (right_flags( ) == SIDE_MIN_INF)
-                || (right_flags( ) == SIDE_MAX_INF)
+                || (flags<right_type>( ) == SIDE_MIN_INF)
+                || (flags<right_type>( ) == SIDE_MAX_INF)
                  ;
         }
 
@@ -378,7 +378,7 @@ namespace etool { namespace intervals {
 
         std::uint16_t right_flags( ) const noexcept
         {
-            return flags_.u.lr[RIGHT_SIDE];
+            return flags<right_type>( );
         }
 
         bool is_right_close( ) const noexcept
@@ -393,7 +393,7 @@ namespace etool { namespace intervals {
 
         std::uint32_t left_flags( ) const noexcept
         {
-            return flags_.u.lr[LEFT_SIDE];
+            return flags<left_type>( );
         }
 
         bool is_left_close( ) const noexcept
