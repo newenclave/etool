@@ -412,22 +412,6 @@ namespace etool { namespace intervals {
                 && ( right_flags( ) == SIDE_CLOSE );
         }
 
-        bool is_both_open( ) const noexcept
-        {
-            return ( left_flags( )  == SIDE_OPEN )
-                && ( right_flags( ) == SIDE_OPEN );
-        }
-
-        void set_left( std::uint16_t f ) noexcept
-        {
-            flags_.u.lr[LEFT_SIDE] = f;
-        }
-
-        void set_right( std::uint32_t f ) noexcept
-        {
-            flags_.u.lr[RIGHT_SIDE] = f;
-        }
-
         bool left_connected( const interval &ol ) const noexcept
         {
             return cmp::equal( left( ), ol.right( ) )
