@@ -185,7 +185,7 @@ namespace etool { namespace intervals {
         {
             using iter_acc = typename trait_type::iterator_access;
             ItrT prev = std::prev(itr, 1);
-            return p.left_neighbor(*iter_acc::get(prev));
+            return p.left_connected(*iter_acc::get(prev));
         }
 
         template <typename ItrT>
@@ -193,7 +193,7 @@ namespace etool { namespace intervals {
         bool has_right_border( ItrT &itr, const typename TraitT::position &p )
         {
             using iter_acc = typename trait_type::iterator_access;
-            return p.right_neighbor(*iter_acc::get(itr));
+            return p.right_connected(*iter_acc::get(itr));
         }
 
         template <typename IterT, typename ContT>
