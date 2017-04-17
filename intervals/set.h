@@ -307,7 +307,7 @@ namespace etool { namespace intervals {
 
                 if( res.second.inside &&
                    !first_last.second.empty( ) &&
-                   !p.is_right_inf( ) )
+                   !p.is_right_inf( ))
                 {
                     ret = trait_type::insert_hint( cont, t,
                                                 std::move(first_last.second) );

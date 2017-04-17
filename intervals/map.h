@@ -373,12 +373,20 @@ namespace etool { namespace intervals {
                 std::unique_ptr<value_type> fvalue;
                 std::unique_ptr<value_type> lvalue;
 
-                if( res.first.inside && !p.is_left_inf( ) ) {
+                if( p.is_left_inf( ) ) {
+
+                    res.first.inside = false;
+
+                } else if( res.first.inside && !p.is_left_inf( ) ) {
                     /// do not use std::move!
                     fvalue.reset(new value_type(res.first.iter->second));
                 }
 
-                if( res.second.inside && !p.is_right_inf( )) {
+                if( p.is_right_inf( ) ) {
+
+                    res.second.inside = false;
+
+                } else if( res.second.inside && !p.is_right_inf( )) {
                     /// ok here
                     lvalue.reset( new value_type( std::move( std::prev(
                                                   res.second.iter)->second)));
@@ -390,18 +398,13 @@ namespace etool { namespace intervals {
 
                 auto t = ret;
 
-                if( res.first.inside &&
-                    !first_last.first.empty( ) &&
-                    !p.is_left_inf( ) )
-                {
+                if( res.first.inside && !first_last.first.empty( ) ) {
                     t = trait_type::insert_hint( cont, t,
                                                  std::move(first_last.first),
                                                  std::move(*fvalue) );
                 }
 
-                if( res.second.inside &&
-                   !first_last.second.empty( ) &&
-                   !p.is_right_inf( ) )
+                if( res.second.inside && !first_last.second.empty( ) )
                 {
                     ret = trait_type::insert_hint( cont, t,
                                                    std::move(first_last.second),
