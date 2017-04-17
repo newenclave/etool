@@ -192,7 +192,30 @@ namespace etool { namespace intervals {
         static
         iterator merge( container &cont, position p, value_type val )
         {
+            if( p.is_max_inf( ) ) {
+                trait_type::clear( cont );
+                trait_type::insert_hint( cont, trait_type::begin(cont),
+                                         std::move(p),
+                                         std::move(val) );
+                return trait_type::begin(cont);
+            }
+
             auto res = super_type::template locate<iterator>( cont, p );
+
+            if( p.is_minus_inf( ) &&
+                iter_access::get(res.first.iter)->is_left_inf( ) )
+            {
+                res.first.iter->second = std::move(val);
+                return res.first.iter;
+            }
+
+            if( p.is_plus_inf( ) && res.second.inside ) {
+                auto prev = std::prev(res.second.iter);
+                if(iter_access::get(prev)->is_right_inf( )) {
+                    prev->second = std::move(val);
+                    return res.second.iter;
+                }
+            }
 
             if( p.invalid( ) || p.empty( ) ) {
                 return trait_type::end( cont );
@@ -201,14 +224,6 @@ namespace etool { namespace intervals {
                 return trait_type::insert_hint( cont, res.first.iter,
                                                 std::move(p), std::move(val) );
             } else {
-
-                if( p.is_max_inf( ) ) {
-                    trait_type::clear( cont );
-                    trait_type::insert_hint( cont, trait_type::begin(cont),
-                                             std::move(p),
-                                             std::move(val) );
-                    return trait_type::begin(cont);
-                }
 
                 if( res.first.border ) {
                     std::advance(res.first.iter, -1);
@@ -256,7 +271,30 @@ namespace etool { namespace intervals {
         static
         iterator insert( container &cont, position p, value_type v )
         {
+            if( p.is_max_inf( ) ) {
+                trait_type::clear( cont );
+                trait_type::insert_hint( cont, trait_type::begin(cont),
+                                         std::move(p),
+                                         std::move(v) );
+                return trait_type::begin(cont);
+            }
+
             auto res = super_type::template locate<iterator>( cont, p );
+
+            if( p.is_minus_inf( ) &&
+                iter_access::get(res.first.iter)->is_left_inf( ) )
+            {
+                res.first.iter->second = std::move(v);
+                return res.first.iter;
+            }
+
+            if( p.is_plus_inf( ) && res.second.inside ) {
+                auto prev = std::prev(res.second.iter);
+                if(iter_access::get(prev)->is_right_inf( )) {
+                    prev->second = std::move(v);
+                    return res.second.iter;
+                }
+            }
 
             if( p.invalid( ) || p.empty( ) ) {
                 return trait_type::end( cont );
@@ -265,31 +303,8 @@ namespace etool { namespace intervals {
                                                 std::move(p), std::move(v) );
             } else {
 
-                if( p.is_max_inf( ) ) {
-                    trait_type::clear( cont );
-                    trait_type::insert_hint( cont, trait_type::begin(cont),
-                                             std::move(p),
-                                             std::move(v) );
-                    return trait_type::begin(cont);
-                }
-
                 auto first_last = super_type::template
                                   make_first_last<iterator>( res, p );
-
-                if( p.is_minus_inf( ) &&
-                    iter_access::get(res.first.iter)->is_left_inf( ) )
-                {
-                    res.first.iter->second = std::move(v);
-                    return res.first.iter;
-                }
-
-                if( p.is_plus_inf( ) && res.second.inside ) {
-                    auto prev = std::prev(res.second.iter);
-                    prev->second = std::move(v);
-                    if(iter_access::get(prev)->is_right_inf( )) {
-                        return res.second.iter;
-                    }
-                }
 
                 std::unique_ptr<value_type> fvalue;
                 std::unique_ptr<value_type> lvalue;
@@ -331,7 +346,20 @@ namespace etool { namespace intervals {
         static
         iterator cut( container &cont, position p )
         {
+            if( p.is_max_inf( ) ) {
+                trait_type::clear( cont );
+                return trait_type::begin(cont);
+            }
+
             auto res = super_type::template locate<iterator>( cont, p );
+
+            if( p.is_minus_inf( ) ) {
+                return trait_type::begin(cont);
+            }
+
+            if( p.is_plus_inf( ) ) {
+                return trait_type::end( cont );
+            }
 
             if( p.invalid( ) || p.is_both_close( ) ) {
                 return trait_type::end( cont );
@@ -339,36 +367,18 @@ namespace etool { namespace intervals {
                 return trait_type::end( cont );
             } else {
 
-                if( p.is_max_inf( ) ) {
-                    trait_type::clear( cont );
-                    return trait_type::begin(cont);
-                }
-
                 auto first_last = super_type::template
                                   make_first_last<iterator>( res, p );
-
-                if( p.is_minus_inf( ) &&
-                    iter_access::get(res.first.iter)->is_left_inf( ) )
-                {
-                    return res.first.iter;
-                }
-
-                if( p.is_plus_inf( ) && res.second.inside ) {
-                    auto prev = std::prev(res.second.iter);
-                    if(iter_access::get(prev)->is_right_inf( )) {
-                        return res.second.iter;
-                    }
-                }
 
                 std::unique_ptr<value_type> fvalue;
                 std::unique_ptr<value_type> lvalue;
 
-                if( res.first.inside ) {
+                if( res.first.inside && !p.is_left_inf( ) ) {
                     /// do not use std::move!
                     fvalue.reset(new value_type(res.first.iter->second));
                 }
 
-                if( res.second.inside ) {
+                if( res.second.inside && !p.is_right_inf( )) {
                     /// ok here
                     lvalue.reset( new value_type( std::move( std::prev(
                                                   res.second.iter)->second)));
@@ -380,13 +390,19 @@ namespace etool { namespace intervals {
 
                 auto t = ret;
 
-                if( res.first.inside && !first_last.first.empty( ) ) {
+                if( res.first.inside &&
+                    !first_last.first.empty( ) &&
+                    !p.is_left_inf( ) )
+                {
                     t = trait_type::insert_hint( cont, t,
                                                  std::move(first_last.first),
                                                  std::move(*fvalue) );
                 }
 
-                if( res.second.inside && !first_last.second.empty( ) ) {
+                if( res.second.inside &&
+                   !first_last.second.empty( ) &&
+                   !p.is_right_inf( ) )
+                {
                     ret = trait_type::insert_hint( cont, t,
                                                    std::move(first_last.second),
                                                    std::move(*lvalue) );
