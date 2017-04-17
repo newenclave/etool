@@ -202,6 +202,14 @@ namespace etool { namespace intervals {
                                                 std::move(p), std::move(val) );
             } else {
 
+                if( p.is_max_inf( ) ) {
+                    trait_type::clear( cont );
+                    trait_type::insert_hint( cont, trait_type::begin(cont),
+                                             std::move(p),
+                                             std::move(val) );
+                    return trait_type::begin(cont);
+                }
+
                 if( res.first.border ) {
                     std::advance(res.first.iter, -1);
                     res.first.inside = true;
@@ -218,19 +226,19 @@ namespace etool { namespace intervals {
                 auto right_pos = iter_access::get(res.second.iter);
 
                 position new_val =
-                        factory::close( fin ? left_pos->left( )   : p.left( ),
-                                        lin ? right_pos->right( ) : p.right( ));
+                    factory::closed( fin ? left_pos->left( )   : p.left( ),
+                                     lin ? right_pos->right( ) : p.right( ));
 
                 if( fin ) {
-                    new_val.set_flag( left_pos->left_flags( ) );
+                    new_val.set_left_flag( left_pos->left_flags( ) );
                 } else {
-                    new_val.set_flag( p.left_flags( ) );
+                    new_val.set_left_flag( p.left_flags( ) );
                 }
 
                 if( lin ) {
-                    new_val.set_flag( right_pos->right_flags( ) );
+                    new_val.set_right_flag( right_pos->right_flags( ) );
                 } else {
-                    new_val.set_flag( p.right_flags( ) );
+                    new_val.set_right_flag( p.right_flags( ) );
                 }
 
                 if( res.second.inside ) {
@@ -257,8 +265,31 @@ namespace etool { namespace intervals {
                                                 std::move(p), std::move(v) );
             } else {
 
+                if( p.is_max_inf( ) ) {
+                    trait_type::clear( cont );
+                    trait_type::insert_hint( cont, trait_type::begin(cont),
+                                             std::move(p),
+                                             std::move(v) );
+                    return trait_type::begin(cont);
+                }
+
                 auto first_last = super_type::template
                                   make_first_last<iterator>( res, p );
+
+                if( p.is_minus_inf( ) &&
+                    iter_access::get(res.first.iter)->is_left_inf( ) )
+                {
+                    res.first.iter->second = std::move(v);
+                    return res.first.iter;
+                }
+
+                if( p.is_plus_inf( ) && res.second.inside ) {
+                    auto prev = std::prev(res.second.iter);
+                    prev->second = std::move(v);
+                    if(iter_access::get(prev)->is_right_inf( )) {
+                        return res.second.iter;
+                    }
+                }
 
                 std::unique_ptr<value_type> fvalue;
                 std::unique_ptr<value_type> lvalue;
@@ -308,8 +339,26 @@ namespace etool { namespace intervals {
                 return trait_type::end( cont );
             } else {
 
+                if( p.is_max_inf( ) ) {
+                    trait_type::clear( cont );
+                    return trait_type::begin(cont);
+                }
+
                 auto first_last = super_type::template
                                   make_first_last<iterator>( res, p );
+
+                if( p.is_minus_inf( ) &&
+                    iter_access::get(res.first.iter)->is_left_inf( ) )
+                {
+                    return res.first.iter;
+                }
+
+                if( p.is_plus_inf( ) && res.second.inside ) {
+                    auto prev = std::prev(res.second.iter);
+                    if(iter_access::get(prev)->is_right_inf( )) {
+                        return res.second.iter;
+                    }
+                }
 
                 std::unique_ptr<value_type> fvalue;
                 std::unique_ptr<value_type> lvalue;

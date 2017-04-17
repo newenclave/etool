@@ -150,6 +150,13 @@ namespace etool { namespace intervals {
                                                 std::move(p) );
             } else {
 
+                if( p.is_max_inf( ) ) {
+                    trait_type::clear( cont );
+                    trait_type::insert_hint( cont, trait_type::begin(cont),
+                                             std::move(p) );
+                    return trait_type::begin(cont);
+                }
+
                 if( res.first.border ) {
                     std::advance(res.first.iter, -1);
                     res.first.inside = true;
@@ -166,19 +173,19 @@ namespace etool { namespace intervals {
                 auto right_pos = iter_access::get(res.second.iter);
 
                 position new_val =
-                        factory::close( fin ? left_pos->left( )   : p.left( ),
-                                        lin ? right_pos->right( ) : p.right( ));
+                      factory::closed( fin ? left_pos->left( )   : p.left( ),
+                                       lin ? right_pos->right( ) : p.right( ));
 
                 if( fin ) {
-                    new_val.set_flag( left_pos->left_flags( ) );
+                    new_val.set_left_flag( left_pos->left_flags( ) );
                 } else {
-                    new_val.set_flag( p.left_flags( ) );
+                    new_val.set_left_flag( p.left_flags( ) );
                 }
 
                 if( lin ) {
-                    new_val.set_flag( right_pos->right_flags( ) );
+                    new_val.set_right_flag( right_pos->right_flags( ) );
                 } else {
-                    new_val.set_flag( p.right_flags( ) );
+                    new_val.set_right_flag( p.right_flags( ) );
                 }
 
                 if( res.second.inside ) {
@@ -203,25 +210,45 @@ namespace etool { namespace intervals {
                                                 std::move(p) );
             } else {
 
+                if( p.is_max_inf( ) ) {
+                    trait_type::clear( cont );
+                    trait_type::insert_hint( cont, trait_type::begin(cont),
+                                             std::move(p) );
+                    return trait_type::begin(cont);
+                }
+
                 auto first_last = super_type::template
                                   make_first_last<iterator>( res, p );
 
-                 auto t = trait_type::erase( cont, res.first.iter,
+                if( p.is_minus_inf( ) &&
+                    iter_access::get(res.first.iter)->is_left_inf( ) )
+                {
+                    return res.first.iter;
+                }
+
+                if( p.is_plus_inf( ) && res.second.inside ) {
+                    auto prev = std::prev(res.second.iter);
+                    if(iter_access::get(prev)->is_right_inf( )) {
+                        return res.second.iter;
+                    }
+                }
+
+                auto t = trait_type::erase( cont, res.first.iter,
                                              res.second.iter );
 
                 if( res.first.inside && !first_last.first.empty( ) ) {
                     t = trait_type::insert_hint( cont, t,
-                                                 std::move(first_last.first) );
+                                              std::move(first_last.first) );
                 }
 
                 iterator ret = trait_type::insert_hint( cont, t, p );
 
                 if( res.second.inside && !first_last.second.empty( ) ) {
                     trait_type::insert_hint( cont, ret,
-                                             std::move(first_last.second) );
+                                           std::move(first_last.second) );
                 }
-
                 return ret;
+
             }
         }
 
@@ -235,6 +262,17 @@ namespace etool { namespace intervals {
             } else if( res.first.iter == trait_type::end( cont ) ) {
                 return trait_type::end( cont );
             } else {
+
+                if( p.is_max_inf( ) ) {
+                    trait_type::clear( cont );
+                    return trait_type::begin(cont);
+                }
+
+                if( p.is_minus_inf( ) &&
+                    iter_access::get(res.first.iter)->is_left_inf( ) )
+                {
+                    return res.first.iter;
+                }
 
                 auto first_last = super_type::template
                                   make_first_last<iterator>( res, p );

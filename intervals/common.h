@@ -228,14 +228,12 @@ namespace etool { namespace intervals {
                 bor = has_left_border( b, p );
             }
 
-            bin = !p.is_left_inf( ) && iter_acc::get(b)->contain( p.left( ) );
+            bin = iter_acc::get(b)->contains_left( p );
 
             if( e != trait_type::begin( cont ) ) {
                 auto prev = std::prev( e, 1);
-                if( !p.is_right_inf( ) &&
-                     iter_acc::get(prev)->contain( p.right( ) ) )
-                {
-                    e = prev;
+                if( iter_acc::get(prev)->contains_right( p ) ) {
+                    e   = prev;
                     ein = true;
                 }
             }

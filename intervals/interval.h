@@ -347,6 +347,22 @@ namespace etool { namespace intervals {
             return flags_.u.lr[SideT::side];
         }
 
+        template <typename SideT>
+        void set_flag( std::uint16_t f )
+        {
+            flags_.u.lr[SideT::side] = f;
+        }
+
+        void set_left_flag( std::uint16_t f )
+        {
+            set_flag<left_type>( f );
+        }
+
+        void set_right_flag( std::uint16_t f )
+        {
+            set_flag<right_type>( f );
+        }
+
         bool has_inf( ) const noexcept
         {
             return (flags<left_type>( )  == SIDE_MIN_INF)
@@ -361,6 +377,13 @@ namespace etool { namespace intervals {
         {
             return (left_flags( )  == SIDE_MIN_INF)
                 && (right_flags( ) == SIDE_MIN_INF)
+                 ;
+        }
+
+        bool is_max_inf( ) const noexcept
+        {
+            return (left_flags( )  == SIDE_MIN_INF)
+                && (right_flags( ) == SIDE_MAX_INF)
                  ;
         }
 
@@ -412,6 +435,12 @@ namespace etool { namespace intervals {
                 && ( right_flags( ) == SIDE_CLOSE );
         }
 
+        bool is_both_open( ) const noexcept
+        {
+            return ( left_flags( )  == SIDE_OPEN )
+                && ( right_flags( ) == SIDE_OPEN );
+        }
+
         bool left_connected( const interval &ol ) const noexcept
         {
             return cmp::equal( left( ), ol.right( ) )
@@ -442,16 +471,6 @@ namespace etool { namespace intervals {
                 return bright;
             }
             return false;
-        }
-
-        bool contain_left( const interval &ol ) const noexcept
-        {
-            return ol.is_left_inf( ) || contain( ol.left( ) );
-        }
-
-        bool contain_right( const interval &ol ) const noexcept
-        {
-            return ol.is_right_inf( ) || contain( ol.right( ) );
         }
 
         const value_type &right( ) const
@@ -530,6 +549,52 @@ namespace etool { namespace intervals {
         {
             cmp c;
             return !c(lh, rh) && !c(rh, lh);
+        }
+
+        bool contains_left( const interval &rhi ) const
+        {
+            using LS = left_type;
+            bool res = false;
+
+            /// LEFT point is placed right
+            if( is_minus_inf<LS>( ) ) {
+                res = rhi.is_minus_inf<LS>( );
+            } else if( is_plus_inf<LS>( ) ) {
+                res = rhi.is_plus_inf<LS>( );
+            }
+
+            if( !res ) {
+                res = contain( rhi.left( ) );
+            }
+
+            return res;
+        }
+
+        bool contains_right( const interval &rhi ) const
+        {
+            using RS = right_type;
+            bool res = false;
+
+            /// RIGHT point is placed right
+            if( is_minus_inf<RS>( ) ) {
+                res = rhi.is_minus_inf<RS>( );
+            } else if( is_plus_inf<RS>( ) ) {
+                res = rhi.is_plus_inf<RS>( );
+            }
+
+            if( !res ) {
+                res = contain( rhi.right( ) );
+            }
+
+            return res;
+        }
+
+        static
+        std::pair<bool, bool> intersections( const interval &lhi,
+                                             const interval &rhi )
+        {
+            return std::make_pair( lhi.contains_left( rhi ),
+                                   lhi.contains_right( rhi ) );
         }
 
     private:
