@@ -123,6 +123,13 @@ namespace etool { namespace intervals {
             return out( o, " " );
         }
 
+        std::string to_string( ) const
+        {
+            std::ostringstream oss;
+            out(oss);
+            return oss.str( );
+        }
+
     private:
 
         container &cont( )
