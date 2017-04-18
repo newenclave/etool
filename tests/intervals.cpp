@@ -60,7 +60,7 @@ TEST_CASE( "Intervals with +inf, -inf" ) {
 
     }
 
-    SECTION( "(-inf, -inf) (+inf, +inf) can not be cutted off" ) {
+    SECTION( "(-inf, -inf) (+inf, +inf) can not be cut off" ) {
         sint.insert( F::infinite( ) );
 
         REQUIRE( sint.size( ) == 1 );
