@@ -119,7 +119,7 @@ namespace etool { namespace intervals {
         template <typename OutT>
         OutT &out( OutT &o ) const
         {
-            return out(o, " ");
+            return out(o, "; ");
         }
 
         template <typename OutT, typename T>
@@ -131,7 +131,7 @@ namespace etool { namespace intervals {
                     o << gap;
                 }
                 start = false;
-                n.first.out(o) << " -> " << n.second;
+                n.first.out(o) << " -> '" << n.second << "'";
             }
             return o;
         }
@@ -415,6 +415,14 @@ namespace etool { namespace intervals {
             }
         }
     };
+
+    template <typename KeyT, typename ValueT, typename TraitT>
+    inline
+    std::ostream & operator << ( std::ostream &o,
+                                 const map<KeyT, ValueT, TraitT> &val )
+    {
+        return val.out(o);
+    }
 
 }}
 

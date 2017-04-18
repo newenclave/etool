@@ -318,6 +318,15 @@ namespace etool { namespace intervals {
         }
     };
 
+    template <typename KeyT, typename TraitT>
+    inline
+    std::ostream & operator << ( std::ostream &o,
+                                 const set<KeyT, TraitT> &val )
+    {
+        return val.out(o);
+    }
+
+
 }}
 
 #endif // SET_H

@@ -31,6 +31,20 @@ namespace etool { namespace intervals {
             }
 
             static
+            interval_type minus_infinite( )
+            {
+                return std::move(interval_type( value_type( ), value_type( ),
+                                                SIDE_MIN_INF, SIDE_MIN_INF ) );
+            }
+
+            static
+            interval_type plus_infinite( )
+            {
+                return std::move(interval_type( value_type( ), value_type( ),
+                                                SIDE_MAX_INF, SIDE_MAX_INF ) );
+            }
+
+            static
             interval_type open( value_type left, value_type right )
             {
                 return std::move(interval_type( std::move(left),
@@ -249,8 +263,8 @@ namespace etool { namespace intervals {
 #if 1
         interval( value_type b, value_type e )
         {
-            sides_[LEFT_SIDE]      = std::move(b);
-            sides_[RIGHT_SIDE]     = std::move(e);
+            sides_[LEFT_SIDE]       = std::move(b);
+            sides_[RIGHT_SIDE]      = std::move(e);
             flags_.u.lr[LEFT_SIDE]  = SIDE_CLOSE;
             flags_.u.lr[RIGHT_SIDE] = SIDE_OPEN;
         }
