@@ -15,6 +15,12 @@ using ival_map = intervals::map<double, std::string>;
 using F        = ival_set::position::factory;
 
 
+TEST_CASE( "Intervals" ) {
+    SECTION( "Properties" ) {
+        REQUIRE( F::infinite( ).is_max_inf( ) );
+    }
+}
+
 TEST_CASE( "Intervals with +inf, -inf" ) {
 
     ival_set sint;
