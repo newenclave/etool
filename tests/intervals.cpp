@@ -12,12 +12,16 @@ using namespace etool;
 
 using ival_set = intervals::set<double>;
 using ival_map = intervals::map<double, std::string>;
+
 using F        = ival_set::position::factory;
+using cmp      = ival_set::position::cmp;
 
 
 TEST_CASE( "Intervals" ) {
     SECTION( "Properties" ) {
         REQUIRE( F::infinite( ).is_max_inf( ) );
+        REQUIRE(  cmp::less(F::degenerate(0), F::degenerate(1)) );
+        REQUIRE( !cmp::less(F::degenerate(1), F::degenerate(0)) );
     }
 }
 
