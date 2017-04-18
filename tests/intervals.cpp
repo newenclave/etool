@@ -11,10 +11,9 @@
 using namespace etool;
 
 using ival_set = intervals::set<double>;
-using F = ival_set::position::factory;
-
 using ival_map = intervals::map<double, std::string>;
-using F = ival_map::position::factory;
+using F        = ival_set::position::factory;
+
 
 TEST_CASE( "Intervals with +inf, -inf" ) {
 
@@ -99,6 +98,7 @@ TEST_CASE( "Interval map can be used as hash-map " ) {
     ival_map fmap;
 
     SECTION( "interval::map::operator []" ) {
+
         fmap[0] = "Hello!";
         fmap[1] = "world!";
 

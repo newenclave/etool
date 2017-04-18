@@ -20,7 +20,7 @@ namespace etool { namespace intervals {
 
         struct factory {
 
-            using value_type    = interval::value_type;
+            using value_type    = ValueT;
             using interval_type = interval<value_type>;
 
             static
