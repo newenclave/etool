@@ -52,6 +52,10 @@ TEST_CASE( "Intervals with +inf, -inf" ) {
 
     SECTION( "(-inf, -inf) (+inf, +inf) can not be cutted off" ) {
         sint.insert( F::infinite( ) );
+
+        REQUIRE( sint.size( ) == 1 );
+        CHECK( sint.to_string( ) == "(-inf, +inf)" );
+
         sint.cut( F::minus_infinite( ) );
         sint.cut( F::plus_infinite( ) );
 
