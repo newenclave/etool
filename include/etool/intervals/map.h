@@ -136,6 +136,13 @@ namespace etool { namespace intervals {
             return o;
         }
 
+        std::string to_string( ) const
+        {
+            std::ostringstream oss;
+            out(oss);
+            return oss.str( );
+        }
+
         container_slice<iterator> intersection( const position &p )
         {
             return super_type::template intersection<iterator>( cont( ), p );
