@@ -118,6 +118,10 @@ TEST_CASE( "Interval map can be used as hash-map " ) {
         fmap.insert( F::plus_infinite(  ),  "++" );
 
         REQUIRE( fmap.size( ) == 4 );
+        CHECK( fmap.to_string( ) == "(-inf, -inf) -> '--'; "
+                                    "[0, 0] -> 'Hello!'; "
+                                    "[1, 1] -> 'world!'; "
+                                    "(+inf, +inf) -> '++'" );
     }
 
 }
