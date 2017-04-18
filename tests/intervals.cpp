@@ -42,6 +42,12 @@ TEST_CASE( "Intervals with +inf, -inf" ) {
 
         REQUIRE( sint.size( ) == 2 );
         CHECK( sint.to_string( ) == "(-inf, 0] (0, +inf)" );
+
+        sint.cut( F::right_open( 0, 0 ) );
+
+        REQUIRE( sint.size( ) == 3 );
+        CHECK( sint.to_string( ) == "(-inf, 0) [0, 0] (0, +inf)" );
+
     }
 
     SECTION( "(-inf, -inf) (+inf, +inf) can not be cutted off" ) {
