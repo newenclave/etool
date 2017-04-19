@@ -9,6 +9,7 @@ namespace etool { namespace intervals {
         SIDE_OPEN         = 0x01,
         SIDE_MIN_INF      = 0x02,
         SIDE_MAX_INF      = 0x03,
+        SIDE_MAXIMUM
     };
 
 }}

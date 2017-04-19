@@ -94,6 +94,11 @@ namespace etool { namespace intervals {
             return trait_type::erase( cont_, from, to );
         }
 
+        void swap( common &other )
+        {
+            std::swap(cont_, other.cont_);
+        }
+
         container_slice<iterator> intersection( const position &p )
         {
             return intersection<iterator>( cont_, p );
@@ -257,11 +262,9 @@ namespace etool { namespace intervals {
             if( loc.first.inside ) {
 
                 std::uint32_t linc =
-                        iterator_access::get(loc.first.iter)->left_flags( );
+                        iterator_access::get(loc.first.iter)->left_flag( );
 
-                std::uint32_t rinc = pos.is_left_close( )
-                                   ? SIDE_OPEN
-                                   : SIDE_CLOSE;
+                std::uint32_t rinc = pos.left_op_flag( );
 
                 first = position( iterator_access::get(loc.first.iter)->left( ),
                                   pos.left( ),
@@ -270,12 +273,10 @@ namespace etool { namespace intervals {
 
             if( loc.second.inside ) {
 
-                std::uint32_t linc = pos.is_right_close( )
-                                   ? SIDE_OPEN
-                                   : SIDE_CLOSE;
+                std::uint32_t linc = pos.right_op_flag( );
 
                 std::uint32_t rinc =
-                        iterator_access::get(loc.second.iter)->right_flags( );
+                        iterator_access::get(loc.second.iter)->right_flag( );
 
                 last = position( pos.right( ),
                              iterator_access::get(loc.second.iter)->right( ),

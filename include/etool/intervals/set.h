@@ -197,15 +197,15 @@ namespace etool { namespace intervals {
                                        lin ? right_pos->right( ) : p.right( ));
 
                 if( fin ) {
-                    new_val.set_left_flag( left_pos->left_flags( ) );
+                    new_val.set_left_flag( left_pos->left_flag( ) );
                 } else {
-                    new_val.set_left_flag( p.left_flags( ) );
+                    new_val.set_left_flag( p.left_flag( ) );
                 }
 
                 if( lin ) {
-                    new_val.set_right_flag( right_pos->right_flags( ) );
+                    new_val.set_right_flag( right_pos->right_flag( ) );
                 } else {
-                    new_val.set_right_flag( p.right_flags( ) );
+                    new_val.set_right_flag( p.right_flag( ) );
                 }
 
                 if( res.second.inside ) {
