@@ -103,6 +103,14 @@ namespace etool { namespace intervals {
             flags_[1] = attributes::MIN_INF;
         }
 
+        interval( const ValueT &val )
+            :left_(val)
+            ,right_(val)
+        {
+            flags_[0] = attributes::CLOSE;
+            flags_[1] = attributes::CLOSE;
+        }
+
         interval( const interval &other )
             :left_ (other.left_)
             ,right_(other.right_)
@@ -291,8 +299,7 @@ namespace etool { namespace intervals {
         static
         interval degenerate( value_type lh )
         {
-            value_type rh = lh;
-            return closed( std::move(lh), std::move(rh) );
+            return interval( lh );
         }
 
         static

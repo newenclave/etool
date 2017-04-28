@@ -9,9 +9,10 @@ namespace etool { namespace intervals { namespace traits {
     template <typename KeyT, typename ValueT, typename Comparator>
     struct std_map {
 
-        using interval_type     = interval<ValueT, Comparator>;
+        using interval_type     = interval<KeyT, Comparator>;
         using map_cmp           = typename interval_type::cmp_not_overlap;
         using container_type    = std::map<interval_type, ValueT, map_cmp>;
+
         using value_type        = typename container_type::value_type;
         using iterator          = typename container_type::iterator;
         using const_iterator    = typename container_type::const_iterator;

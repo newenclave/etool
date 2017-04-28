@@ -11,14 +11,16 @@ namespace etool { namespace intervals {
 
         using trait_type        = TraitT;
 
-        using interval_type     = typename trait_type::interval_type;
+        using key_type          = typename trait_type::interval_type;
         using value_type        = typename trait_type::value_type;
         using container_type    = typename trait_type::container_type;
+
         using iterator          = typename trait_type::iterator;
         using const_iterator    = typename trait_type::const_iterator;
+
         using iterator_access   = typename trait_type::iterator_access;
 
-        using data_type         = typename interval_type::value_type;
+        using data_type         = typename key_type::value_type;
 
         iterator begin( )
         {
@@ -62,12 +64,42 @@ namespace etool { namespace intervals {
 
         iterator find( const data_type &key )
         {
-            return find_impl<iterator>(key);
+            return find_impl(key);
         }
 
         const_iterator find( const data_type &key ) const
         {
-            return find_impl<const_iterator>(key);
+            return find_const(key);
+        }
+
+        iterator find( const key_type &key )
+        {
+            using CT = container_type;
+            auto res = locate<CT, iterator>(cont_, key);
+
+            if(  res.left.itr == res.right.itr
+              && res.left.contains
+              && res.right.contains )
+            {
+                return res.left.itr;
+            }
+
+            return cont_.end( );
+        }
+
+        const_iterator find( const key_type &key ) const
+        {
+            using CCT = container_type;
+            auto res = locate<CCT, iterator>(cont_, key);
+
+            if(  res.left.itr == res.right.itr
+              && res.left.contains
+              && res.right.contains )
+            {
+                return res.left.itr;
+            }
+
+            return cont_.end( );
         }
 
     protected:
@@ -76,10 +108,17 @@ namespace etool { namespace intervals {
 
         template <typename ItrT>
         struct intersect_info {
+
             ItrT     itr;
             bool     contains;
             bool     connected;
-            intersect_info( iterator i, bool cont, bool conn )
+
+            intersect_info( const intersect_info & ) = default;
+            intersect_info& operator = ( const intersect_info & ) = default;
+            intersect_info( intersect_info && ) = default;
+            intersect_info& operator = ( intersect_info && ) = default;
+
+            intersect_info( ItrT i, bool cont, bool conn )
                 :itr(i)
                 ,contains(cont)
                 ,connected(conn)
@@ -90,6 +129,12 @@ namespace etool { namespace intervals {
         struct intersect_pair {
             intersect_info<ItrT> left;
             intersect_info<ItrT> right;
+
+            intersect_pair( const intersect_pair & ) = default;
+            intersect_pair& operator = ( const intersect_pair & ) = default;
+            intersect_pair( intersect_pair && ) = default;
+            intersect_pair& operator = ( intersect_pair && ) = default;
+
             intersect_pair( intersect_info<ItrT> l, intersect_info<ItrT> r )
                 :left(std::move(l))
                 ,right(std::move(r))
@@ -99,7 +144,7 @@ namespace etool { namespace intervals {
         iterator insert_impl( value_type ival )
         {
 #ifdef DEBUG
-            if( !ival.valid( ) ) {
+            if( !I::key(ival).valid( ) ) {
                 throw std::logic_error( "Insert. Invalid value." );
                 return cont_.end( );
             }
@@ -113,7 +158,7 @@ namespace etool { namespace intervals {
                 cont_.swap( tmp );
                 return cont_.begin( );
             }
-            auto pair = locate<iterator>( I::key(ival) );
+            auto pair = locate<container_type, iterator>( cont_, I::key(ival) );
             if( pair.left.itr == cont_.end( ) ) {
                 return cont_.emplace_hint( cont_.end( ), std::move(ival) );
             }
@@ -146,7 +191,7 @@ namespace etool { namespace intervals {
                 cont_.emplace_hint( res, std::move(last) );
             }
 
-            return tmp;
+            return res;
         }
 
         iterator merge_impl( value_type ival )
@@ -158,7 +203,8 @@ namespace etool { namespace intervals {
             }
 #endif
 
-            using I = iterator_access;
+            using I  = iterator_access;
+            using CT = container_type;
 
             if( I::key(ival).is_infinite( ) ) {
                 container_type tmp;
@@ -167,7 +213,7 @@ namespace etool { namespace intervals {
                 return cont_.begin( );
             }
 
-            auto pair = locate<iterator>( I::key(ival) );
+            auto pair = locate<CT, iterator>( cont_, I::key(ival) );
             if( pair.left.itr == cont_.end( ) ) {
                 return cont_.emplace_hint( cont_.end( ), std::move(ival) );
             }
@@ -224,19 +270,12 @@ namespace etool { namespace intervals {
                 last_iter = pair.right.itr;
             }
 
-//            if( pair.left.contains ) {
-
-//            }
-
-//            I::mutable_key(ival) =
-//                    interval_type::intersection( I::key(first_iter),
-//                                                 I::key(last_iter) );
             auto tmp = cont_.erase( first_iter, last_iter );
             return cont_.emplace_hint( tmp, std::move(ival) );
 
         }
 
-        iterator cut_impl( interval_type ival )
+        iterator cut_impl( key_type ival )
         {
 #ifdef DEBUG
             if( !ival.valid( ) ) {
@@ -244,7 +283,8 @@ namespace etool { namespace intervals {
                 return cont_.end( );
             }
 #endif
-            using I = iterator_access;
+            using I  = iterator_access;
+            using CT = container_type;
 
             if( ival.is_infinite( ) ) {
                 container_type tmp;
@@ -252,7 +292,7 @@ namespace etool { namespace intervals {
                 return cont_.end( );
             }
 
-            auto pair = locate<iterator>( ival );
+            auto pair = locate<CT, iterator>( cont_, ival );
             if( pair.left.itr == cont_.end( ) ) {
                 return cont_.end( );
             }
@@ -287,8 +327,9 @@ namespace etool { namespace intervals {
 
     protected:
 
-        template <typename ItrT = const_iterator>
-        intersect_pair<ItrT> locate( const interval_type &ival ) const
+        template <typename Cont, typename ItrT = const_iterator>
+        static
+        intersect_pair<ItrT> locate( Cont &cont, const key_type &ival )
         {
 #ifdef DEBUG
             if( !ival.valid( ) ) {
@@ -298,24 +339,26 @@ namespace etool { namespace intervals {
 #endif
             using I = iterator_access;
 
-            using res_type = intersect_pair<ItrT>;
-            using value_type = intersect_info<ItrT>;
+            using res_type  = intersect_pair<ItrT>;
+            using info_type = intersect_info<ItrT>;
 
-            auto left = cont_.lower_bound( ival );
-            if( left == cont_.end( ) ) {
+            ItrT left = cont.lower_bound( ival );
+            if( left == cont.end( ) ) {
                 bool border = false;
-                if( left != cont_.begin( ) ) {
+                if( left != cont.begin( ) ) {
                     auto prev = std::prev( left );
                     border = ival.left_connected( I::key(prev) );
                 }
-                return res_type( value_type(cont_.end( ), false, border),
-                                 value_type(cont_.end( ), false, false) );
+
+                return res_type( info_type( cont.end( ), false, border ),
+                                 info_type( cont.end( ), false, false  ) );
+
             }
 
             bool left_border   = false;
             bool left_contain  = I::key(left).contains_left( ival );
 
-            if( left != cont_.begin( ) ) {
+            if( left != cont.begin( ) ) {
                 auto prev = std::prev(left);
                 left_border = ival.left_connected( I::key(prev) );
             }
@@ -323,15 +366,13 @@ namespace etool { namespace intervals {
             bool right_border  = false;
             bool right_contain = false;
 
-            auto right = cont_.upper_bound( ival );
+            ItrT right = cont.upper_bound( ival );
 
-            auto r = I::key(right);
-
-            if( right != cont_.end( ) ) {
+            if( right != cont.end( ) ) {
                 right_border = ival.right_connected( I::key(right) );
             }
 
-            if( right != cont_.begin( ) ) {
+            if( right != cont.begin( ) ) {
                 auto prev = std::prev( right );
                 right_contain = I::key(prev).contains_right( ival );
                 if( right_contain ) {
@@ -339,16 +380,29 @@ namespace etool { namespace intervals {
                 }
             }
 
-            return res_type( value_type(left,  left_contain,  left_border),
-                             value_type(right, right_contain, right_border) );
+            return res_type( info_type(left,  left_contain,  left_border),
+                             info_type(right, right_contain, right_border) );
 
         }
 
-        template <typename ItrT = const_iterator>
-        ItrT find_impl( const data_type &key )
+        iterator find_impl( const data_type &key )
         {
-            using I = iterator_access;
-            auto res = locate<ItrT>( interval_type::degenerate(key) );
+            using I  = iterator_access;
+            using CT = container_type;
+
+            auto res = locate<CT, iterator>( cont_, key );
+
+            return I::key(res.left.itr).contains( key )
+                 ? res.left.itr
+                 : cont_.end( );
+        }
+
+        const_iterator find_const( const data_type &key ) const
+        {
+            using I   = iterator_access;
+            using CCT = const container_type;
+            auto res  = locate<CCT, const_iterator>( cont_, key );
+
             return I::key(res.left.itr).contains(key)
                  ? res.left.itr
                  : cont_.end( );
