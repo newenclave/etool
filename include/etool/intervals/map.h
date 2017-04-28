@@ -56,9 +56,9 @@ namespace etool { namespace intervals {
             }
         }
 
-        iterator cut( value_type val )
+        iterator cut( const key_type &val )
         {
-            return parent_type::cut_impl( std::move(val) );
+            return parent_type::cut_impl( val );
         }
 
         mapped_type &operator [ ] ( const key_type &k )

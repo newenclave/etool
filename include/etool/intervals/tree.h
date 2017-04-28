@@ -275,7 +275,7 @@ namespace etool { namespace intervals {
 
         }
 
-        iterator cut_impl( key_type ival )
+        iterator cut_impl( const key_type &ival )
         {
 #ifdef DEBUG
             if( !ival.valid( ) ) {
