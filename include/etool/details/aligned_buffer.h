@@ -50,7 +50,7 @@ namespace etool { namespace details {
 
             template <typename ...ArgT>
             static
-            void call( ValueT *v, ArgT...args )
+            void create( ValueT *v, ArgT...args )
             {
                 new (v) ValueT(std::forward<ArgT>(args)...);
             }
@@ -65,6 +65,8 @@ namespace etool { namespace details {
             {
                 ptr_ = nullptr;
             }
+
+        private:
 
             ValueT * ptr_ = nullptr;
         };
@@ -119,7 +121,7 @@ namespace etool { namespace details {
 
             template <typename ...ArgT>
             static
-            void call( ValueT *v, ArgT...args )
+            void create( ValueT *v, ArgT...args )
             {
                 for( auto i = 0; i<N; ++i  ) {
                     new (&v[i]) ValueT(std::forward<ArgT>(args)...);
@@ -139,6 +141,7 @@ namespace etool { namespace details {
                 ptr_ = nullptr;
             }
 
+        private:
             ValueT * ptr_ = nullptr;
         };
 
