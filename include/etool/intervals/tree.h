@@ -98,6 +98,13 @@ namespace etool { namespace intervals {
 
         iterator insert_impl( value_type ival )
         {
+#ifdef DEBUG
+            if( !ival.valid( ) ) {
+                throw std::logic_error( "Insert. Invalid value." );
+                return cont_.end( );
+            }
+#endif
+
             using I = iterator_access;
 
             if( I::key(ival).is_infinite( ) ) {
@@ -144,6 +151,13 @@ namespace etool { namespace intervals {
 
         iterator merge_impl( value_type ival )
         {
+#ifdef DEBUG
+            if( !ival.valid( ) ) {
+                throw std::logic_error( "Merge. Invalid value." );
+                return cont_.end( );
+            }
+#endif
+
             using I = iterator_access;
 
             if( I::key(ival).is_infinite( ) ) {
@@ -224,6 +238,12 @@ namespace etool { namespace intervals {
 
         iterator cut_impl( interval_type ival )
         {
+#ifdef DEBUG
+            if( !ival.valid( ) ) {
+                throw std::logic_error( "Cut. Invalid value." );
+                return cont_.end( );
+            }
+#endif
             using I = iterator_access;
 
             if( ival.is_infinite( ) ) {
@@ -270,6 +290,12 @@ namespace etool { namespace intervals {
         template <typename ItrT = const_iterator>
         intersect_pair<ItrT> locate( const interval_type &ival ) const
         {
+#ifdef DEBUG
+            if( !ival.valid( ) ) {
+                throw std::logic_error( "Locate. Invalid value." );
+                return cont_.end( );
+            }
+#endif
             using I = iterator_access;
 
             using res_type = intersect_pair<ItrT>;

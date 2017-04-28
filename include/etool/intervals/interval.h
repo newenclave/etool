@@ -18,6 +18,17 @@ namespace etool { namespace intervals {
 
     private:
 
+        template <typename IvalT>
+        static IvalT &check( IvalT &ival )
+        {
+#ifdef DEBUG
+            if( !ival.valid( ) ) {
+                throw std::logic_error( "Invalid value." );
+            }
+#endif
+            return ival;
+        }
+
         interval( value_type lh, value_type rh,
                   attributes lf, attributes rf )
             :left_(std::move(lh))
@@ -226,6 +237,25 @@ namespace etool { namespace intervals {
                              flags<endpoint_name::RIGHT>( ) );
         }
 
+        bool valid( ) const
+        {
+            using u16 = std::uint16_t;
+            auto lf = static_cast<u16>(factor<endpoint_name::LEFT>( ));
+            auto rf = static_cast<u16>(factor<endpoint_name::RIGHT>( ));
+
+            switch ( lf ) {
+            case  static_cast<u16>(attributes::MIN_INF):
+                return true;
+            case ( static_cast<u16>(attributes::CLOSE) |
+                   static_cast<u16>(attributes::OPEN) ):
+                return (rf == static_cast<u16>(attributes::MAX_INF))
+                    || ((rf == lf) && cmp::less_equal(left( ), right( )));
+            case  static_cast<u16>(attributes::MAX_INF):
+                return (rf == static_cast<u16>(attributes::MAX_INF));
+            };
+            return false;
+        }
+
         void replace_left( const interval &to )
         {
             flags_[0] = to.flags_[0];
@@ -367,6 +397,10 @@ namespace etool { namespace intervals {
             static const char *minf = "-inf";
             static const char *pinf = "+inf";
 
+            if( !valid( ) ) {
+                o << "(inval)";
+                return o;
+            }
 
             switch ( flags<endpoint_name::LEFT>( ) ) {
             case attributes::CLOSE:

@@ -12,7 +12,7 @@ namespace etool { namespace intervals {
         MAX_INF    = 1 << 3,
     };
 
-    inline
+    inline constexpr
     attributes operator | ( attributes lh, attributes rh )
     {
         using u16 = std::uint16_t;
@@ -20,7 +20,7 @@ namespace etool { namespace intervals {
                                       | static_cast<u16>( rh ) );
     }
 
-    inline
+    inline constexpr
     attributes operator & ( attributes lh, attributes rh )
     {
         using u16 = std::uint16_t;
@@ -28,14 +28,14 @@ namespace etool { namespace intervals {
                                       & static_cast<u16>( rh ) );
     }
 
-    inline
+    inline constexpr
     bool operator == ( attributes lh, std::uint16_t val )
     {
         using u16 = std::uint16_t;
         return static_cast<u16>( lh ) == val;
     }
 
-    inline
+    inline constexpr
     bool operator != ( attributes lh, std::uint16_t val )
     {
         using u16 = std::uint16_t;

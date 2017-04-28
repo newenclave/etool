@@ -18,38 +18,38 @@ namespace etool { namespace intervals {
 
     public:
 
-        using key_type          = KeyT;
+        using data_type         = KeyT;
         using iterator          = typename parent_type::iterator;
         using const_iterator    = typename parent_type::const_iterator;
 
-        iterator insert( const key_type& k )
+        iterator insert( const data_type& k )
         {
             return insert(interval_type::degenerate( k ));
         }
 
-        iterator insert( const interval_type& k )
+        iterator insert( interval_type k )
         {
-            return parent_type::insert_impl( k );
+            return parent_type::insert_impl(std::move(k) );
         }
 
-        iterator merge( const key_type& k )
+        iterator merge( const data_type& k )
         {
             return merge(interval_type::degenerate( k ));
         }
 
-        iterator merge( const interval_type& k )
+        iterator merge( interval_type k )
         {
-            return parent_type::merge_impl( k );
+            return parent_type::merge_impl( std::move(k) );
         }
 
-        iterator cut( const key_type& k )
+        iterator cut( const data_type& k )
         {
             return cut(interval_type::degenerate( k ));
         }
 
-        iterator cut( const interval_type& k )
+        iterator cut( interval_type k )
         {
-            return parent_type::cut_impl( k );
+            return parent_type::cut_impl( std::move(k) );
         }
     };
 }}
