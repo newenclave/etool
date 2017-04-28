@@ -1,680 +1,861 @@
 #ifndef ETOOL_INTERVALS_INTERVAL_H
 #define ETOOL_INTERVALS_INTERVAL_H
 
-#include <cstdint>
-#include <string>
-#include <sstream>
-
-#include "etool/intervals/side_info.h"
+#include <algorithm>
+#include <functional>
+#include "etool/intervals/attributes.h"
+#include "etool/intervals/endpoint_type.h"
 
 namespace etool { namespace intervals {
 
-    template <typename ValueT>
+    template <typename ValueT, typename Comparator = std::less<ValueT> >
     class interval {
-
-        using value_type = ValueT;
-
-        enum { LEFT_SIDE = 0, RIGHT_SIDE = 1 };
 
     public:
 
-        struct factory {
+        using value_type      = ValueT;
+        using comparator_type = Comparator;
 
-            using value_type    = ValueT;
-            using interval_type = interval<value_type>;
+    private:
 
-            static
-            interval_type infinite( )
-            {
-                return std::move(interval_type( value_type( ), value_type( ),
-                                                SIDE_MIN_INF, SIDE_MAX_INF ) );
+        interval( value_type lh, value_type rh,
+                  attributes lf, attributes rf )
+            :left_(std::move(lh))
+            ,right_(std::move(rh))
+        {
+            flags_[0] = lf;
+            flags_[1] = rf;
+        }
+
+        template <attributes Flag = attributes::CLOSE>
+        interval( endpoint_type<value_type, endpoint_name::LEFT> side,
+                  attribute<Flag> sf = attribute<Flag>( ) )
+            :left_(std::move(side.move( ) ))
+        {
+            using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
+            using op_side = typename my_side::opposite;
+
+            flags_[my_side::id] = sf.get( );
+            flags_[op_side::id] = op_side::def_inf;
+        }
+
+        template <attributes Flag = attributes::CLOSE>
+        interval( endpoint_type<value_type, endpoint_name::RIGHT> side,
+                  attribute<Flag> sf = attribute<Flag>( ) )
+            :right_(std::move(side.move( ) ))
+        {
+            using my_side = endpoint_type<value_type, endpoint_name::RIGHT>;
+            using op_side = typename my_side::opposite;
+
+            flags_[my_side::id] = sf.get( );
+            flags_[op_side::id] = op_side::def_inf;
+        }
+
+        template <attributes LFlag,     attributes RFlag>
+        interval( endpoint_type<value_type, endpoint_name::LEFT>  ls,
+                  endpoint_type<value_type, endpoint_name::RIGHT> rs,
+                  attribute<LFlag> lf,  attribute<RFlag>  rf)
+            :left_(ls.move( ))
+            ,right_(rs.move( ))
+        {
+            using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
+            using op_side = endpoint_type<value_type, endpoint_name::RIGHT>;
+
+            flags_[my_side::id] = lf.get( );
+            flags_[op_side::id] = rf.get( );
+        }
+
+        template <attributes LInf = attributes::MIN_INF,
+                  attributes RInf = attributes::MAX_INF>
+        interval( typename endpoint_type<value_type,
+                           endpoint_name::LEFT>::template inf<LInf> ls,
+                  typename endpoint_type<value_type,
+                           endpoint_name::RIGHT>::template inf<RInf> rs)
+        {
+            static_assert( LInf <= RInf, "Left side must be less then right" );
+
+            using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
+            using op_side = endpoint_type<value_type, endpoint_name::RIGHT>;
+
+            flags_[my_side::id] = ls.get( );
+            flags_[op_side::id] = rs.get( );
+        }
+
+    public:
+
+        using left_type  = endpoint_type<value_type, endpoint_name::LEFT>;
+        using right_type = endpoint_type<value_type, endpoint_name::RIGHT>;
+
+        interval( )
+        {
+            flags_[0] = attributes::MIN_INF;
+            flags_[1] = attributes::MIN_INF;
+        }
+
+        interval( const interval &other )
+            :left_ (other.left_)
+            ,right_(other.right_)
+        {
+            flags_[0] = other.flags_[0];
+            flags_[1] = other.flags_[1];
+        }
+
+        interval( interval &&other )
+            :left_(std::move(other.left_))
+            ,right_(std::move(other.right_))
+        {
+            flags_[0]  = other.flags_[0];
+            flags_[1]  = other.flags_[1];
+        }
+
+        interval& operator = ( const interval &other )
+        {
+            interval tmp(other);
+            swap( tmp );
+            return *this;
+        }
+
+        interval& operator = ( interval &&other )
+        {
+            interval tmp(std::move(other));
+            swap( tmp );
+            return *this;
+        }
+
+        ~interval( )
+        { }
+
+        const value_type &left( ) const noexcept
+        {
+            return value<endpoint_name::LEFT>( );
+        }
+
+        const value_type &right( ) const noexcept
+        {
+            return value<endpoint_name::RIGHT>( );
+        }
+
+        attributes left_attr( ) const noexcept
+        {
+            return flags<endpoint_name::LEFT>( );
+        }
+
+        attributes right_attr( ) const noexcept
+        {
+            return flags<endpoint_name::RIGHT>( );
+        }
+
+        bool left_connected( const interval &other ) const
+        {
+            return connected<endpoint_name::LEFT>(other);
+        }
+
+        bool right_connected( const interval &other ) const
+        {
+            return other.left_connected( *this );
+        }
+
+        bool contains( const value_type &val ) const
+        {
+            bool bleft = is_minus_inf<endpoint_name::LEFT>( )
+                    ||   is_greater_equal<endpoint_name::LEFT>( val );
+
+            if( bleft ) {
+                return is_plus_inf<endpoint_name::RIGHT>( )
+                    || is_less_equal<endpoint_name::RIGHT>( val );
+            }
+            return false;
+        }
+
+        bool contains_left( const interval &other ) const
+        {
+            return contains_side<endpoint_name::LEFT>(other);
+        }
+
+        bool contains_right( const interval &other ) const
+        {
+            return contains_side<endpoint_name::RIGHT>(other);
+        }
+
+        std::pair<bool, bool> contains( const interval &other ) const
+        {
+            return std::make_pair( contains_side<endpoint_name::LEFT>(other),
+                                   contains_side<endpoint_name::RIGHT>(other) );
+        }
+
+        void swap( interval &other )
+        {
+            std::swap( flags_[0], other.flags_[0] );
+            std::swap( flags_[1], other.flags_[1] );
+            std::swap( left_,     other.left_ );
+            std::swap( right_,    other.right_ );
+        }
+
+        bool not_empty( ) const
+        {
+            return  has_infinite( )
+                 || (has_open( ) ? cmp::less( left( ), right( ) )
+                                 : cmp::less_equal( left( ), right( ) ) );
+                  ;
+        }
+
+        bool empty( ) const
+        {
+            return !has_infinite( )
+                 && has_open( )
+                 && cmp::equal( left( ), right( ) );
+        }
+
+        bool is_infinite( ) const
+        {
+            return is_minus_inf<endpoint_name::LEFT>( )
+                && is_plus_inf<endpoint_name::RIGHT>( );
+        }
+
+        interval connect_right( const interval &to ) const
+        {
+            return interval( left( ), to.left( ),
+                             flags<endpoint_name::LEFT>( ),
+                             to.connected_flags<endpoint_name::LEFT>( ) );
+        }
+
+        interval connect_left( const interval &to ) const
+        {
+            return interval( to.right( ),  right( ),
+                             to.connected_flags<endpoint_name::RIGHT>( ),
+                             flags<endpoint_name::RIGHT>( ) );
+        }
+
+        void replace_left( const interval &to )
+        {
+            flags_[0] = to.flags_[0];
+            left_     = to.left_;
+        }
+
+        void replace_right( const interval &to )
+        {
+            flags_[1] = to.flags_[1];
+            right_    = to.right_;
+        }
+
+    public: /// factories
+
+        static
+        interval open( value_type lh, value_type rh )
+        {
+            return interval( left_type(std::move(lh)),
+                             right_type(std::move(rh)),
+                             attribute<attributes::OPEN>( ),
+                             attribute<attributes::OPEN>( ) );
+        }
+
+        static
+        interval closed( value_type lh, value_type rh )
+        {
+            return interval( left_type(std::move(lh)),
+                             right_type(std::move(rh)),
+                             attribute<attributes::CLOSE>( ),
+                             attribute<attributes::CLOSE>( ) );
+        }
+
+        static
+        interval degenerate( value_type lh )
+        {
+            value_type rh = lh;
+            return closed( std::move(lh), std::move(rh) );
+        }
+
+        static
+        interval infinite(  )
+        {
+            return interval( typename left_type::default_inf( ),
+                             typename right_type::default_inf( ) );
+        }
+
+        static
+        interval minus_infinite(  )
+        {
+            return interval( typename left_type::template
+                                        inf<attributes::MIN_INF>( ),
+                             typename right_type::template
+                                        inf<attributes::MIN_INF>( ) );
+        }
+
+        static
+        interval plus_infinite(  )
+        {
+            return interval( typename left_type::template
+                                        inf<attributes::MAX_INF>( ),
+                             typename right_type::template
+                                        inf<attributes::MAX_INF>( ) );
+        }
+
+        static
+        interval left_open( value_type val )
+        {
+            return interval( left_type(std::move(val)),
+                             attribute<attributes::OPEN>( ) );
+        }
+
+        static
+        interval left_open( value_type lh, value_type rh )
+        {
+            return interval( left_type(std::move(lh)),
+                             right_type(std::move(rh)),
+                             attribute<attributes::OPEN>( ),
+                             attribute<attributes::CLOSE>( ));
+        }
+
+        static
+        interval right_open( value_type val )
+        {
+            return interval( right_type(std::move(val)),
+                             attribute<attributes::OPEN>( ) );
+        }
+
+        static
+        interval right_open( value_type lh, value_type rh )
+        {
+            return interval( left_type(std::move(lh)),
+                             right_type(std::move(rh)),
+                             attribute<attributes::CLOSE>( ),
+                             attribute<attributes::OPEN>( ));
+        }
+
+        static
+        interval left_closed( value_type val )
+        {
+            return interval( left_type(std::move(val)),
+                             attribute<attributes::CLOSE>( ) );
+        }
+
+        static
+        interval left_closed( value_type lh, value_type rh )
+        {
+            return right_open( std::move(lh), std::move(rh) );
+        }
+
+        static
+        interval right_closed( value_type val )
+        {
+            return interval( right_type(std::move(val)),
+                             attribute<attributes::CLOSE>( ) );
+        }
+
+        static
+        interval right_closed( value_type lh, value_type rh )
+        {
+            return left_open( std::move(lh), std::move(rh) );
+        }
+
+        static
+        interval intersection( const interval &lh, const interval &rh )
+        {
+            return interval( lh.left( ), rh.right( ),
+                             lh.flags<endpoint_name::LEFT>( ),
+                             rh.flags<endpoint_name::RIGHT>( ) );
+        }
+
+    ////// factories
+
+        template <typename Out>
+        Out &out( Out &o ) const
+        {
+            static const char lbracket[2] = { '[', '(' };
+            static const char rbracket[2] = { ']', ')' };
+
+            static const char *minf = "-inf";
+            static const char *pinf = "+inf";
+
+
+            switch ( flags<endpoint_name::LEFT>( ) ) {
+            case attributes::CLOSE:
+                o << lbracket[0] << value<endpoint_name::LEFT>( );
+                break;
+            case attributes::OPEN:
+                o << lbracket[1] << value<endpoint_name::LEFT>( );
+                break;
+            case attributes::MIN_INF:
+                o << lbracket[1] << minf;
+                break;
+            case attributes::MAX_INF:
+                o << lbracket[1] << pinf;
+                break;
             }
 
-            static
-            interval_type minus_infinite( )
-            {
-                return std::move(interval_type( value_type( ), value_type( ),
-                                                SIDE_MIN_INF, SIDE_MIN_INF ) );
+            o << ", ";
+
+            switch ( flags<endpoint_name::RIGHT>( ) ) {
+            case attributes::CLOSE:
+                o << value<endpoint_name::RIGHT>( ) << rbracket[0];
+                break;
+            case attributes::OPEN:
+                o << value<endpoint_name::RIGHT>( ) << rbracket[1];
+                break;
+            case attributes::MIN_INF:
+                o << minf << rbracket[1];
+                break;
+            case attributes::MAX_INF:
+                o  << pinf << rbracket[1];
+                break;
             }
 
-            static
-            interval_type plus_infinite( )
-            {
-                return std::move(interval_type( value_type( ), value_type( ),
-                                                SIDE_MAX_INF, SIDE_MAX_INF ) );
-            }
+            return o;
+        }
 
-            static
-            interval_type open( value_type left, value_type right )
-            {
-                return std::move(interval_type( std::move(left),
-                                                std::move(right),
-                                                SIDE_OPEN, SIDE_OPEN ) );
-            }
-
-            static
-            interval_type closed( value_type left, value_type right )
-            {
-                return std::move(interval_type( std::move(left),
-                                                std::move(right),
-                                                SIDE_CLOSE, SIDE_CLOSE ) );
-            }
-
-            static
-            interval_type degenerate( value_type left )
-            {
-                value_type right = left;
-                return std::move( closed( std::move(left), std::move(right) ) );
-            }
-
-            static
-            interval_type left_open( value_type left )
-            {
-                return interval_type( std::move(left), value_type( ),
-                                      SIDE_OPEN, SIDE_MAX_INF );
-            }
-
-            static
-            interval_type left_open( value_type left, value_type right )
-            {
-                return interval_type( std::move(left), std::move(right),
-                                      SIDE_OPEN, SIDE_CLOSE );
-            }
-
-            static
-            interval_type right_open( value_type right )
-            {
-                return interval_type( value_type( ),
-                                      std::move(right),
-                                      SIDE_MIN_INF, SIDE_OPEN );
-            }
-
-            static
-            interval_type right_open( value_type left, value_type right )
-            {
-                return interval_type( std::move(left), std::move(right),
-                                      SIDE_CLOSE, SIDE_OPEN );
-            }
-
-            static
-            interval_type left_closed( value_type left )
-            {
-                return interval_type( std::move(left), value_type( ),
-                                      SIDE_CLOSE, SIDE_MAX_INF );
-            }
-
-            static
-            interval_type left_closed( value_type left, value_type right  )
-            {
-                return right_open( std::move(left), std::move(right) );
-            }
-
-            static
-            interval_type right_closed( value_type right )
-            {
-                return interval<ValueT>( value_type( ), std::move(right),
-                                         SIDE_MIN_INF, SIDE_CLOSE );
-            }
-
-            static
-            interval_type right_closed( value_type left, value_type right )
-            {
-                return left_open( std::move(left), std::move(right) );
-            }
-
-            static
-            interval_type intersection( const interval_type &lh,
-                                        const interval_type &rh )
-            {
-                return interval_type( lh.left( ),      rh.right( ),
-                                      lh.left_flag( ), rh.right_flag( ) );
-            }
-
-            static
-            interval_type gap( const interval_type &lh,
-                               const interval_type &rh )
-            {
-                return interval_type( lh.right( ),         rh.left( ),
-                                      lh.right_op_flag( ), rh.left_op_flag( ) );
-            }
-
-        };
-
-        struct cmp: public std::binary_function<interval, interval, bool> {
-
-            static
-            value_type &min( value_type &lh, value_type &rh )
-            {
-                return less( lh, rh ) ? lh : rh;
-            }
-
-            static
-            value_type &max( value_type &lh, value_type &rh )
-            {
-                return greater( lh, rh ) ? lh : rh;
-            }
+        struct cmp {
 
             static
             bool less( const value_type &lh, const value_type &rh )
             {
-//                static const std::less<value_type> lesser;
-//                return lesser(lh, rh);
-                return lh < rh;
-            }
-
-            static
-            bool less_equal( const value_type &lh, const value_type &rh )
-            {
-                return cmp::less( lh, rh ) || cmp::equal( lh, rh );
+                const comparator_type compare;
+                return compare( lh, rh );
             }
 
             static
             bool greater( const value_type &lh, const value_type &rh )
             {
-                return cmp::less( rh, lh ); // viceversa
-            }
-
-            static
-            bool greater_equa( const value_type &lh, const value_type &rh )
-            {
-                return cmp::greater( lh, rh ) || equal( lh, rh );
+                return less( rh, lh );
             }
 
             static
             bool equal( const value_type &lh, const value_type &rh )
             {
-                return !cmp::less( lh, rh )
-                    && !cmp::less( rh, lh );
+                return !less(lh, rh) && !less(rh, lh);
+            }
+
+            static
+            bool equal( const interval &lh, const interval &rh )
+            {
+                return cmp::template equal_side<endpoint_name::LEFT>(lh, rh)
+                    && cmp::template equal_side<endpoint_name::RIGHT>(lh, rh)
+                     ;
+            }
+
+            static
+            bool less_equal( const value_type &lh, const value_type &rh )
+            {
+                return less(lh, rh) || equal(lh, rh);
+            }
+
+            static
+            bool greater_equal( const value_type &lh, const value_type &rh )
+            {
+                return greater( lh, rh ) || equal( lh, rh );
+            }
+
+            static
+            bool less_left( const interval &lh, const interval &rh )
+            {
+                using attr = attributes;
+
+                auto lf = lh.factor<endpoint_name::LEFT>( );
+                auto rf = rh.factor<endpoint_name::LEFT>( );
+
+                if( (lf == rf) && ( lf == (attr::CLOSE | attr::OPEN) ) ) {
+                    if( equal( lh.value<endpoint_name::LEFT>( ),
+                               rh.value<endpoint_name::LEFT>( ) ) )
+                    {
+                        return rh.is_close<endpoint_name::LEFT>( ) <
+                               lh.is_close<endpoint_name::LEFT>( );
+                    } else {
+                        return less(lh.value<endpoint_name::LEFT>( ),
+                                    rh.value<endpoint_name::LEFT>( ));
+                    }
+                } else {
+                    return (lf < rf);
+                }
+            }
+
+            template <endpoint_name Side>
+            static
+            bool equal_side( const interval &lh, const interval &rh )
+            {
+                auto lf = lh.factor<Side>( );
+                auto rf = rh.factor<Side>( );
+
+                if( lf == rf ) {
+                    if( lf == (attributes::CLOSE | attributes::OPEN) ) {
+                        return  equal( lh.value<Side>( ), rh.value<Side>( ) )
+                           && ( lh.is_close<Side>( ) == rh.is_close<Side>( ) );
+                    }
+                    return true;
+                }
+                return false;
+            }
+
+            static
+            bool less_right( const interval &lh, const interval &rh )
+            {
+                using AT = attributes;
+                using EP = endpoint_name;
+
+                auto lf = lh.factor<EP::RIGHT>( );
+                auto rf = rh.factor<EP::RIGHT>( );
+
+                if( (lf == rf) && ( lf == (AT::CLOSE | AT::OPEN) ) ) {
+                    if(equal(lh.value<EP::RIGHT>( ),rh.value<EP::RIGHT>( ))) {
+                        return lh.is_close<EP::RIGHT>( ) <
+                               rh.is_close<EP::RIGHT>( );
+                    } else {
+                        return less(lh.value<EP::RIGHT>( ),
+                                    rh.value<EP::RIGHT>( ));
+                    }
+                } else {
+                    return (lf < rf);
+                }
             }
 
             static
             bool less( const interval &lh, const interval &rh )
             {
-                using LS = left_type;
-                using RS = right_type;
-
-                if( lh.is_minus_inf<RS>( ) ) {
-                    return !rh.is_minus_inf<LS>( );
-                } else if( lh.is_plus_inf<RS>( ) || rh.is_minus_inf<LS>( ) ) {
-                    return false;
-                } else if( rh.is_plus_inf<LS>( ) ) {
-                    return true;
-                } else if( lh.is_open<RS>( ) || rh.is_open<LS>( ) ) {
-                    return interval::cmp::less_equal( lh.value<RS>( ),
-                                                      rh.value<LS>( ) );
+                if( equal_side<endpoint_name::LEFT>( lh, rh ) ) {
+                    return less_right( lh, rh );
                 } else {
-                    return interval::cmp::less( lh.value<RS>( ),
-                                                rh.value<LS>( ) );
+                    return less_left( lh, rh );
                 }
             }
 
             bool operator ( )( const interval &lh, const interval &rh ) const
             {
-                return cmp::less( lh, rh );
-            }
-
-            bool operator ( )( const value_type &lh,
-                               const value_type &rh ) const
-            {
-                return cmp::less( lh, rh );
+                return less( lh, rh );
             }
         };
 
-        template <side_name Side>
-        class side_access {
-
-            using info = side_info<Side>;
-
-        public:
-
-            side_access( const interval *parent )
-                :parent_(parent)
-            { }
-
-            bool is_minus_inf( ) const noexcept
-            {
-                return parent_->template is_minus_inf<info>( );
-            }
-
-            bool is_plus_inf( ) const noexcept
-            {
-                return parent_->template is_plus_inf<info>( );
-            }
-
-            bool is_open( ) const noexcept
-            {
-                return parent_->template is_open<info>( );
-            }
-
-            bool is_close( ) const noexcept
-            {
-                return parent_->template is_close<info>( );
-            }
-
-            const value_type &value( ) const
-            {
-                return parent_->template value<info>( );
-            }
-
-            const std::uint16_t &flags( ) const
-            {
-                return parent_->template flag<info>( );
-            }
+        struct cmp_not_overlap {
 
         private:
 
-            const interval *parent_;
-        };
-
-    public:
-
-        using left_type  = side_info<side_name::LEFT>;
-        using right_type = side_info<side_name::RIGHT>;
-
-        interval             ( )                    = default;
-        interval             ( const interval & )   = default;
-        interval &operator = ( const interval & )   = default;
-        interval             ( interval && )        = default;
-        interval& operator = ( interval && )        = default;
-
-#if 1
-        interval( value_type b, value_type e )
-        {
-            sides_[LEFT_SIDE]       = std::move(b);
-            sides_[RIGHT_SIDE]      = std::move(e);
-            flags_.u.lr[LEFT_SIDE]  = SIDE_CLOSE;
-            flags_.u.lr[RIGHT_SIDE] = SIDE_OPEN;
-        }
-
-        interval( value_type b, value_type e,
-                 std::uint16_t lf, std::uint16_t rf)
-            :flags_(lf, rf)
-        {
-            sides_[LEFT_SIDE]  = std::move(b);
-            sides_[RIGHT_SIDE] = std::move(e);
-        }
-
-        bool valid( ) const
-        {
-            return has_inf( ) || cmp::less_equal( left( ), right( ) );
-        }
-
-#else
-        interval( value_type b, value_type e )
-        {
-            if( cmp::less( b, e ) ) {
-                sides_[LEFT_SIDE]  = std::move(b);
-                sides_[RIGHT_SIDE] = std::move(e);
-            } else {
-                sides_[LEFT_SIDE]  = std::move(e);
-                sides_[RIGHT_SIDE] = std::move(b);
+            static
+            bool degen( const interval &ival )
+            {
+                return ival.is_close<endpoint_name::LEFT>( )
+                    && ival.is_close<endpoint_name::RIGHT>( )
+                    && cmp::equal( ival.left( ), ival.right( ) );
             }
 
-            flags.u.lr[LEFT_SIDE] = SIDE_CLOSE;
-            flags.u.lr[RIGHT_SIDE] = SIDE_OPEN;
-        }
-
-        interval( value_type b, value_type e,
-                 std::uint16_t lf, std::uint16_t rf)
-            :flags(lf, rf)
-        {
-            if( cmp::less( b, e ) ) {
-                sides_[LEFT_SIDE]  = std::move(b);
-                sides_[RIGHT_SIDE] = std::move(e);
-            } else {
-                sides_[LEFT_SIDE]  = std::move(e);
-                sides_[RIGHT_SIDE] = std::move(b);
+            static
+            bool empty( const interval &ival )
+            {
+                return ival.empty( );
             }
-            flags.u.lr[LEFT_SIDE]  = lf;
-            flags.u.lr[RIGHT_SIDE] = rf;
-        }
 
-        constexpr
-        bool valid( ) const noexcept
-        {
-            return true;
-        }
-#endif
+        public:
 
-//        template <typename SideT>
-//        side_info side( ) const
-//        {
-//            side_info( value<SideT>( ), flags<SideT>( ) );
-//        }
+            static
+            bool equal_empty( const interval &lh, const interval &rh )
+            {
+                return (lh.empty( ) && rh.empty( ) &&
+                        cmp::equal( lh.left( ), rh.left( ) ) );
+            }
 
-        template <typename SideT>
-        bool is_minus_inf( ) const noexcept
-        {
-            return flags_.u.lr[SideT::side] == SIDE_MIN_INF;
-        }
+            static
+            bool less( const interval &lh, const interval &rh )
+            {
 
-        template <typename SideT>
-        bool is_plus_inf( ) const noexcept
-        {
-            return flag<SideT>( ) == SIDE_MAX_INF;
-        }
+                using EN = endpoint_name;
+                using AT = attributes;
 
-        template <typename SideT>
-        bool is_open( ) const noexcept
-        {
-            return flag<SideT>( ) == SIDE_OPEN;
-        }
+                //// very special cases
+                switch ( rh.flags<EN::LEFT>( ) ) {
+                case attributes::MAX_INF:
+                    return lh.flags<EN::RIGHT>( ) != AT::MAX_INF;
+                case attributes::MIN_INF:
+                    return false;
+                case attributes::OPEN:
+                case attributes::CLOSE:
+                    break;
+                }
 
-        template <typename SideT>
-        bool is_close( ) const noexcept
-        {
-            return flag<SideT>( ) == SIDE_CLOSE;
-        }
+                switch ( lh.flags<EN::RIGHT>( ) ) {
+                case attributes::MIN_INF: /// we have already checked right flag
+                    return true;
+                case attributes::MAX_INF:
+                    return false;
+                case attributes::OPEN:
+                case attributes::CLOSE:
+                    break;
+                }
 
-        template <typename SideT>
-        const value_type &value( ) const
-        {
-            return sides_[SideT::side];
-        }
+                bool empty_left  = false;
+                bool empty_right = false;
 
-        template <typename SideT>
-        std::uint16_t flag( ) const
-        {
-            return flags_.u.lr[SideT::side];
-        }
+                if( equal_empty( lh, rh ) ) {
+                    return false;
+                } else if( (empty_left = empty( lh )) && degen(rh) ) {
+                    return cmp::less_equal( lh.value<EN::RIGHT>( ),
+                                            rh.value<EN::LEFT>( ) );
+                } else if( (empty_right = empty( rh )) && degen(lh) ) {
+                    return cmp::less( lh.value<EN::RIGHT>( ),
+                                      rh.value<EN::LEFT>( ) );
+                }
 
-        template <typename SideT>
-        std::uint16_t op_flag( ) const
-        {
-            auto f = flag<SideT>( );
-            /// swap open/close
-            switch (f) {
-            case SIDE_CLOSE: return SIDE_OPEN;
-            case SIDE_OPEN:  return SIDE_CLOSE;
-            };
+                //// end of "very special cases"
 
-            return f;
-        }
+                bool or_empty = empty_right || empty_left;
 
-        template <typename SideT>
-        void set_flag( std::uint16_t f )
-        {
-            flags_.u.lr[SideT::side] = f;
-        }
-
-        void set_left_flag( std::uint16_t f )
-        {
-            set_flag<left_type>( f );
-        }
-
-        void set_right_flag( std::uint16_t f )
-        {
-            set_flag<right_type>( f );
-        }
-
-        bool has_inf( ) const noexcept
-        {
-            return (flag<left_type>( )  == SIDE_MIN_INF)
-                || (flag<left_type>( )  == SIDE_MAX_INF)
-
-                || (flag<right_type>( ) == SIDE_MIN_INF)
-                || (flag<right_type>( ) == SIDE_MAX_INF)
-                 ;
-        }
-
-        bool is_minus_inf( ) const noexcept
-        {
-            return (left_flag( )  == SIDE_MIN_INF)
-                && (right_flag( ) == SIDE_MIN_INF)
-                 ;
-        }
-
-        bool is_max_inf( ) const noexcept
-        {
-            return (left_flag( )  == SIDE_MIN_INF)
-                && (right_flag( ) == SIDE_MAX_INF)
-                 ;
-        }
-
-        bool is_plus_inf( ) const noexcept
-        {
-            return (left_flag( )  == SIDE_MAX_INF)
-                && (right_flag( ) == SIDE_MAX_INF)
-                 ;
-        }
-
-        bool is_side_inf( ) const noexcept
-        {
-            return is_minus_inf( ) || is_plus_inf( );
-        }
-
-        std::uint16_t right_flag( ) const noexcept
-        {
-            return flag<right_type>( );
-        }
-
-        std::uint16_t right_op_flag( ) const noexcept
-        {
-            return op_flag<right_type>( );
-        }
-
-        bool is_right_close( ) const noexcept
-        {
-            return right_flag( ) == SIDE_CLOSE;
-        }
-
-        bool is_right_inf( ) const noexcept
-        {
-            return right_flag( ) == SIDE_MAX_INF;
-        }
-
-        std::uint16_t left_flag( ) const noexcept
-        {
-            return flag<left_type>( );
-        }
-
-        std::uint16_t left_op_flag( ) const noexcept
-        {
-            return op_flag<left_type>( );
-        }
-
-        bool is_left_close( ) const noexcept
-        {
-            return left_flag( ) == SIDE_CLOSE;
-        }
-
-        bool is_left_inf( ) const noexcept
-        {
-            return left_flag( ) == SIDE_MIN_INF;
-        }
-
-        bool is_both_close( ) const noexcept
-        {
-            return ( left_flag( )  == SIDE_CLOSE )
-                && ( right_flag( ) == SIDE_CLOSE );
-        }
-
-        bool is_both_open( ) const noexcept
-        {
-            return ( left_flag( )  == SIDE_OPEN )
-                && ( right_flag( ) == SIDE_OPEN );
-        }
-
-        bool left_connected( const interval &ol ) const noexcept
-        {
-            return cmp::equal( left( ), ol.right( ) )
-                && (is_left_close( ) || ol.is_right_close( )) ;
-        }
-
-        bool right_connected( const interval &ol ) const noexcept
-        {
-            return ol.left_connected( *this );
-        }
-
-        bool contain( const value_type &k ) const noexcept
-        {
-            if( is_side_inf( ) ) {
+                switch ( lh.flags<EN::RIGHT>( ) ) {
+                case attributes::OPEN:
+                    return cmp::less_equal( lh.value<EN::RIGHT>( ),
+                                            rh.value<EN::LEFT>( ) )
+                         ;
+                case attributes::CLOSE:
+                    return (or_empty || rh.is_open<EN::LEFT>( ))
+                         ? cmp::less_equal( lh.value<EN::RIGHT>( ),
+                                            rh.value<EN::LEFT>( ) )
+                         :       cmp::less( lh.value<EN::RIGHT>( ),
+                                            rh.value<EN::LEFT>( ) )
+                         ;
+                case attributes::MIN_INF: /// we have already checked right flag
+                case attributes::MAX_INF:
+                    break;
+                }
                 return false;
             }
 
-            bool bleft = is_left_inf( )
-                    || ( is_left_close( )
-                       ? cmp::greater_equa( k, left( ) )
-                       : cmp::greater( k, left( ) ) );
-
-            if( bleft ) {
-                bool bright = is_right_inf( )
-                         || ( is_right_close( )
-                            ? cmp::less_equal( k, right( ) )
-                            : cmp::less( k, right( ) ) );
-                return bright;
-            }
-            return false;
-        }
-
-        const value_type &left( ) const
-        {
-            return value<left_type>( );
-        }
-
-        const value_type &right( ) const
-        {
-            return value<right_type>( );
-        }
-
-        std::ostream &out( std::ostream &oss ) const
-        {
-            static const char lbracket[2] = { '(', '[' };
-            static const char rbracket[2] = { ')', ']' };
-
-            static const char *minf = "-inf";
-            static const char *pinf = "+inf";
-
-            oss << lbracket[is_left_close( )];
-
-            if( left_flag( ) == SIDE_MIN_INF ) {
-                oss << minf;
-            } else if( left_flag( ) == SIDE_MAX_INF ) {
-                oss << pinf;
-            } else {
-                oss << left( );
+            bool operator ( )( const interval &lh, const interval &rh ) const
+            {
+                return less( lh, rh );
             }
 
-            oss << ", ";
+        };
 
-            if( right_flag( ) == SIDE_MIN_INF ) {
-                oss << minf;
-            } else if( right_flag( ) == SIDE_MAX_INF ) {
-                oss << pinf;
-            } else {
-                oss << right( );
-            }
+    private:
 
-            oss << rbracket[is_right_close( )];
-            return oss;
+        friend struct cmp;
+        friend struct cmp_not_overlap;
+
+        template <endpoint_name Side>
+        bool is_close( ) const
+        {
+            using S = endpoint_type<value_type, Side>;
+            return ( flags_[S::id] == attributes::CLOSE );
         }
 
-        std::string to_string(  ) const
+        template <endpoint_name Side>
+        bool is_open( ) const
         {
-            std::ostringstream oss;
-            out(oss);
-            return oss.str( );
+            using S = endpoint_type<value_type, Side>;
+            return ( flags_[S::id] == attributes::OPEN );
         }
 
-        value_type length( ) const
+        bool has_infinite( ) const
         {
-            return right( ) - left( );
+            return ( ( flags<endpoint_name::LEFT>( )
+                     | flags<endpoint_name::RIGHT>( ) )
+                   & (attributes::MIN_INF | attributes::MAX_INF) ) != 0;
+                 ;
         }
 
-        bool invalid( ) const noexcept
+        bool has_open( ) const
         {
-            return !valid( );
+            return is_open<endpoint_name::LEFT> ( )
+                || is_open<endpoint_name::RIGHT>( )
+                 ;
         }
 
-        bool empty( ) const noexcept
+        template <endpoint_name Side>
+        bool is_any_inf( ) const
         {
-            return !has_inf( )
-                && ( cmp::equal( right( ), left( ) ) && !is_both_close( ) );
+            return is_minus_inf<Side>( )
+                || is_plus_inf<Side>( );
         }
 
-        bool intersected( const interval &other ) const noexcept
+        template <endpoint_name Side>
+        bool is_minus_inf( ) const
         {
-            return intersected(*this, other);
+            using S = endpoint_type<value_type, Side>;
+            return ( flags_[S::id] == attributes::MIN_INF );
         }
 
-        static
-        bool intersected( const interval &lh, const interval &rh ) noexcept
+        template <endpoint_name Side>
+        bool is_plus_inf( ) const
         {
-            cmp c;
-            return !c(lh, rh) && !c(rh, lh);
+            using S = endpoint_type<value_type, Side>;
+            return ( flags_[S::id] == attributes::MAX_INF );
         }
 
-        bool contains_left( const interval &rhi ) const
+        template <endpoint_name Side>
+        const value_type &value( ) const
         {
-            using LS = left_type;
-            bool res = false;
-
-            /// LEFT point is placed right
-            if( is_minus_inf<LS>( ) ) {
-                res = rhi.is_minus_inf<LS>( );
-            } else if( is_plus_inf<LS>( ) ) {
-                res = rhi.is_plus_inf<LS>( );
-            }
-
-            if( !res ) {
-                res = contain( rhi.left( ) );
-            }
-
-            return res;
+            using S = endpoint_type<int, Side>;
+            return value( typename S::pointer( ) ) ;
         }
 
-        bool contains_right( const interval &rhi ) const
+        const value_type &value( endpoint_type<int,
+                                 endpoint_name::LEFT>::pointer ) const
         {
-            using RS = right_type;
-            bool res = false;
-
-            /// RIGHT point is placed right
-            if( is_minus_inf<RS>( ) ) {
-                res = rhi.is_minus_inf<RS>( );
-            } else if( is_plus_inf<RS>( ) ) {
-                res = rhi.is_plus_inf<RS>( );
-            }
-
-            if( !res ) {
-                res = contain( rhi.right( ) );
-            }
-
-            return res;
+            return left_;
         }
 
-        static
-        std::pair<bool, bool> intersections( const interval &lhi,
-                                             const interval &rhi )
+        const value_type &value( endpoint_type<int,
+                                 endpoint_name::RIGHT>::pointer ) const
         {
-            return std::make_pair( lhi.contains_left( rhi ),
-                                   lhi.contains_right( rhi ) );
+            return right_;
+        }
+
+        template <endpoint_name Side>
+        const attributes &flags( ) const
+        {
+            using S = endpoint_type<value_type, Side>;
+            return flags_[S::id];
         }
 
     private:
-        struct flags_value {
 
-            union {
-                std::uint32_t all;
-                std::uint16_t lr[2] = { 0, 0};
-            } u;
+        template <endpoint_name Side>
+        value_type &&mv_value( )
+        {
+            using S = endpoint_type<int, Side>;
+            return mv_value(typename S::pointer( ));
+        }
 
-            flags_value( ) = default;
-            flags_value( std::uint16_t l, std::uint16_t r )
-            {
-                u.lr[0] = l;
-                u.lr[1] = r;
+        value_type &&mv_value( endpoint_type<int,
+                               endpoint_name::LEFT>::pointer )
+        {
+            return std::move(left_);
+        }
+
+        value_type &&mv_value( endpoint_type<int,
+                               endpoint_name::RIGHT>::pointer )
+        {
+            return std::move(right_);
+        }
+
+        value_type &&mv_left( )
+        {
+            return mv_value<endpoint_name::LEFT>( );
+        }
+
+        value_type &&mv_right( )
+        {
+            return mv_value<endpoint_name::RIGHT>( );
+        }
+
+        template <endpoint_name Side>
+        bool is_less_equal( const value_type &val ) const
+        {
+            using V = endpoint_type<int, Side>;
+            using ptr = typename V::pointer;
+            const ptr p;
+            return is_close<Side>( )
+                 ? cmp::less_equal( val, value( p ) )
+                 : cmp::less( val, value( p ) )
+                 ;
+        }
+
+        template <endpoint_name Side>
+        bool is_greater_equal( const value_type &val ) const
+        {
+            using V = endpoint_type<int, Side>;
+            using ptr = typename V::pointer;
+            const ptr p;
+            return is_close<Side>( )
+                 ? cmp::greater_equal( val, value( p ) )
+                 : cmp::greater( val, value( p ) )
+                 ;
+        }
+
+        template <endpoint_name Side>
+        bool contains_side( const interval &other ) const
+        {
+            bool bleft  = false;
+
+            if( other.is_minus_inf<Side>( ) ) {
+                bleft = false; //is_minus_inf<Side>( );
+            } else if( other.is_plus_inf<Side>( ) ) {
+                bleft = false; //is_plus_inf<Side>( );
+            } else {
+                bleft = contains( other.value<Side>( ) );
+                if( !bleft ) {
+                    bleft = other.is_open<Side>( )
+                       && is_open<Side>( )
+                       && cmp::equal( value<Side>( ), other.value<Side>( ) );
+                }
             }
-        };
+            return bleft;
+        }
 
-        value_type      sides_[2];
-        flags_value     flags_;
+        template <endpoint_name Side>
+        bool connected( const interval &other ) const
+        {
+            using Opp = typename endpoint_type<value_type, Side>::opposite;
+
+            if( is_any_inf<Side>( ) || other.is_any_inf<Opp::name>( ) ) {
+                return false;
+            } else {
+                bool eq = cmp::equal( value<Side>( ),
+                                      other.value<Opp::name>( ) );
+                if( eq ) {
+                    return empty( )
+                        || other.empty( )
+                        || (flags<Side>( ) ==
+                            other.connected_flags<Opp::name>( ));
+                }
+                return false;
+            }
+        }
+
+        template <endpoint_name Side>
+        attributes connected_flags( ) const
+        {
+            auto f = flags<Side>( );
+            switch( f ){
+
+            case attributes::CLOSE: return attributes::OPEN;
+            case attributes::OPEN:  return attributes::CLOSE;
+
+            case attributes::MIN_INF:
+            case attributes::MAX_INF:
+                break;
+            }
+            return f;
+        }
+
+        template <endpoint_name Side>
+        attributes factor( ) const
+        {
+            auto f = flags<Side>( );
+            switch( f ) {
+            case attributes::OPEN:
+            case attributes::CLOSE:
+                return attributes::OPEN | attributes::CLOSE;
+
+            case attributes::MIN_INF:
+            case attributes::MAX_INF:
+                break;
+            }
+            return  f;
+        }
+
+    //    template <endpoint_name Side>
+    //    std::uint16_t &flags( )
+    //    {
+    //        using S = endpoint_type<value_type, Side>;
+    //        return flags_[S::id];
+    //    }
+
+    private:
+        value_type left_  { };
+        value_type right_ { };
+        attributes flags_[2];
     };
 
-    template <typename ValueT>
+    template <typename ValueT, typename Comparator>
     inline
-    std::ostream & operator << ( std::ostream &o, const interval<ValueT> &val )
+    bool operator < ( const interval<ValueT, Comparator> &lh,
+                      const interval<ValueT, Comparator> &rh )
     {
-        return val.out(o);
+        using Ival = interval<ValueT, Comparator>;
+        return Ival::cmp::less( lh, rh );
+    }
+
+    template <typename ValueT, typename Comparator>
+    inline
+    std::ostream &operator << ( std::ostream &o,
+                                const interval<ValueT, Comparator> &val )
+    {
+        return val.out( o );
     }
 
 }}

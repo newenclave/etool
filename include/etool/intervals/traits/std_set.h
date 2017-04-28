@@ -1,118 +1,60 @@
-#ifndef ETOOL_INTERVALS_STD_SET_H
-#define ETOOL_INTERVALS_STD_SET_H
+#ifndef ETOOL_INTERVALS_TRAITS_STD_SET_H
+#define ETOOL_INTERVALS_TRAITS_STD_SET_H
 
 #include <set>
 #include "etool/intervals/interval.h"
 
 namespace etool { namespace intervals { namespace traits {
 
-    template <typename KeyT>
+    template <typename ValueT, typename Comparator>
     struct std_set {
-
-        using key            = KeyT;
-        using position       = intervals::interval<key>;
-        using container      = std::set<position, typename position::cmp>;
-
-        using iterator       = typename container::iterator;
-        using const_iterator = typename container::const_iterator;
+        using interval_type     = interval<ValueT, Comparator>;
+        using value_type        = interval_type;
+        using set_cmp           = typename interval_type::cmp_not_overlap;
+        using container_type    = std::set<interval_type, set_cmp>;
+        using iterator          = typename container_type::iterator;
+        using const_iterator    = typename container_type::const_iterator;
 
         struct iterator_access {
 
-            template <typename IterT>
-            static constexpr
-            const position *get( IterT &itr )
+            static
+            const interval_type &key( const_iterator itr )
             {
-                return &(*itr);
+                return *itr;
+            }
+
+            static
+            const interval_type &key( const value_type &val )
+            {
+                return val;
+            }
+
+            static
+            interval_type &mutable_key( value_type &val )
+            {
+                return val;
+            }
+
+            static
+            void copy( value_type &, const value_type & )
+            {
+                //to = from;
+            }
+
+            static
+            const value_type &val( const_iterator itr )
+            {
+                return *itr;
+            }
+
+            static
+            value_type &mutable_val( iterator itr )
+            {
+                return *itr;
             }
         };
-
-        static
-        iterator begin( container &c )
-        {
-            return c.begin( );
-        }
-
-        static
-        const_iterator cbegin( const container &c )
-        {
-            return c.begin( );
-        }
-
-        static
-        iterator end( container &c )
-        {
-            return c.end( );
-        }
-
-        static
-        const_iterator cend( const container &c )
-        {
-            return c.end( );
-        }
-
-        static
-        size_t size( const container &c )
-        {
-            return c.size( );
-        }
-
-        static
-        void clear( container &c )
-        {
-            c.clear( );
-        }
-
-        static
-        iterator upper_bound( container &c, const position &p )
-        {
-            return c.upper_bound( p );
-        }
-
-        static
-        const_iterator upper_bound( const container &c, const position &p )
-        {
-            return c.upper_bound( p );
-        }
-
-        static
-        iterator lower_bound( container &c, const position &p )
-        {
-            return c.lower_bound( p );
-        }
-
-        static
-        const_iterator lower_bound( const container &c, const position &p )
-        {
-            return c.lower_bound( p );
-        }
-
-        static
-        iterator erase( container &c, const_iterator from, const_iterator to )
-        {
-            return c.erase( from, to );
-        }
-
-        static
-        iterator erase( container &c, const_iterator from )
-        {
-            return c.erase( from );
-        }
-
-        static
-        iterator insert( container &c, position p )
-        {
-            return c.emplace( std::move(p) ).first;
-        }
-
-        static
-        iterator insert_hint( container &c, iterator h, position p )
-        {
-            return c.emplace_hint( h, std::move(p) );
-        }
-
     };
 
 }}}
-
 
 #endif // STD_SET_H

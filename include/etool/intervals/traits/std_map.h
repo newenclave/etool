@@ -6,112 +6,55 @@
 
 namespace etool { namespace intervals { namespace traits {
 
-    template <typename KeyT, typename ValueT>
+    template <typename KeyT, typename ValueT, typename Comparator>
     struct std_map {
 
-        using key       = KeyT;
-        using value     = ValueT;
-        using position  = intervals::interval<key>;
-        using container = std::map<position, value, typename position::cmp>;
-
-        using iterator       = typename container::iterator;
-        using const_iterator = typename container::const_iterator;
+        using interval_type     = interval<ValueT, Comparator>;
+        using map_cmp           = typename interval_type::cmp_not_overlap;
+        using container_type    = std::map<interval_type, ValueT, map_cmp>;
+        using value_type        = typename container_type::value_type;
+        using iterator          = typename container_type::iterator;
+        using const_iterator    = typename container_type::const_iterator;
 
         struct iterator_access {
-            template <typename IterT>
+
             static
-            const position *get( IterT itr )
+            const interval_type &key( const_iterator itr )
             {
-                return &itr->first;
+                return itr->first;
+            }
+
+            static
+            const interval_type &key( const value_type &val )
+            {
+                return val.first;
+            }
+
+            static
+            interval_type &mutable_key( value_type &val )
+            {
+                return const_cast<interval_type &>(val.first);
+            }
+
+            static
+            void copy( value_type &to, const value_type &from )
+            {
+                to.second = from.second;
+            }
+
+            static
+            const value_type &val( const_iterator itr )
+            {
+                return *itr;
+            }
+
+            static
+            value_type &mutable_val( iterator itr )
+            {
+                return *itr;
             }
         };
-
-        static
-        iterator begin( container &c )
-        {
-            return c.begin( );
-        }
-
-        static
-        const_iterator cbegin( const container &c )
-        {
-            return c.begin( );
-        }
-
-        static
-        iterator end( container &c )
-        {
-            return c.end( );
-        }
-
-        static
-        const_iterator cend( const container &c )
-        {
-            return c.end( );
-        }
-
-        static
-        size_t size( const container &c )
-        {
-            return c.size( );
-        }
-
-        static
-        void clear( container &c )
-        {
-            c.clear( );
-        }
-
-        static
-        iterator upper_bound( container &c, const position &p )
-        {
-            return c.upper_bound( p );
-        }
-
-        static
-        const_iterator upper_bound( const container &c, const position &p )
-        {
-            return c.upper_bound( p );
-        }
-
-        static
-        iterator lower_bound( container &c, const position &p )
-        {
-            return c.lower_bound( p );
-        }
-
-        static
-        const_iterator lower_bound( const container &c, const position &p )
-        {
-            return c.lower_bound( p );
-        }
-
-        static
-        iterator erase( container &c, iterator from, iterator to )
-        {
-            return c.erase( from, to );
-        }
-
-        static
-        iterator erase( container &c, const_iterator from )
-        {
-            return c.erase( from );
-        }
-
-        static
-        iterator insert( container &c, position p, value v )
-        {
-            return c.emplace(std::make_pair(std::move(p), std::move(v))).first;
-        }
-
-        static
-        iterator insert_hint( container &c, iterator h, position p, value v )
-        {
-//            return insert( c, std::move(p), std::move(v) );
-            return c.emplace_hint( h, std::move(p), std::move(v) );
-        }
     };
 
 }}}
-
 #endif // STD_MAP_H
