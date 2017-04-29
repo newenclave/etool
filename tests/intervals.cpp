@@ -54,15 +54,28 @@ SCENARIO( "MAP" ) {
                 std::uniform_int_distribution<std::uint64_t>
                                    ud( 0, 0xFFFFFFFFFFFFFFFF );
 
-                ival_map::iterator f[ ] = {
-                    im.find( ud( rd ) ),
-                    im.find( ud( rd ) ),
-                    im.find( ud( rd ) ),
-                    im.find( ud( rd ) ),
+                std::uint64_t values[ ] = {
+                    ud( rd ), ud( rd ), ud( rd ), ud( rd ),
                 };
+
+                ival_map::iterator f[ ] = {
+                    im.find( values[0] ),
+                    im.find( values[1] ),
+                    im.find( values[2] ),
+                    im.find( values[3] ),
+                };
+
                 for( auto i = 0; i<countof(f); ++i ) {
+                    INFO("Check: " << values[i] );
                     REQUIRE( f[i] != im.end( ) );
                     REQUIRE( f[i]->second == "!" );
+                }
+            }
+            WHEN( "insert some value to the map" ) {
+                auto some_value = ival_type::left_closed( 100, 1000 );
+                im.insert( std::make_pair( some_value, "@") );
+                THEN( "it splis the map into 3 parts" ) {
+                    REQUIRE( im.size( ) == 3 );
                 }
             }
         }
