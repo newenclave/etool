@@ -17,20 +17,23 @@ namespace etool { namespace intervals {
             bool _( ) const { return b[0]; }
         };
 
-        template<typename T, typename Arg>
-        no_type operator == ( const T&, const Arg& );
+        namespace equal {
 
-        bool check(...);
-        no_type& check( const no_type& );
+            template<typename T, typename Arg>
+            no_type operator == ( const T&, const Arg& );
 
-        template <typename T, typename Arg = T>
-        struct equal_exists {
-            enum { value = ( sizeof( check( *reinterpret_cast<T*>(0) ==
-                                            *reinterpret_cast<Arg*>(0) )
-                                   ) != sizeof( no_type )
-                           )
-                 };
-        };
+            bool check(...);
+            no_type& check( const no_type& );
+
+            template <typename T, typename Arg = T>
+            struct exists {
+                enum { value = ( sizeof( check( *reinterpret_cast<T*>( 0 ) ==
+                                                *reinterpret_cast<Arg*>( 0 ) )
+                                       ) != sizeof( no_type )
+                               )
+                     };
+            };
+        }
 
         template <typename ValueT, typename Comparator, bool>
         struct cmp_value;
@@ -70,7 +73,7 @@ namespace etool { namespace intervals {
         template <typename ValueT, typename Comparator>
         using cmp = cmp_value< ValueT,
                                Comparator,
-                               equal_exists<ValueT>::value>;
+                               equal::exists<ValueT>::value>;
 
     }
 
