@@ -3,6 +3,8 @@
 
 #include <algorithm>
 #include <functional>
+#include <sstream>
+
 #include "etool/intervals/attributes.h"
 #include "etool/intervals/endpoint_type.h"
 
@@ -394,6 +396,13 @@ namespace etool { namespace intervals {
         }
 
     ////// factories
+
+        std::string to_string( ) const
+        {
+            std::ostringstream oss;
+            out(oss);
+            return oss.str( );
+        }
 
         template <typename Out>
         Out &out( Out &o ) const

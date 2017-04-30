@@ -275,7 +275,7 @@ namespace etool { namespace intervals {
 
         }
 
-        iterator cut_impl( key_type ival )
+        iterator cut_impl( const key_type &ival )
         {
             using I  = iterator_access;
             using CT = container_type;
