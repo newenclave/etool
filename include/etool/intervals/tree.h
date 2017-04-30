@@ -196,15 +196,15 @@ namespace etool { namespace intervals {
 
         iterator merge_impl( value_type ival )
         {
+            using I  = iterator_access;
+            using CT = container_type;
+
 #ifdef DEBUG
-            if( !ival.valid( ) ) {
+            if( !I::key(ival).valid( ) ) {
                 throw std::logic_error( "Merge. Invalid value." );
                 return cont_.end( );
             }
 #endif
-
-            using I  = iterator_access;
-            using CT = container_type;
 
             if( I::key(ival).is_infinite( ) ) {
                 container_type tmp;
@@ -277,14 +277,14 @@ namespace etool { namespace intervals {
 
         iterator cut_impl( key_type ival )
         {
+            using I  = iterator_access;
+            using CT = container_type;
 #ifdef DEBUG
-            if( !ival.valid( ) ) {
+            if( !I::key(ival).valid( ) ) {
                 throw std::logic_error( "Cut. Invalid value." );
                 return cont_.end( );
             }
 #endif
-            using I  = iterator_access;
-            using CT = container_type;
 
             if( ival.is_infinite( ) ) {
                 container_type tmp;
