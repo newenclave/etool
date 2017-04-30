@@ -10,6 +10,70 @@
 
 namespace etool { namespace intervals {
 
+    namespace op {
+
+        class no_type {
+            bool b[2];
+            bool _( ) const { return b[0]; }
+        };
+
+        template<typename T, typename Arg>
+        no_type operator == ( const T&, const Arg& );
+
+        bool check(...);
+        no_type& check( const no_type& );
+
+        template <typename T, typename Arg = T>
+        struct equal_exists {
+            enum { value = ( sizeof( check( *reinterpret_cast<T*>(0) ==
+                                            *reinterpret_cast<Arg*>(0) )
+                                   ) != sizeof( no_type )
+                           )
+                 };
+        };
+
+        template <typename ValueT, typename Comparator, bool>
+        struct cmp_value;
+
+        template <typename ValueT, typename Comparator>
+        struct cmp_value<ValueT, Comparator, true> {
+            static
+            bool less( const ValueT &lh, const ValueT &rh )
+            {
+                const Comparator compare;
+                return compare( lh, rh );
+            }
+
+            static
+            bool equal( const ValueT &lh, const ValueT &rh )
+            {
+                return lh == rh;
+            }
+        };
+
+        template <typename ValueT, typename Comparator>
+        struct cmp_value<ValueT, Comparator, false> {
+            static
+            bool less( const ValueT &lh, const ValueT &rh )
+            {
+                const Comparator compare;
+                return compare( lh, rh );
+            }
+
+            static
+            bool equal( const ValueT &lh, const ValueT &rh )
+            {
+                return !less( lh, rh ) && !less( rh, lh );
+            }
+        };
+
+        template <typename ValueT, typename Comparator>
+        using cmp = cmp_value< ValueT,
+                               Comparator,
+                               equal_exists<ValueT>::value>;
+
+    }
+
     template <typename ValueT, typename Comparator = std::less<ValueT> >
     class interval {
 
@@ -460,11 +524,12 @@ namespace etool { namespace intervals {
 
         struct cmp {
 
+            using op_cmp = op::cmp<value_type, Comparator>;
+
             static
             bool less( const value_type &lh, const value_type &rh )
             {
-                const comparator_type compare;
-                return compare( lh, rh );
+                return op_cmp::less(lh, rh);
             }
 
             static
@@ -476,7 +541,7 @@ namespace etool { namespace intervals {
             static
             bool equal( const value_type &lh, const value_type &rh )
             {
-                return !less(lh, rh) && !less(rh, lh);
+                return op_cmp::equal( lh, rh );
             }
 
             static

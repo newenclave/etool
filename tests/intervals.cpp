@@ -119,7 +119,16 @@ TEST_CASE( "SET", "[set]") {
         is.insert(ival_type::infinite( ));
         is.insert(ival_type::left_closed( 0, 0 ));
         REQUIRE( is.size( ) == 3 );
+        REQUIRE( is.find(ival_type::left_open( 0, 0 )) != is.end( ) );
         REQUIRE( is.find(ival_type::left_closed( 0, 0 )) != is.end( ) );
+    }
+
+    SECTION( "empty interval can be cut" ) {
+        is.insert(ival_type::infinite( ));
+        is.cut(ival_type::left_closed( 0, 0 ));
+        REQUIRE( is.size( ) == 2 );
+        REQUIRE( is.find(ival_type::left_open( 0, 0 )) == is.end( ) );
+        REQUIRE( is.find(ival_type::left_closed( 0, 0 )) == is.end( ) );
     }
 
 }
