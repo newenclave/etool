@@ -24,20 +24,34 @@ struct my_int {
 
 bool operator < (my_int lh, my_int rh)
 {
+    std::cout << "less\n";
     return lh.i < rh.i;
 }
 
 //bool operator == (my_int lh, my_int rh)
 //{
+//    std::cout << "eq\n";
 //    return lh.i == rh.i;
 //}
+
+//bool operator <= (my_int lh, my_int rh)
+//{
+//    std::cout << "ls eq\n";
+//    return lh.i <= rh.i;
+//}
+
 
 int main0(  int argc, char* argv[ ] )
 {
     using check_type = my_int;
     using ival = intervals::interval<check_type>;
 
-    ival::cmp::equal( ival::degenerate(10), ival::degenerate( 100 ) );
+    std::cout << ival::cmp::greater_equal( my_int(10), my_int(10) )
+              << "\n";
+    std::cout << ival::cmp::greater_equal( my_int(100), my_int(10) )
+              << "\n";
+    std::cout << ival::cmp::greater_equal( my_int(1), my_int(10) )
+              << "\n";
 
     return 0;
 }

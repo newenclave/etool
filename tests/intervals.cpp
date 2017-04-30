@@ -212,7 +212,23 @@ SCENARIO( "MAP", "[map]" ) {
                     REQUIRE( im.find( r - 1 ) == im.end( ) );
                 }
             }
-        }
-    }
+        } /// WHEN
+
+        WHEN( "minimum and maximum infinite" ) {
+            im[ival_type::minus_infinite( )] = "-inf";
+            im[ival_type::plus_infinite( )] = "+inf";
+            THEN( "there are no values in map but it is not empty" ) {
+                REQUIRE( im.size( ) == 2 );
+                REQUIRE( im.find( ud( rd ) ) == im.end( ) ); /// !!!
+                REQUIRE( im.begin( )->first.to_string( ) == "(-inf, -inf)" );
+                REQUIRE( im.begin( )->second == "-inf" );
+
+                REQUIRE( std::next(im.begin( ))->first.to_string( ) ==
+                                                        "(+inf, +inf)" );
+                REQUIRE( std::next(im.begin( ))->second == "+inf" );
+            }
+        } // WHEN
+
+    } // GIVEN
 }
 

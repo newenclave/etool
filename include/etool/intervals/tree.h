@@ -77,7 +77,7 @@ namespace etool { namespace intervals {
             using CT  = container_type;
             using  IA = iterator_access;
             using cmp = typename key_type::cmp_not_overlap;
-            auto res = locate<CT, iterator>(cont_, key);
+            auto res  = locate<CT, iterator>(cont_, key);
 
             if(( res.left.itr == res.right.itr
                  && res.left.contains
@@ -95,7 +95,7 @@ namespace etool { namespace intervals {
             using CCT = container_type;
             using  IA = iterator_access;
             using cmp = typename key_type::cmp_not_overlap;
-            auto res = locate<CCT, iterator>(cont_, key);
+            auto res  = locate<CCT, iterator>(cont_, key);
 
             if(( res.left.itr == res.right.itr
                  && res.left.contains
