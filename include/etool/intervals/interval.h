@@ -36,8 +36,8 @@ namespace etool { namespace intervals {
             :left_(std::move(lh))
             ,right_(std::move(rh))
         {
-            flags_[0] = lf;
-            flags_[1] = rf;
+            attrs_[0] = lf;
+            attrs_[1] = rf;
         }
 
         template <attributes Flag = attributes::CLOSE>
@@ -48,8 +48,8 @@ namespace etool { namespace intervals {
             using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
             using op_side = typename my_side::opposite;
 
-            flags_[my_side::id] = sf.get( );
-            flags_[op_side::id] = op_side::def_inf;
+            attrs_[my_side::id] = sf.get( );
+            attrs_[op_side::id] = op_side::def_inf;
         }
 
         template <attributes Flag = attributes::CLOSE>
@@ -60,8 +60,8 @@ namespace etool { namespace intervals {
             using my_side = endpoint_type<value_type, endpoint_name::RIGHT>;
             using op_side = typename my_side::opposite;
 
-            flags_[my_side::id] = sf.get( );
-            flags_[op_side::id] = op_side::def_inf;
+            attrs_[my_side::id] = sf.get( );
+            attrs_[op_side::id] = op_side::def_inf;
         }
 
         template <attributes LFlag,     attributes RFlag>
@@ -74,8 +74,8 @@ namespace etool { namespace intervals {
             using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
             using op_side = endpoint_type<value_type, endpoint_name::RIGHT>;
 
-            flags_[my_side::id] = lf.get( );
-            flags_[op_side::id] = rf.get( );
+            attrs_[my_side::id] = lf.get( );
+            attrs_[op_side::id] = rf.get( );
         }
 
         template <attributes LInf = attributes::MIN_INF,
@@ -90,8 +90,8 @@ namespace etool { namespace intervals {
             using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
             using op_side = endpoint_type<value_type, endpoint_name::RIGHT>;
 
-            flags_[my_side::id] = ls.get( );
-            flags_[op_side::id] = rs.get( );
+            attrs_[my_side::id] = ls.get( );
+            attrs_[op_side::id] = rs.get( );
         }
 
     public:
@@ -101,32 +101,32 @@ namespace etool { namespace intervals {
 
         interval( )
         {
-            flags_[0] = attributes::MIN_INF;
-            flags_[1] = attributes::MIN_INF;
+            attrs_[0] = attributes::MIN_INF;
+            attrs_[1] = attributes::MIN_INF;
         }
 
         interval( const ValueT &val )
             :left_(val)
             ,right_(val)
         {
-            flags_[0] = attributes::CLOSE;
-            flags_[1] = attributes::CLOSE;
+            attrs_[0] = attributes::CLOSE;
+            attrs_[1] = attributes::CLOSE;
         }
 
         interval( const interval &other )
             :left_ (other.left_)
             ,right_(other.right_)
         {
-            flags_[0] = other.flags_[0];
-            flags_[1] = other.flags_[1];
+            attrs_[0] = other.attrs_[0];
+            attrs_[1] = other.attrs_[1];
         }
 
         interval( interval &&other )
             :left_(std::move(other.left_))
             ,right_(std::move(other.right_))
         {
-            flags_[0]  = other.flags_[0];
-            flags_[1]  = other.flags_[1];
+            attrs_[0]  = other.attrs_[0];
+            attrs_[1]  = other.attrs_[1];
         }
 
         interval& operator = ( const interval &other )
@@ -158,12 +158,12 @@ namespace etool { namespace intervals {
 
         attributes left_attr( ) const noexcept
         {
-            return flags<endpoint_name::LEFT>( );
+            return attrs<endpoint_name::LEFT>( );
         }
 
         attributes right_attr( ) const noexcept
         {
-            return flags<endpoint_name::RIGHT>( );
+            return attrs<endpoint_name::RIGHT>( );
         }
 
         bool left_connected( const interval &other ) const
@@ -206,8 +206,8 @@ namespace etool { namespace intervals {
 
         void swap( interval &other )
         {
-            std::swap( flags_[0], other.flags_[0] );
-            std::swap( flags_[1], other.flags_[1] );
+            std::swap( attrs_[0], other.attrs_[0] );
+            std::swap( attrs_[1], other.attrs_[1] );
             std::swap( left_,     other.left_ );
             std::swap( right_,    other.right_ );
         }
@@ -236,15 +236,15 @@ namespace etool { namespace intervals {
         interval connect_right( const interval &to ) const
         {
             return interval( left( ), to.left( ),
-                             flags<endpoint_name::LEFT>( ),
-                             to.connected_flags<endpoint_name::LEFT>( ) );
+                             attrs<endpoint_name::LEFT>( ),
+                             to.connected_attr<endpoint_name::LEFT>( ) );
         }
 
         interval connect_left( const interval &to ) const
         {
             return interval( to.right( ),  right( ),
-                             to.connected_flags<endpoint_name::RIGHT>( ),
-                             flags<endpoint_name::RIGHT>( ) );
+                             to.connected_attr<endpoint_name::RIGHT>( ),
+                             attrs<endpoint_name::RIGHT>( ) );
         }
 
         bool valid( ) const
@@ -266,15 +266,20 @@ namespace etool { namespace intervals {
             return false;
         }
 
+        bool invalid( ) const
+        {
+            return !valid( );
+        }
+
         void replace_left( const interval &to )
         {
-            flags_[0] = to.flags_[0];
+            attrs_[0] = to.attrs_[0];
             left_     = to.left_;
         }
 
         void replace_right( const interval &to )
         {
-            flags_[1] = to.flags_[1];
+            attrs_[1] = to.attrs_[1];
             right_    = to.right_;
         }
 
@@ -391,8 +396,8 @@ namespace etool { namespace intervals {
         interval intersection( const interval &lh, const interval &rh )
         {
             return interval( lh.left( ), rh.right( ),
-                             lh.flags<endpoint_name::LEFT>( ),
-                             rh.flags<endpoint_name::RIGHT>( ) );
+                             lh.attrs<endpoint_name::LEFT>( ),
+                             rh.attrs<endpoint_name::RIGHT>( ) );
         }
 
     ////// factories
@@ -418,7 +423,7 @@ namespace etool { namespace intervals {
                 return o;
             }
 
-            switch ( flags<endpoint_name::LEFT>( ) ) {
+            switch ( attrs<endpoint_name::LEFT>( ) ) {
             case attributes::CLOSE:
                 o << lbracket[0] << value<endpoint_name::LEFT>( );
                 break;
@@ -435,7 +440,7 @@ namespace etool { namespace intervals {
 
             o << ", ";
 
-            switch ( flags<endpoint_name::RIGHT>( ) ) {
+            switch ( attrs<endpoint_name::RIGHT>( ) ) {
             case attributes::CLOSE:
                 o << value<endpoint_name::RIGHT>( ) << rbracket[0];
                 break;
@@ -607,9 +612,9 @@ namespace etool { namespace intervals {
                 using AT = attributes;
 
                 //// very special cases
-                switch ( rh.flags<EN::LEFT>( ) ) {
+                switch ( rh.attrs<EN::LEFT>( ) ) {
                 case attributes::MAX_INF:
-                    return lh.flags<EN::RIGHT>( ) != AT::MAX_INF;
+                    return lh.attrs<EN::RIGHT>( ) != AT::MAX_INF;
                 case attributes::MIN_INF:
                     return false;
                 case attributes::OPEN:
@@ -617,7 +622,7 @@ namespace etool { namespace intervals {
                     break;
                 }
 
-                switch ( lh.flags<EN::RIGHT>( ) ) {
+                switch ( lh.attrs<EN::RIGHT>( ) ) {
                 case attributes::MIN_INF: /// we have already checked right flag
                     return true;
                 case attributes::MAX_INF:
@@ -644,7 +649,7 @@ namespace etool { namespace intervals {
 
                 bool or_empty = empty_right || empty_left;
 
-                switch ( lh.flags<EN::RIGHT>( ) ) {
+                switch ( lh.attrs<EN::RIGHT>( ) ) {
                 case attributes::OPEN:
                     return cmp::less_equal( lh.value<EN::RIGHT>( ),
                                             rh.value<EN::LEFT>( ) )
@@ -679,20 +684,20 @@ namespace etool { namespace intervals {
         bool is_close( ) const
         {
             using S = endpoint_type<value_type, Side>;
-            return ( flags_[S::id] == attributes::CLOSE );
+            return ( attrs_[S::id] == attributes::CLOSE );
         }
 
         template <endpoint_name Side>
         bool is_open( ) const
         {
             using S = endpoint_type<value_type, Side>;
-            return ( flags_[S::id] == attributes::OPEN );
+            return ( attrs_[S::id] == attributes::OPEN );
         }
 
         bool has_infinite( ) const
         {
-            return ( ( flags<endpoint_name::LEFT>( )
-                     | flags<endpoint_name::RIGHT>( ) )
+            return ( ( attrs<endpoint_name::LEFT>( )
+                     | attrs<endpoint_name::RIGHT>( ) )
                    & (attributes::MIN_INF | attributes::MAX_INF) ) != 0;
                  ;
         }
@@ -715,14 +720,14 @@ namespace etool { namespace intervals {
         bool is_minus_inf( ) const
         {
             using S = endpoint_type<value_type, Side>;
-            return ( flags_[S::id] == attributes::MIN_INF );
+            return ( attrs_[S::id] == attributes::MIN_INF );
         }
 
         template <endpoint_name Side>
         bool is_plus_inf( ) const
         {
             using S = endpoint_type<value_type, Side>;
-            return ( flags_[S::id] == attributes::MAX_INF );
+            return ( attrs_[S::id] == attributes::MAX_INF );
         }
 
         template <endpoint_name Side>
@@ -745,10 +750,10 @@ namespace etool { namespace intervals {
         }
 
         template <endpoint_name Side>
-        const attributes &flags( ) const
+        const attributes &attrs( ) const
         {
             using S = endpoint_type<value_type, Side>;
-            return flags_[S::id];
+            return attrs_[S::id];
         }
 
     private:
@@ -839,17 +844,17 @@ namespace etool { namespace intervals {
                 if( eq ) {
                     return empty( )
                         || other.empty( )
-                        || (flags<Side>( ) ==
-                            other.connected_flags<Opp::name>( ));
+                        || (attrs<Side>( ) ==
+                            other.connected_attr<Opp::name>( ));
                 }
                 return false;
             }
         }
 
         template <endpoint_name Side>
-        attributes connected_flags( ) const
+        attributes connected_attr( ) const
         {
-            auto f = flags<Side>( );
+            auto f = attrs<Side>( );
             switch( f ){
 
             case attributes::CLOSE: return attributes::OPEN;
@@ -865,7 +870,7 @@ namespace etool { namespace intervals {
         template <endpoint_name Side>
         attributes factor( ) const
         {
-            auto f = flags<Side>( );
+            auto f = attrs<Side>( );
             switch( f ) {
             case attributes::OPEN:
             case attributes::CLOSE:
@@ -886,9 +891,9 @@ namespace etool { namespace intervals {
     //    }
 
     private:
-        value_type left_  { };
-        value_type right_ { };
-        attributes flags_[2];
+        value_type left_ { };
+        value_type right_{ };
+        attributes attrs_[2];
     };
 
     template <typename ValueT, typename Comparator>

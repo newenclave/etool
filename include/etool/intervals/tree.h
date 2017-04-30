@@ -74,12 +74,15 @@ namespace etool { namespace intervals {
 
         iterator find( const key_type &key )
         {
-            using CT = container_type;
+            using CT  = container_type;
+            using  IA = iterator_access;
+            using cmp = typename key_type::cmp_not_overlap;
             auto res = locate<CT, iterator>(cont_, key);
 
-            if(  res.left.itr == res.right.itr
-              && res.left.contains
-              && res.right.contains )
+            if(( res.left.itr == res.right.itr
+                 && res.left.contains
+                 && res.right.contains )
+              || cmp::equal_empty(IA::key(res.left.itr), key) )
             {
                 return res.left.itr;
             }
@@ -90,11 +93,14 @@ namespace etool { namespace intervals {
         const_iterator find( const key_type &key ) const
         {
             using CCT = container_type;
+            using  IA = iterator_access;
+            using cmp = typename key_type::cmp_not_overlap;
             auto res = locate<CCT, iterator>(cont_, key);
 
-            if(  res.left.itr == res.right.itr
-              && res.left.contains
-              && res.right.contains )
+            if(( res.left.itr == res.right.itr
+                 && res.left.contains
+                 && res.right.contains )
+              || cmp::equal_empty(IA::key(res.left.itr), key) )
             {
                 return res.left.itr;
             }
@@ -214,7 +220,7 @@ namespace etool { namespace intervals {
             }
 
             auto pair = locate<CT, iterator>( cont_, I::key(ival) );
-            if( pair.left.itr == cont_.end( ) ) {
+            if( pair.left.itr == cont_.end( ) && !pair.left.connected ) {
                 return cont_.emplace_hint( cont_.end( ), std::move(ival) );
             }
 

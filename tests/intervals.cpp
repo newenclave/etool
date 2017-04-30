@@ -8,17 +8,86 @@
 
 using namespace etool;
 
-using ival_type = intervals::interval<std::uint64_t>;
-using ival_set  = intervals::set<std::uint64_t>;
-using ival_map  = intervals::map<std::uint64_t, std::string>;
+namespace {
 
-template <typename T, std::size_t N>
-constexpr std::size_t countof(T const (&)[N]) noexcept
-{
-    return N;
+    using u64 = std::uint64_t;
+
+    using ival_type = intervals::interval<u64>;
+    using ival_set  = intervals::set<u64>;
+    using ival_map  = intervals::map<u64, std::string>;
+
+
+    template <typename T, std::size_t N>
+    constexpr std::size_t countof(T const (&)[N]) noexcept
+    {
+        return N;
+    }
+
+    std::random_device rd;
+    std::uniform_int_distribution<std::uint64_t>
+                       ud( 0, 0xFFFFFFFFFFFFFFFF );
+
+    std::uniform_int_distribution<std::uint64_t>
+                       ud0( 0, 10000000 );
+
+    std::uniform_int_distribution<std::uint64_t>
+                       ud1( 10000001, 1000000000 );
+
 }
 
-TEST_CASE( "SET", "ww") {
+TEST_CASE( "The intervals", "[intervals]" ) {
+
+    SECTION( "infinite" ) {
+
+        auto minus_inf = ival_type::minus_infinite( );
+        auto plus_inf  = ival_type::plus_infinite( );
+        auto inf       = ival_type::infinite( );
+
+        REQUIRE( minus_inf.valid( ) );
+        REQUIRE( plus_inf.valid( ) );
+        REQUIRE( inf.valid( ) );
+
+        SECTION( "to_string" ) {
+            REQUIRE( minus_inf.to_string( ) == "(-inf, -inf)" );
+            REQUIRE( plus_inf.to_string( )  == "(+inf, +inf)" );
+            REQUIRE( inf.to_string( )       == "(-inf, +inf)" );
+        }
+
+        SECTION( "compare lexicographical" ) {
+            REQUIRE( minus_inf < plus_inf );
+            REQUIRE( !(plus_inf < inf) );
+            REQUIRE( minus_inf < inf );
+        }
+
+        SECTION( "compare solid" ) {
+            using cmp = ival_type::cmp_not_overlap;
+
+            REQUIRE(  cmp::less( minus_inf, plus_inf  ) );
+            REQUIRE( !cmp::less( minus_inf, minus_inf ) );
+            REQUIRE( !cmp::less( plus_inf,  minus_inf ) );
+            REQUIRE( !cmp::less( minus_inf, inf       ) );
+            REQUIRE( !cmp::less( inf,       inf       ) );
+        }
+    }
+
+    SECTION( "invalid" ) {
+        REQUIRE( ival_type::left_closed( 10, 0 ).invalid( ) );
+        REQUIRE( ival_type::left_open( 10, 0 ).invalid( ) );
+        REQUIRE( ival_type::closed( 10, 0 ).invalid( ) );
+        REQUIRE( ival_type::open( 10, 0 ).invalid( ) );
+        REQUIRE( ival_type::open( 123, 12 ).to_string( ) == "(inval)" );
+    }
+
+    SECTION( "empty" ) {
+        REQUIRE(  ival_type::left_closed( 0, 0 ).empty( ) );
+        REQUIRE(  ival_type::left_open( 100, 100 ).empty( ) );
+        REQUIRE(  ival_type::open( 777, 777 ).empty( ) );
+        REQUIRE( !ival_type::closed( 9888, 9888 ).empty( ) );
+    }
+
+}
+
+TEST_CASE( "SET", "[set]") {
 
     ival_set is;
 
@@ -35,12 +104,34 @@ TEST_CASE( "SET", "ww") {
         REQUIRE( is.size( ) == 1 );
     }
 
+    SECTION( "merge values" ) {
+        u64 maximum = ud( rd ) % 100;
+        for( u64 i = 0; i<maximum; i++ ) {
+            /// "(i , i + 1]"
+            is.merge( ival_type::left_open( i, i + 1 ) );
+        }
+        REQUIRE( is.size( ) == 1 );
+        REQUIRE( is.begin( )->to_string( ) ==
+                 ival_type::left_open( 0, maximum ).to_string( ) );
+    }
+
+    SECTION( "empty interval can be inserted" ) {
+        is.insert(ival_type::infinite( ));
+        is.insert(ival_type::left_closed( 0, 0 ));
+        REQUIRE( is.size( ) == 3 );
+        REQUIRE( is.find(ival_type::left_closed( 0, 0 )) != is.end( ) );
+    }
+
 }
 
-SCENARIO( "MAP" ) {
+SCENARIO( "MAP", "[map]" ) {
+
     GIVEN( "An interval map" ) {
+
         ival_map im;
+
         WHEN( "add interval (-inf, +inf)" ) {
+
             im.insert( std::make_pair( ival_type::infinite( ), "!") );
 
             THEN( "map contains the only element" ) {
@@ -49,10 +140,6 @@ SCENARIO( "MAP" ) {
             }
 
             THEN( "every value is mapped to '!'" ) {
-
-                std::random_device rd;
-                std::uniform_int_distribution<std::uint64_t>
-                                   ud( 0, 0xFFFFFFFFFFFFFFFF );
 
                 std::uint64_t values[ ] = {
                     ud( rd ), ud( rd ), ud( rd ), ud( rd ),
@@ -65,17 +152,55 @@ SCENARIO( "MAP" ) {
                     im.find( values[3] ),
                 };
 
-                for( auto i = 0; i<countof(f); ++i ) {
+                for( std::size_t i = 0; i<countof(f); ++i ) {
                     INFO("Check: " << values[i] );
                     REQUIRE( f[i] != im.end( ) );
                     REQUIRE( f[i]->second == "!" );
                 }
             }
             WHEN( "insert some value to the map" ) {
-                auto some_value = ival_type::left_closed( 100, 1000 );
+
+                auto l = ud0( rd );
+                auto r = ud1( rd );
+
+                INFO( "insert " << ival_type::left_closed( l, r ) );
+
+                auto some_value = ival_type::left_closed( l, r );
+
                 im.insert( std::make_pair( some_value, "@") );
                 THEN( "it splis the map into 3 parts" ) {
                     REQUIRE( im.size( ) == 3 );
+                }
+                THEN( "2 parts have mapped value '!' and one has '@'" ) {
+                    REQUIRE( im.find( l - 1 )->second   == "!" );
+                    REQUIRE( im.find( l )->second  == "@" );
+                    REQUIRE( im.find( r -1 )->second  == "@" );
+                    REQUIRE( im.find( r )->second == "!" );
+                }
+            }
+            WHEN( "cut some value from the map" ) {
+
+                auto l = ud0( rd );
+                auto r = ud1( rd );
+
+                INFO( "cut " << ival_type::left_closed( l, r ) );
+
+                auto some_value = ival_type::left_closed( l, r );
+                im.cut( some_value );
+
+                THEN( "it splis the map into 2 parts" ) {
+                    REQUIRE( im.size( ) == 2 );
+                }
+
+                THEN( "parts have mapped value '!' "
+                      "but values from the removed "
+                      "interval do not exist" )
+                {
+                    REQUIRE( im.find( l - 1 )->second   == "!" );
+                    REQUIRE( im.find( r )->second == "!" );
+
+                    REQUIRE( im.find( l ) == im.end( ) );
+                    REQUIRE( im.find( r - 1 ) == im.end( ) );
                 }
             }
         }
