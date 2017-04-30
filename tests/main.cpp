@@ -17,13 +17,27 @@ namespace {
 
 }
 
+struct my_int {
+    my_int( int ii ) :i(ii) { }
+    int i;
+};
+
+bool operator < (my_int lh, my_int rh)
+{
+    return lh.i < rh.i;
+}
+
 int main(  int argc, char* argv[ ] )
 {
-    std::cout << ( 1 <= 0 ) << "\n";
+    using check_type = my_int;
+    using ival = intervals::interval<check_type>;
+
+    ival::cmp::equal( ival::degenerate(10), ival::degenerate( 100 ) );
+
     return 0;
 }
 
-int main0(  int argc, char* argv[ ] )
+int main0( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );

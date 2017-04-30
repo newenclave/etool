@@ -33,47 +33,66 @@ namespace etool { namespace intervals {
                                )
                      };
             };
+
+            template <typename ValueT, typename LessComparator, bool>
+            struct cmp;
+
+            /// for those who has opetator ==
+            template <typename ValueT, typename LessComparator>
+            struct cmp<ValueT, LessComparator, true> {
+                static
+                bool less( const ValueT &lh, const ValueT &rh )
+                {
+                    const LessComparator compare;
+                    return compare( lh, rh );
+                }
+
+                static
+                bool equal( const ValueT &lh, const ValueT &rh )
+                {
+                    return lh == rh;
+                }
+            };
+
+            /// for those who doesn't know how to compare with ==
+            template <typename ValueT, typename LessComparator>
+            struct cmp<ValueT, LessComparator, false> {
+                static
+                bool less( const ValueT &lh, const ValueT &rh )
+                {
+                    const LessComparator compare;
+                    return compare( lh, rh );
+                }
+
+                static
+                bool equal( const ValueT &lh, const ValueT &rh )
+                {
+                    return !less( lh, rh ) && !less( rh, lh );
+                }
+            };
+
         }
 
-        template <typename ValueT, typename LessComparator, bool>
-        struct cmp_value;
-
-        /// for those who has opetator ==
-        template <typename ValueT, typename LessComparator>
-        struct cmp_value<ValueT, LessComparator, true> {
-            static
-            bool less( const ValueT &lh, const ValueT &rh )
-            {
-                const LessComparator compare;
-                return compare( lh, rh );
-            }
-
-            static
-            bool equal( const ValueT &lh, const ValueT &rh )
-            {
-                return lh == rh;
-            }
-        };
-
-        /// for those who doesn't know how to compare with ==
-        template <typename ValueT, typename LessComparator>
-        struct cmp_value<ValueT, LessComparator, false> {
-            static
-            bool less( const ValueT &lh, const ValueT &rh )
-            {
-                const LessComparator compare;
-                return compare( lh, rh );
-            }
-
-            static
-            bool equal( const ValueT &lh, const ValueT &rh )
-            {
-                return !less( lh, rh ) && !less( rh, lh );
-            }
-        };
-
         template <typename ValueT, typename Comparator>
-        using cmp = cmp_value<ValueT, Comparator, equal::exists<ValueT>::value>;
+        struct cmp {
+            using value_type      = ValueT;
+            using comparator_type = Comparator;
+
+            static
+            bool less( const value_type &lh, const value_type &rh )
+            {
+                const comparator_type compare;
+                return compare( lh, rh );
+            }
+
+            static
+            bool equal( const value_type &lh, const value_type &rh )
+            {
+                using myop = equal::cmp<value_type, comparator_type,
+                                        equal::exists<ValueT>::value>;
+                return myop::equal( lh, rh );
+            }
+        };
 
     }
 
@@ -91,7 +110,7 @@ namespace etool { namespace intervals {
         static IvalT &check( IvalT &ival )
         {
 #ifdef DEBUG
-            if( !ival.valid( ) ) {
+            if( ival.invalid( ) ) {
                 throw std::logic_error( "Invalid value." );
             }
 #endif
@@ -317,18 +336,19 @@ namespace etool { namespace intervals {
         bool valid( ) const
         {
             using u16 = std::uint16_t;
+            using A = attributes;
             auto lf = static_cast<u16>(factor<endpoint_name::LEFT>( ));
             auto rf = static_cast<u16>(factor<endpoint_name::RIGHT>( ));
 
             switch ( lf ) {
-            case  static_cast<u16>(attributes::MIN_INF):
+            case  static_cast<u16>(A::MIN_INF):
                 return true;
-            case ( static_cast<u16>(attributes::CLOSE) |
-                   static_cast<u16>(attributes::OPEN) ):
-                return (rf == static_cast<u16>(attributes::MAX_INF))
-                    || ((rf == lf) && cmp::less_equal(left( ), right( )));
-            case  static_cast<u16>(attributes::MAX_INF):
-                return (rf == static_cast<u16>(attributes::MAX_INF));
+            case ( static_cast<u16>(A::CLOSE) |
+                   static_cast<u16>(A::OPEN) ):
+                return  ( rf == static_cast<u16>(A::MAX_INF))
+                   || ( ( rf == lf) && cmp::less_equal(left( ), right( )));
+            case  static_cast<u16>(A::MAX_INF):
+                return  ( rf == static_cast<u16>(A::MAX_INF));
             };
             return false;
         }
