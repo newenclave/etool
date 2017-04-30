@@ -573,8 +573,8 @@ namespace etool { namespace intervals {
             static
             bool equal( const interval &lh, const interval &rh )
             {
-                return cmp::template equal_side<endpoint_name::LEFT>(lh, rh)
-                    && cmp::template equal_side<endpoint_name::RIGHT>(lh, rh)
+                return equal_side<endpoint_name::LEFT>(lh, rh)
+                    && equal_side<endpoint_name::RIGHT>(lh, rh)
                      ;
             }
 
