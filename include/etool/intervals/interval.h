@@ -35,15 +35,15 @@ namespace etool { namespace intervals {
             };
         }
 
-        template <typename ValueT, typename Comparator, bool>
+        template <typename ValueT, typename LessComparator, bool>
         struct cmp_value;
 
-        template <typename ValueT, typename Comparator>
-        struct cmp_value<ValueT, Comparator, true> {
+        template <typename ValueT, typename LessComparator>
+        struct cmp_value<ValueT, LessComparator, true> {
             static
             bool less( const ValueT &lh, const ValueT &rh )
             {
-                const Comparator compare;
+                const LessComparator compare;
                 return compare( lh, rh );
             }
 
@@ -54,12 +54,12 @@ namespace etool { namespace intervals {
             }
         };
 
-        template <typename ValueT, typename Comparator>
-        struct cmp_value<ValueT, Comparator, false> {
+        template <typename ValueT, typename LessComparator>
+        struct cmp_value<ValueT, LessComparator, false> {
             static
             bool less( const ValueT &lh, const ValueT &rh )
             {
-                const Comparator compare;
+                const LessComparator compare;
                 return compare( lh, rh );
             }
 

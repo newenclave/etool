@@ -8,7 +8,7 @@ namespace etool { namespace trees { namespace trie {
 
 namespace nodes {
 
-    template <typename KeyT, typename ValueT>
+    template <typename KeyT, typename ValueT, typename Comp = std::less<KeyT> >
     class map {
 
     public:
@@ -17,7 +17,7 @@ namespace nodes {
         using value_type = ValueT;
         using value_ptr  = std::unique_ptr<value_type>;
 
-        using nodes_type = std::map<key_type, map>;
+        using nodes_type = std::map<key_type, map, Cmp>;
 
         map *get( const key_type &k )
         {

@@ -9,7 +9,7 @@ namespace etool { namespace trees { namespace trie {
 
 namespace nodes {
 
-    template <typename KeyT, typename ValueT>
+    template <typename KeyT, typename ValueT, typename Comp = std::less<KeyT> >
     class array {
     public:
 
@@ -54,7 +54,8 @@ namespace nodes {
         struct cmp {
             bool operator ( )( const key_data &d, const key_type &k ) const
             {
-                return d.key < k;
+                const Comp compare;
+                return compare( d.key, k );
             }
         };
 

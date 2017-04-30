@@ -6,13 +6,15 @@
 
 namespace etool { namespace trees { namespace trie {
 
-    template <typename KeyT, typename ValueT,
-              template <typename, typename> class NodeT = nodes::array>
+    template <typename KeyT, typename ValueT, typename Comp = std::less<KeyT>,
+              template <typename,
+                        typename,
+                        typename> class NodeT = nodes::array>
     class base {
     public:
         using key_type   = KeyT;
         using value_type = ValueT;
-        using node_type  = NodeT<KeyT, ValueT>;
+        using node_type  = NodeT<KeyT, ValueT, Comp>;
 
     public:
         base( ) = default;
