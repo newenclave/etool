@@ -37,7 +37,7 @@ namespace etool { namespace intervals {
             template <typename ValueT, typename LessComparator, bool>
             struct cmp_value;
 
-            /// for those who has opetator ==
+            /// for those who have opetator ==
             template <typename ValueT, typename LessComparator>
             struct cmp_value<ValueT, LessComparator, true> {
                 static
@@ -54,7 +54,7 @@ namespace etool { namespace intervals {
                 }
             };
 
-            /// for those who doesn't know how to compare with ==
+            /// for those who don't know how to compare with ==
             template <typename ValueT, typename LessComparator>
             struct cmp_value<ValueT, LessComparator, false> {
                 static
