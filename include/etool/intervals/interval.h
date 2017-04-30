@@ -14,7 +14,7 @@ namespace etool { namespace intervals {
 
         class no_type {
             bool b[2];
-            bool _( ) const { return b[0]; }
+            bool _( ) const { return b[0]; } /// avoid warinig for
         };
 
         namespace equal {

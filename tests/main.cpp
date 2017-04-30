@@ -27,7 +27,12 @@ bool operator < (my_int lh, my_int rh)
     return lh.i < rh.i;
 }
 
-int main(  int argc, char* argv[ ] )
+//bool operator == (my_int lh, my_int rh)
+//{
+//    return lh.i == rh.i;
+//}
+
+int main0(  int argc, char* argv[ ] )
 {
     using check_type = my_int;
     using ival = intervals::interval<check_type>;
@@ -37,7 +42,7 @@ int main(  int argc, char* argv[ ] )
     return 0;
 }
 
-int main0( int argc, char* argv[ ] )
+int main( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );
