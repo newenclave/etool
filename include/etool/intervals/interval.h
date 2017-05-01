@@ -330,6 +330,10 @@ namespace etool { namespace intervals {
 
         bool contains( const value_type &val ) const
         {
+            if( is_plus_inf<endpoint_name::LEFT>( ) ) {
+                return false;
+            }
+
             bool bleft = is_minus_inf<endpoint_name::LEFT>( )
                     ||   is_greater_equal<endpoint_name::LEFT>( val );
 
@@ -624,7 +628,7 @@ namespace etool { namespace intervals {
             static
             bool greater( const value_type &lh, const value_type &rh )
             {
-                return op_cmp::greater( rh, lh );
+                return op_cmp::greater( lh, rh );
             }
 
             static

@@ -212,11 +212,24 @@ SCENARIO( "MAP", "[map]" ) {
                     REQUIRE( im.find( r - 1 ) == im.end( ) );
                 }
             }
+
+            WHEN( "insert and cut some value to the map" ) {
+                auto some_value1 = ival_type::left_closed( 0, 1000 );
+                auto some_value2 = ival_type::left_open( 100, 500 );
+                im.insert( std::make_pair( some_value1, "inserted") );
+                im.cut( some_value2 );
+
+                THEN( "it splis the map into 2 parts" ) {
+                    REQUIRE( im.size( ) == 4 );
+                }
+            }
+
         } /// WHEN
 
         WHEN( "minimum and maximum infinite" ) {
             im[ival_type::minus_infinite( )] = "-inf";
             im[ival_type::plus_infinite( )] = "+inf";
+
             THEN( "there are no values in map but it is not empty" ) {
                 REQUIRE( im.size( ) == 2 );
                 REQUIRE( im.find( ud( rd ) ) == im.end( ) ); /// !!!

@@ -7,6 +7,7 @@
 
 #include "etool/intervals/tree.h"
 #include "etool/intervals/traits/std_set.h"
+#include "etool/intervals/traits/array_set.h"
 
 namespace etool { namespace intervals {
 

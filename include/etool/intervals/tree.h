@@ -54,7 +54,7 @@ namespace etool { namespace intervals {
 
         iterator erase( const_iterator itr )
         {
-            cont_.erase(itr);
+            cont_.erase( itr );
         }
 
         iterator erase( const_iterator b, const_iterator e )
@@ -160,7 +160,7 @@ namespace etool { namespace intervals {
 
             if( I::key(ival).is_infinite( ) ) {
                 container_type tmp;
-                tmp.insert( std::move(ival) );
+                tmp.emplace_hint( tmp.begin( ), std::move(ival) );
                 cont_.swap( tmp );
                 return cont_.begin( );
             }
@@ -214,7 +214,7 @@ namespace etool { namespace intervals {
 
             if( I::key(ival).is_infinite( ) ) {
                 container_type tmp;
-                tmp.insert( ival );
+                tmp.emplace_hint( tmp.begin( ), std::move(ival) );
                 cont_.swap( tmp );
                 return cont_.begin( );
             }

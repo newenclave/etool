@@ -40,18 +40,33 @@ bool operator < (my_int lh, my_int rh)
 //    return lh.i <= rh.i;
 //}
 
+struct test_cmp {
+    bool operator ( ) ( int l, int r ) const
+    {
+        return l < r;
+    }
+};
 
 int main0(  int argc, char* argv[ ] )
 {
-    using check_type = my_int;
-    using ival = intervals::interval<check_type>;
 
-    std::cout << ival::cmp::greater_equal( my_int(10), my_int(10) )
-              << "\n";
-    std::cout << ival::cmp::greater_equal( my_int(100), my_int(10) )
-              << "\n";
-    std::cout << ival::cmp::greater_equal( my_int(1), my_int(10) )
-              << "\n";
+    using iavl_type = intervals::interval<int>;
+    intervals::set<int> s;
+
+    std::cout << iavl_type::cmp::greater_equal(  50, 0 ) << "\n";
+
+    s.insert( iavl_type::minus_infinite( ) );
+    s.insert( iavl_type::plus_infinite( ) );
+
+    auto f = s.find( 100 );
+
+    if( f == s.end( ) ) {
+        std::cout << "End!\n";
+    }
+
+    for( auto &a : s ) {
+        std::cout << a << "\n";
+    }
 
     return 0;
 }
