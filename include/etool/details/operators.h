@@ -1,8 +1,8 @@
 #ifndef ETOOL_DETAILS_OPERATORS_H
 #define ETOOL_DETAILS_OPERATORS_H
 
-//// derived operators (if some class has only "less")
 
+//// derived operators (if some class has only "less")
 namespace etool { namespace details { namespace operators {
 
     class no_type {
@@ -26,7 +26,6 @@ namespace etool { namespace details { namespace operators {
                            )
                  };
         };
-
 
         template <typename ValueT, typename LessComparator, bool>
         struct comparator;
