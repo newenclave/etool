@@ -108,6 +108,45 @@ namespace etool { namespace intervals {
             return cont_.end( );
         }
 
+        iterator absorb_left( iterator from )
+        {
+            using I  = iterator_access;
+            iterator backup = from;
+
+            if( from != cont_.begin( ) ) {
+                do {
+                    iterator prev = std::prev( from );
+                    if( I::key( from ).left_connected( I::key( prev ) ) ) {
+                        --from;
+                    } else {
+                        break;
+                    }
+                } while( from != cont_.begin( ) );
+            }
+            I::mutable_key( backup ).replace_left( I::key( from ) );
+            return cont_.erase( from, backup );
+        }
+
+        iterator absorb_right( iterator from )
+        {
+            using I  = iterator_access;
+
+            iterator backup = from;
+            iterator next = std::next( from );
+
+            while( next != cont_.end( ) &&
+                   I::key( from ).right_connected( I::key( next ) ) )
+            {
+                from = next;
+                ++next;
+            }
+
+            I::mutable_key( backup ).replace_right( I::key( from ) );
+
+            from = cont_.erase( ++backup, next );
+            return std::prev(from);
+        }
+
     protected:
 
         tree( ) = default;

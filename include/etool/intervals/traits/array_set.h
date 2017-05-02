@@ -2,6 +2,7 @@
 #define ETOOL_INTERVALS_TRAITS_ARRAY_SET_H
 
 #include <set>
+#include <vector>
 #include "etool/intervals/interval.h"
 
 namespace etool { namespace intervals { namespace traits {
@@ -125,6 +126,12 @@ namespace etool { namespace intervals { namespace traits {
 
             static
             const interval_type &key( const_iterator itr )
+            {
+                return *itr;
+            }
+
+            static
+            interval_type &mutable_key( iterator itr )
             {
                 return *itr;
             }

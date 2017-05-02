@@ -50,17 +50,20 @@ struct test_cmp {
 int main0(  int argc, char* argv[ ] )
 {
 
-    using ival_type = intervals::interval<int>;
-    intervals::set<int> s;
+    using ival_type = intervals::interval<double>;
+    intervals::set<double> s;
 
-    s.merge( ival_type::left_open( 0, 100 ) );
-    s.merge( ival_type::left_open( 100, 1000 ) );
-    s.merge( ival_type::left_open( 90, 110 ) );
+    s.insert( ival_type::left_closed( -100, -99 ) );
+    s.insert( ival_type::left_closed( 99, 100 ) );
 
-    auto f = s.find( 100 );
+    for( double i = 0; i<10; i += 1 ) {
+        s.insert( ival_type::left_closed( i, i + 1 ) );
+    }
 
-    if( f == s.end( ) ) {
-        std::cout << "End!\n";
+    auto f = s.find( 5.0 );
+
+    if( f != s.end( ) ) {
+        std::cout << *s.absorb_right( f ) << "\n";
     }
 
     for( auto &a : s ) {

@@ -26,6 +26,12 @@ namespace etool { namespace intervals { namespace traits {
             }
 
             static
+            interval_type &mutable_key( iterator itr )
+            {
+                return const_cast<interval_type &>(itr->first);
+            }
+
+            static
             const interval_type &key( const value_type &val )
             {
                 return val.first;
