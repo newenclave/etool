@@ -63,7 +63,7 @@ int main(  int argc, char* argv[ ] )
     auto f = s.find( 5.0 );
 
     if( f != s.end( ) ) {
-        std::cout << *s.absorb_right( f ) << "\n";
+        std::cout << *s.absorb_left( f ) << "\n";
     }
 
     for( auto &a : s ) {

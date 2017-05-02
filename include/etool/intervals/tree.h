@@ -132,13 +132,13 @@ namespace etool { namespace intervals {
             using I  = iterator_access;
 
             iterator backup = from;
-            iterator next = std::next( from );
+            iterator next   = from;
 
-            while( next != cont_.end( ) &&
-                   I::key( from ).right_connected( I::key( next ) ) )
-            {
-                from = next;
-                ++next;
+            while( next != cont_.end( ) ) {
+                from = next++;
+                if( !I::key( from ).right_connected( I::key( next ) ) ) {
+                    break;
+                }
             }
 
             I::mutable_key( backup ).replace_right( I::key( from ) );
