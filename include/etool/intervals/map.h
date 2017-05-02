@@ -9,9 +9,9 @@ namespace etool { namespace intervals {
 
     template <typename KeyT, typename ValueT, typename Comp = std::less<KeyT>,
               typename AllocT = std::allocator<std::pair<const KeyT, ValueT> > >
-    class map: public tree<traits::array_map<KeyT, ValueT, Comp, AllocT> > {
+    class map: public tree<traits::std_map<KeyT, ValueT, Comp, AllocT> > {
 
-        using parent_type   = tree< traits::array_map< KeyT, ValueT,
+        using parent_type   = tree< traits::std_map< KeyT, ValueT,
                                                      Comp, AllocT> >;
 
     public:

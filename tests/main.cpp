@@ -47,7 +47,7 @@ struct test_cmp {
     }
 };
 
-int main1( )
+int main0( )
 {
     using ival_type = intervals::interval<double>;
     intervals::map<double, std::string> s;
