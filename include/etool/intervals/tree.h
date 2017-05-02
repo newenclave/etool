@@ -20,7 +20,7 @@ namespace etool { namespace intervals {
 
         using iterator_access   = typename trait_type::iterator_access;
 
-        using data_type         = typename key_type::value_type;
+        using domain_type       = typename key_type::domain_type;
 
         iterator begin( )
         {
@@ -62,12 +62,12 @@ namespace etool { namespace intervals {
             cont_.erase( b, e );
         }
 
-        iterator find( const data_type &key )
+        iterator find( const domain_type &key )
         {
             return find_impl(key);
         }
 
-        const_iterator find( const data_type &key ) const
+        const_iterator find( const domain_type &key ) const
         {
             return find_const(key);
         }
@@ -505,7 +505,7 @@ namespace etool { namespace intervals {
 
         }
 
-        iterator find_impl( const data_type &key )
+        iterator find_impl( const domain_type &key )
         {
             using I  = iterator_access;
             using CT = container_type;
@@ -517,7 +517,7 @@ namespace etool { namespace intervals {
                  : cont_.end( );
         }
 
-        const_iterator find_const( const data_type &key ) const
+        const_iterator find_const( const domain_type &key ) const
         {
             using I   = iterator_access;
             using CCT = const container_type;

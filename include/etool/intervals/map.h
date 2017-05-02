@@ -15,7 +15,7 @@ namespace etool { namespace intervals {
 
     public:
 
-        using data_type         = KeyT;
+        using domain_type         = KeyT;
         using mapped_type       = ValueT;
         using key_type          = typename parent_type::key_type;
         using value_type        = typename parent_type::value_type;
@@ -89,7 +89,7 @@ namespace etool { namespace intervals {
             }
         }
 
-        mapped_type &operator [ ]( const data_type &k )
+        mapped_type &operator [ ]( const domain_type &k )
         {
             return operator [ ]( key_type( k ) );
         }

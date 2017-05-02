@@ -20,7 +20,7 @@ namespace etool { namespace intervals {
 
     public:
 
-        using data_type         = KeyT;
+        using domain_type         = KeyT;
         using iterator          = typename parent_type::iterator;
         using const_iterator    = typename parent_type::const_iterator;
 
@@ -32,7 +32,7 @@ namespace etool { namespace intervals {
             }
         }
 
-        iterator insert( data_type k )
+        iterator insert( domain_type k )
         {
             return insert(key_type( std::move(k) ));
         }
@@ -50,7 +50,7 @@ namespace etool { namespace intervals {
             }
         }
 
-        iterator merge( data_type k )
+        iterator merge( domain_type k )
         {
             return merge(key_type( std::move(k) ));
         }
@@ -68,7 +68,7 @@ namespace etool { namespace intervals {
             }
         }
 
-        iterator absorb( data_type k )
+        iterator absorb( domain_type k )
         {
             return absorb(key_type( std::move(k) ));
         }
@@ -86,7 +86,7 @@ namespace etool { namespace intervals {
             }
         }
 
-        iterator cut( const data_type& k )
+        iterator cut( const domain_type& k )
         {
             return cut(key_type::degenerate( k ));
         }

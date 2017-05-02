@@ -164,12 +164,12 @@ namespace etool { namespace intervals {
 
     }
 
-    template <typename ValueT, typename Comparator = std::less<ValueT> >
+    template <typename DomainT, typename Comparator = std::less<DomainT> >
     class interval {
 
     public:
 
-        using value_type      = ValueT;
+        using domain_type     = DomainT;
         using comparator_type = Comparator;
 
     private:
@@ -185,7 +185,7 @@ namespace etool { namespace intervals {
             return ival;
         }
 
-        interval( value_type lh, value_type rh,
+        interval( domain_type lh, domain_type rh,
                   attributes lf, attributes rf )
             :left_(std::move(lh))
             ,right_(std::move(rh))
@@ -195,11 +195,11 @@ namespace etool { namespace intervals {
         }
 
         template <attributes Flag = attributes::CLOSE>
-        interval( endpoint_type<value_type, endpoint_name::LEFT> side,
+        interval( endpoint_type<domain_type, endpoint_name::LEFT> side,
                   attribute<Flag> sf = attribute<Flag>( ) )
             :left_(std::move(side.move( ) ))
         {
-            using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
+            using my_side = endpoint_type<domain_type, endpoint_name::LEFT>;
             using op_side = typename my_side::opposite;
 
             attrs_[my_side::id] = sf.get( );
@@ -207,11 +207,11 @@ namespace etool { namespace intervals {
         }
 
         template <attributes Flag = attributes::CLOSE>
-        interval( endpoint_type<value_type, endpoint_name::RIGHT> side,
+        interval( endpoint_type<domain_type, endpoint_name::RIGHT> side,
                   attribute<Flag> sf = attribute<Flag>( ) )
             :right_(std::move(side.move( ) ))
         {
-            using my_side = endpoint_type<value_type, endpoint_name::RIGHT>;
+            using my_side = endpoint_type<domain_type, endpoint_name::RIGHT>;
             using op_side = typename my_side::opposite;
 
             attrs_[my_side::id] = sf.get( );
@@ -219,14 +219,14 @@ namespace etool { namespace intervals {
         }
 
         template <attributes LFlag,     attributes RFlag>
-        interval( endpoint_type<value_type, endpoint_name::LEFT>  ls,
-                  endpoint_type<value_type, endpoint_name::RIGHT> rs,
+        interval( endpoint_type<domain_type, endpoint_name::LEFT>  ls,
+                  endpoint_type<domain_type, endpoint_name::RIGHT> rs,
                   attribute<LFlag> lf,  attribute<RFlag>  rf)
             :left_(ls.move( ))
             ,right_(rs.move( ))
         {
-            using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
-            using op_side = endpoint_type<value_type, endpoint_name::RIGHT>;
+            using my_side = endpoint_type<domain_type, endpoint_name::LEFT>;
+            using op_side = endpoint_type<domain_type, endpoint_name::RIGHT>;
 
             attrs_[my_side::id] = lf.get( );
             attrs_[op_side::id] = rf.get( );
@@ -234,15 +234,15 @@ namespace etool { namespace intervals {
 
         template <attributes LInf = attributes::MIN_INF,
                   attributes RInf = attributes::MAX_INF>
-        interval( typename endpoint_type<value_type,
+        interval( typename endpoint_type<domain_type,
                            endpoint_name::LEFT>::template inf<LInf> ls,
-                  typename endpoint_type<value_type,
+                  typename endpoint_type<domain_type,
                            endpoint_name::RIGHT>::template inf<RInf> rs)
         {
             static_assert( LInf <= RInf, "Left side must be less then right" );
 
-            using my_side = endpoint_type<value_type, endpoint_name::LEFT>;
-            using op_side = endpoint_type<value_type, endpoint_name::RIGHT>;
+            using my_side = endpoint_type<domain_type, endpoint_name::LEFT>;
+            using op_side = endpoint_type<domain_type, endpoint_name::RIGHT>;
 
             attrs_[my_side::id] = ls.get( );
             attrs_[op_side::id] = rs.get( );
@@ -250,8 +250,8 @@ namespace etool { namespace intervals {
 
     public:
 
-        using left_type  = endpoint_type<value_type, endpoint_name::LEFT>;
-        using right_type = endpoint_type<value_type, endpoint_name::RIGHT>;
+        using left_type  = endpoint_type<domain_type, endpoint_name::LEFT>;
+        using right_type = endpoint_type<domain_type, endpoint_name::RIGHT>;
 
         interval( )
         {
@@ -259,7 +259,7 @@ namespace etool { namespace intervals {
             attrs_[1] = attributes::MIN_INF;
         }
 
-        interval( const ValueT &val )
+        interval( const DomainT &val )
             :left_(val)
             ,right_(val)
         {
@@ -300,12 +300,12 @@ namespace etool { namespace intervals {
         ~interval( )
         { }
 
-        const value_type &left( ) const noexcept
+        const domain_type &left( ) const noexcept
         {
             return value<endpoint_name::LEFT>( );
         }
 
-        const value_type &right( ) const noexcept
+        const domain_type &right( ) const noexcept
         {
             return value<endpoint_name::RIGHT>( );
         }
@@ -330,7 +330,7 @@ namespace etool { namespace intervals {
             return other.left_connected( *this );
         }
 
-        bool contains( const value_type &val ) const
+        bool contains( const domain_type &val ) const
         {
             if( is_plus_inf<endpoint_name::LEFT>( ) ) {
                 return false;
@@ -445,7 +445,7 @@ namespace etool { namespace intervals {
     public: /// factories
 
         static
-        interval open( value_type lh, value_type rh )
+        interval open( domain_type lh, domain_type rh )
         {
             return interval( left_type(std::move(lh)),
                              right_type(std::move(rh)),
@@ -454,7 +454,7 @@ namespace etool { namespace intervals {
         }
 
         static
-        interval closed( value_type lh, value_type rh )
+        interval closed( domain_type lh, domain_type rh )
         {
             return interval( left_type(std::move(lh)),
                              right_type(std::move(rh)),
@@ -463,7 +463,7 @@ namespace etool { namespace intervals {
         }
 
         static
-        interval degenerate( value_type lh )
+        interval degenerate( domain_type lh )
         {
             return interval( lh );
         }
@@ -494,14 +494,14 @@ namespace etool { namespace intervals {
         }
 
         static
-        interval left_open( value_type val )
+        interval left_open( domain_type val )
         {
             return interval( left_type(std::move(val)),
                              attribute<attributes::OPEN>( ) );
         }
 
         static
-        interval left_open( value_type lh, value_type rh )
+        interval left_open( domain_type lh, domain_type rh )
         {
             return interval( left_type(std::move(lh)),
                              right_type(std::move(rh)),
@@ -510,14 +510,14 @@ namespace etool { namespace intervals {
         }
 
         static
-        interval right_open( value_type val )
+        interval right_open( domain_type val )
         {
             return interval( right_type(std::move(val)),
                              attribute<attributes::OPEN>( ) );
         }
 
         static
-        interval right_open( value_type lh, value_type rh )
+        interval right_open( domain_type lh, domain_type rh )
         {
             return interval( left_type(std::move(lh)),
                              right_type(std::move(rh)),
@@ -526,27 +526,27 @@ namespace etool { namespace intervals {
         }
 
         static
-        interval left_closed( value_type val )
+        interval left_closed( domain_type val )
         {
             return interval( left_type(std::move(val)),
                              attribute<attributes::CLOSE>( ) );
         }
 
         static
-        interval left_closed( value_type lh, value_type rh )
+        interval left_closed( domain_type lh, domain_type rh )
         {
             return right_open( std::move(lh), std::move(rh) );
         }
 
         static
-        interval right_closed( value_type val )
+        interval right_closed( domain_type val )
         {
             return interval( right_type(std::move(val)),
                              attribute<attributes::CLOSE>( ) );
         }
 
         static
-        interval right_closed( value_type lh, value_type rh )
+        interval right_closed( domain_type lh, domain_type rh )
         {
             return left_open( std::move(lh), std::move(rh) );
         }
@@ -619,22 +619,22 @@ namespace etool { namespace intervals {
 
         struct cmp {
 
-            using op_cmp = op::cmp<value_type, Comparator>;
+            using op_cmp = op::cmp<domain_type, Comparator>;
 
             static
-            bool less( const value_type &lh, const value_type &rh )
+            bool less( const domain_type &lh, const domain_type &rh )
             {
                 return op_cmp::less(lh, rh);
             }
 
             static
-            bool greater( const value_type &lh, const value_type &rh )
+            bool greater( const domain_type &lh, const domain_type &rh )
             {
                 return op_cmp::greater( lh, rh );
             }
 
             static
-            bool equal( const value_type &lh, const value_type &rh )
+            bool equal( const domain_type &lh, const domain_type &rh )
             {
                 return op_cmp::equal( lh, rh );
             }
@@ -648,13 +648,13 @@ namespace etool { namespace intervals {
             }
 
             static
-            bool less_equal( const value_type &lh, const value_type &rh )
+            bool less_equal( const domain_type &lh, const domain_type &rh )
             {
                 return op_cmp::less_equal( lh, rh );
             }
 
             static
-            bool greater_equal( const value_type &lh, const value_type &rh )
+            bool greater_equal( const domain_type &lh, const domain_type &rh )
             {
                 return op_cmp::greater_equal( lh, rh );
             }
@@ -845,14 +845,14 @@ namespace etool { namespace intervals {
         template <endpoint_name Side>
         bool is_close( ) const
         {
-            using S = endpoint_type<value_type, Side>;
+            using S = endpoint_type<domain_type, Side>;
             return ( attrs_[S::id] == attributes::CLOSE );
         }
 
         template <endpoint_name Side>
         bool is_open( ) const
         {
-            using S = endpoint_type<value_type, Side>;
+            using S = endpoint_type<domain_type, Side>;
             return ( attrs_[S::id] == attributes::OPEN );
         }
 
@@ -881,31 +881,31 @@ namespace etool { namespace intervals {
         template <endpoint_name Side>
         bool is_minus_inf( ) const
         {
-            using S = endpoint_type<value_type, Side>;
+            using S = endpoint_type<domain_type, Side>;
             return ( attrs_[S::id] == attributes::MIN_INF );
         }
 
         template <endpoint_name Side>
         bool is_plus_inf( ) const
         {
-            using S = endpoint_type<value_type, Side>;
+            using S = endpoint_type<domain_type, Side>;
             return ( attrs_[S::id] == attributes::MAX_INF );
         }
 
         template <endpoint_name Side>
-        const value_type &value( ) const
+        const domain_type &value( ) const
         {
             using S = endpoint_type<int, Side>;
             return value( typename S::pointer( ) ) ;
         }
 
-        const value_type &value( endpoint_type<int,
+        const domain_type &value( endpoint_type<int,
                                  endpoint_name::LEFT>::pointer ) const
         {
             return left_;
         }
 
-        const value_type &value( endpoint_type<int,
+        const domain_type &value( endpoint_type<int,
                                  endpoint_name::RIGHT>::pointer ) const
         {
             return right_;
@@ -914,43 +914,43 @@ namespace etool { namespace intervals {
         template <endpoint_name Side>
         const attributes &attrs( ) const
         {
-            using S = endpoint_type<value_type, Side>;
+            using S = endpoint_type<domain_type, Side>;
             return attrs_[S::id];
         }
 
     private:
 
         template <endpoint_name Side>
-        value_type &&mv_value( )
+        domain_type &&mv_value( )
         {
             using S = endpoint_type<int, Side>;
             return mv_value(typename S::pointer( ));
         }
 
-        value_type &&mv_value( endpoint_type<int,
+        domain_type &&mv_value( endpoint_type<int,
                                endpoint_name::LEFT>::pointer )
         {
             return std::move(left_);
         }
 
-        value_type &&mv_value( endpoint_type<int,
+        domain_type &&mv_value( endpoint_type<int,
                                endpoint_name::RIGHT>::pointer )
         {
             return std::move(right_);
         }
 
-        value_type &&mv_left( )
+        domain_type &&mv_left( )
         {
             return mv_value<endpoint_name::LEFT>( );
         }
 
-        value_type &&mv_right( )
+        domain_type &&mv_right( )
         {
             return mv_value<endpoint_name::RIGHT>( );
         }
 
         template <endpoint_name Side>
-        bool is_less_equal( const value_type &val ) const
+        bool is_less_equal( const domain_type &val ) const
         {
             using V = endpoint_type<int, Side>;
             using ptr = typename V::pointer;
@@ -962,7 +962,7 @@ namespace etool { namespace intervals {
         }
 
         template <endpoint_name Side>
-        bool is_greater_equal( const value_type &val ) const
+        bool is_greater_equal( const domain_type &val ) const
         {
             using V = endpoint_type<int, Side>;
             using ptr = typename V::pointer;
@@ -996,7 +996,7 @@ namespace etool { namespace intervals {
         template <endpoint_name Side>
         bool connected( const interval &other ) const
         {
-            using Opp = typename endpoint_type<value_type, Side>::opposite;
+            using Opp = typename endpoint_type<domain_type, Side>::opposite;
 
             if( is_any_inf<Side>( ) || other.is_any_inf<Opp::name>( ) ) {
                 return false;
@@ -1053,8 +1053,8 @@ namespace etool { namespace intervals {
     //    }
 
     private:
-        value_type left_ { };
-        value_type right_{ };
+        domain_type left_ { };
+        domain_type right_{ };
         attributes attrs_[2];
     };
 
