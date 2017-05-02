@@ -1,5 +1,5 @@
-#ifndef ETOOL_BYTE_ORDER_H
-#define ETOOL_BYTE_ORDER_H
+#ifndef ETOOL_DETAILS_BYTE_ORDER_H
+#define ETOOL_DETAILS_BYTE_ORDER_H
 
 #include <cstdint>
 #include <climits>
