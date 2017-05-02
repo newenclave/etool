@@ -13,7 +13,6 @@ namespace etool { namespace intervals {
     namespace op {
 
         class no_type {
-            no_type( ) = delete;
             bool b[2];
             bool do_not_use( ) const { return b[0]; } /// avoid warinig for
         };
@@ -36,11 +35,11 @@ namespace etool { namespace intervals {
             };
 
             template <typename ValueT, typename LessComparator, bool>
-            struct cmp_value;
+            struct comparator;
 
             /// for those who have opetator ==
             template <typename ValueT, typename LessComparator>
-            struct cmp_value<ValueT, LessComparator, true> {
+            struct comparator<ValueT, LessComparator, true> {
                 static
                 bool less( const ValueT &lh, const ValueT &rh )
                 {
@@ -57,7 +56,7 @@ namespace etool { namespace intervals {
 
             /// for those who don't know how to compare with ==
             template <typename ValueT, typename LessComparator>
-            struct cmp_value<ValueT, LessComparator, false> {
+            struct comparator<ValueT, LessComparator, false> {
                 static
                 bool less( const ValueT &lh, const ValueT &rh )
                 {
@@ -73,8 +72,8 @@ namespace etool { namespace intervals {
             };
 
             template <typename ValueT, typename LessComparator>
-            using cmp = cmp_value<ValueT, LessComparator,
-                                  exists<ValueT>::value>;
+            using cmp = comparator<ValueT, LessComparator,
+                                   exists<ValueT>::value>;
 
         }
 
@@ -92,11 +91,11 @@ namespace etool { namespace intervals {
                      };
             };
             template <typename ValueT, typename LessComparator, bool>
-            struct cmp_value;
+            struct comparator;
 
             /// for those who have opetator <=
             template <typename ValueT, typename LessComparator>
-            struct cmp_value<ValueT, LessComparator, true> {
+            struct comparator<ValueT, LessComparator, true> {
                 static
                 bool less_equal( const ValueT &lh, const ValueT &rh )
                 {
@@ -106,7 +105,7 @@ namespace etool { namespace intervals {
 
             /// for those who don't know how to compare with <=
             template <typename ValueT, typename LessComparator>
-            struct cmp_value<ValueT, LessComparator, false> {
+            struct comparator<ValueT, LessComparator, false> {
                 static
                 bool less_equal( const ValueT &lh, const ValueT &rh )
                 {
@@ -116,8 +115,8 @@ namespace etool { namespace intervals {
             };
 
             template <typename ValueT, typename LessComparator>
-            using cmp = cmp_value<ValueT, LessComparator,
-                                  exists<ValueT>::value>;
+            using cmp = comparator<ValueT, LessComparator,
+                                   exists<ValueT>::value>;
 
         }
 
