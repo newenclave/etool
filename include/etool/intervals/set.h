@@ -20,7 +20,7 @@ namespace etool { namespace intervals {
 
     public:
 
-        using domain_type         = KeyT;
+        using domain_type       = KeyT;
         using iterator          = typename parent_type::iterator;
         using const_iterator    = typename parent_type::const_iterator;
 

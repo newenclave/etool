@@ -15,7 +15,7 @@ namespace etool { namespace intervals {
 
     public:
 
-        using domain_type         = KeyT;
+        using domain_type       = KeyT;
         using mapped_type       = ValueT;
         using key_type          = typename parent_type::key_type;
         using value_type        = typename parent_type::value_type;
