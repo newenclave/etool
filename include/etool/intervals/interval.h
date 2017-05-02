@@ -771,7 +771,8 @@ namespace etool { namespace intervals {
                 using EN = endpoint_name;
                 using AT = attributes;
 
-                //// very special cases
+                //// ===========================================
+                ///                very special cases
                 switch ( rh.attrs<EN::LEFT>( ) ) {
                 case attributes::MAX_INF:
                     return lh.attrs<EN::RIGHT>( ) != AT::MAX_INF;
@@ -804,8 +805,9 @@ namespace etool { namespace intervals {
                     return cmp::less( lh.value<EN::RIGHT>( ),
                                       rh.value<EN::LEFT>( ) );
                 }
+                ////               "very special cases"
+                ///  ==============================================
 
-                //// end of "very special cases"
 
                 bool or_empty = empty_right || empty_left;
 

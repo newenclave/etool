@@ -49,6 +49,19 @@ namespace etool { namespace intervals {
         }
 
         template <typename IterT>
+        void absorb( IterT begin, IterT end )
+        {
+            for( ; begin != end; ++begin ) {
+                absorb( *begin );
+            }
+        }
+
+        iterator absorb( value_type val )
+        {
+            return parent_type::absorb_impl( std::move(val) );
+        }
+
+        template <typename IterT>
         void cut( IterT begin, IterT end )
         {
             for( ; begin != end; ++begin ) {

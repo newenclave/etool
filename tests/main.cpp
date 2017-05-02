@@ -47,16 +47,15 @@ struct test_cmp {
     }
 };
 
-int main(  int argc, char* argv[ ] )
+int main0(  int argc, char* argv[ ] )
 {
 
-    using iavl_type = intervals::interval<int>;
+    using ival_type = intervals::interval<int>;
     intervals::set<int> s;
 
-    std::cout << iavl_type::cmp::greater_equal(  50, 0 ) << "\n";
-
-    s.insert( iavl_type::minus_infinite( ) );
-    s.insert( iavl_type::plus_infinite( ) );
+    s.merge( ival_type::left_open( 0, 100 ) );
+    s.merge( ival_type::left_open( 100, 1000 ) );
+    s.merge( ival_type::left_open( 90, 110 ) );
 
     auto f = s.find( 100 );
 
@@ -71,7 +70,7 @@ int main(  int argc, char* argv[ ] )
     return 0;
 }
 
-int main0( int argc, char* argv[ ] )
+int main( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );

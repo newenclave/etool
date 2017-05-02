@@ -227,6 +227,46 @@ namespace etool { namespace intervals {
             auto first_iter = pair.left.itr;
             if( pair.left.contains ) {
                 I::mutable_key(ival).replace_left(I::key(first_iter));
+            }
+
+            auto last_iter = pair.right.itr;
+            if( pair.right.contains ) {
+                I::mutable_key(ival).replace_right(I::key(last_iter));
+                last_iter++;
+            }
+
+            auto tmp = cont_.erase( first_iter, last_iter );
+            return cont_.emplace_hint( tmp, std::move(ival) );
+
+        }
+
+        iterator absorb_impl( value_type ival )
+        {
+            using I  = iterator_access;
+            using CT = container_type;
+
+#ifdef DEBUG
+            if( !I::key(ival).valid( ) ) {
+                throw std::logic_error( "Merge. Invalid value." );
+                return cont_.end( );
+            }
+#endif
+
+            if( I::key(ival).is_infinite( ) ) {
+                container_type tmp;
+                tmp.emplace_hint( tmp.begin( ), std::move(ival) );
+                cont_.swap( tmp );
+                return cont_.begin( );
+            }
+
+            auto pair = locate<CT, iterator>( cont_, I::key(ival) );
+            if( pair.left.itr == cont_.end( ) && !pair.left.connected ) {
+                return cont_.emplace_hint( cont_.end( ), std::move(ival) );
+            }
+
+            auto first_iter = pair.left.itr;
+            if( pair.left.contains ) {
+                I::mutable_key(ival).replace_left(I::key(first_iter));
                 if( first_iter != cont_.begin( ) ) {
                     auto prev = std::prev(first_iter);
                     pair.left.connected =

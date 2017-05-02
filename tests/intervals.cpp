@@ -107,12 +107,23 @@ TEST_CASE( "SET", "[set]") {
     SECTION( "merge values" ) {
         u64 maximum = ud( rd ) % 100;
         for( u64 i = 0; i<maximum; i++ ) {
-            /// "(i , i + 1]"
-            is.merge( ival_type::left_open( i, i + 1 ) );
+            /// "[i , i + 1]"
+            is.merge( ival_type::closed( i, i + 1 ) );
         }
         REQUIRE( is.size( ) == 1 );
         REQUIRE( is.begin( )->to_string( ) ==
-                 ival_type::left_open( 0, maximum ).to_string( ) );
+                 ival_type::closed( 0, maximum ).to_string( ) );
+    }
+
+    SECTION( "absorb values" ) {
+        u64 maximum = ud( rd ) % 100;
+        for( u64 i = 0; i<maximum; i++ ) {
+            /// "[i , i + 1)"
+            is.absorb( ival_type::left_closed( i, i + 1 ) );
+        }
+        REQUIRE( is.size( ) == 1 );
+        REQUIRE( is.begin( )->to_string( ) ==
+                 ival_type::left_closed( 0, maximum ).to_string( ) );
     }
 
     SECTION( "empty interval can be inserted" ) {
