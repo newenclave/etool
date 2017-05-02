@@ -8,6 +8,9 @@ namespace etool { namespace details { namespace operators {
     class no_type {
         bool b[2];
         bool do_not_use( ) const { return b[0]; } /// avoid warinig for
+    public:
+        no_type(  );
+        ~no_type( );
     };
 
     bool check(...);

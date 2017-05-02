@@ -28,17 +28,17 @@ bool operator < (my_int lh, my_int rh)
     return lh.i < rh.i;
 }
 
-//bool operator == (my_int lh, my_int rh)
-//{
-//    std::cout << "eq\n";
-//    return lh.i == rh.i;
-//}
+bool operator == (my_int lh, my_int rh)
+{
+    std::cout << "eq\n";
+    return lh.i == rh.i;
+}
 
-//bool operator <= (my_int lh, my_int rh)
-//{
-//    std::cout << "ls eq\n";
-//    return lh.i <= rh.i;
-//}
+bool operator <= (my_int lh, my_int rh)
+{
+    std::cout << "ls eq\n";
+    return lh.i <= rh.i;
+}
 
 struct test_cmp {
     bool operator ( ) ( int l, int r ) const
@@ -47,7 +47,7 @@ struct test_cmp {
     }
 };
 
-int main0(  int argc, char* argv[ ] )
+int main(  int argc, char* argv[ ] )
 {
 
     using iavl_type = intervals::interval<int>;
@@ -71,7 +71,7 @@ int main0(  int argc, char* argv[ ] )
     return 0;
 }
 
-int main( int argc, char* argv[ ] )
+int main0( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );
