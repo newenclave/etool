@@ -79,12 +79,14 @@ namespace etool { namespace intervals {
             using cmp = typename key_type::cmp_not_overlap;
             auto res  = locate<CT, iterator>(cont_, key);
 
-            if(( res.left.itr == res.right.itr
-                 && res.left.contains
-                 && res.right.contains )
-              || cmp::equal_empty(IA::key(res.left.itr), key) )
-            {
-                return res.left.itr;
+            if( res.left.itr != cont_.end( ) ) {
+                if(( res.left.itr == res.right.itr
+                     && res.left.contains
+                     && res.right.contains )
+                  || cmp::equal_empty(IA::key(res.left.itr), key) )
+                {
+                    return res.left.itr;
+                }
             }
 
             return cont_.end( );
@@ -97,14 +99,47 @@ namespace etool { namespace intervals {
             using cmp = typename key_type::cmp_not_overlap;
             auto res  = locate<CCT, iterator>(cont_, key);
 
-            if(( res.left.itr == res.right.itr
-                 && res.left.contains
-                 && res.right.contains )
-              || cmp::equal_empty(IA::key(res.left.itr), key) )
-            {
-                return res.left.itr;
+            if( res.left.itr != cont_.end( ) ) {
+                if(( res.left.itr == res.right.itr
+                     && res.left.contains
+                     && res.right.contains )
+                  || cmp::equal_empty(IA::key(res.left.itr), key) )
+                {
+                    return res.left.itr;
+                }
             }
+            return cont_.end( );
+        }
 
+        bool left_connected( const_iterator itr ) const
+        {
+            using  I = iterator_access;
+            return I::key(itr).left_connected( I::key(std::prev(itr)) );
+        }
+
+        bool right_connected( const_iterator itr ) const
+        {
+            using  I = iterator_access;
+            return I::key(itr).right_connected( I::key(std::next(itr)) );
+        }
+
+        iterator merge_left( iterator itr )
+        {
+            using I  = iterator_access;
+            iterator prev = std::prev(itr);
+            I::mutable_key(itr).replace_left(I::key(prev));
+            return cont_.erase(prev);
+        }
+
+        iterator merge_right( iterator itr )
+        {
+            using I  = iterator_access;
+            iterator next = std::next(itr);
+            if( next != cont_.end( ) ) {
+                I::mutable_key(itr).replace_right(I::key(next));
+                next = cont_.erase(next);
+                return std::prev(next);
+            }
             return cont_.end( );
         }
 

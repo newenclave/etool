@@ -47,7 +47,23 @@ struct test_cmp {
     }
 };
 
-int main(  int argc, char* argv[ ] )
+int main1( )
+{
+    using ival_type = intervals::interval<double>;
+    intervals::map<double, std::string> s;
+
+    s.insert(std::make_pair(ival_type::minus_infinite( ), "-inf"));
+    s.insert(std::make_pair(ival_type::plus_infinite( ), "+inf"));
+
+
+    for( auto &a : s ) {
+        std::cout << a.first << a.second << "\n";
+    }
+
+    return 0;
+}
+
+int main1(  int argc, char* argv[ ] )
 {
 
     using ival_type = intervals::interval<double>;
@@ -62,9 +78,16 @@ int main(  int argc, char* argv[ ] )
 
     auto f = s.find( 5.0 );
 
-    if( f != s.end( ) ) {
-        std::cout << *s.absorb_left( f ) << "\n";
+    while( f != s.begin( ) ) {
+        f = s.merge_left( f );
     }
+
+//    std::cout << *s.absorb_right( f );
+    std::cout << "==========\n";
+
+//    if( f != s.end( ) ) {
+//        std::cout << *s.absorb_left( f ) << "\n";
+//    }
 
     for( auto &a : s ) {
         std::cout << a << "\n";
@@ -73,7 +96,7 @@ int main(  int argc, char* argv[ ] )
     return 0;
 }
 
-int main0( int argc, char* argv[ ] )
+int main( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );

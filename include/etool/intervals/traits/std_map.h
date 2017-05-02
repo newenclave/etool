@@ -6,12 +6,16 @@
 
 namespace etool { namespace intervals { namespace traits {
 
-    template <typename KeyT, typename ValueT, typename Comparator>
+    template <typename KeyT, typename ValueT, typename Comparator,
+              typename AllocT>
     struct std_map {
 
         using interval_type     = interval<KeyT, Comparator>;
         using map_cmp           = typename interval_type::cmp_not_overlap;
-        using container_type    = std::map<interval_type, ValueT, map_cmp>;
+
+        using allocator_type    = AllocT;
+        using container_type    = std::map<interval_type, ValueT,
+                                           map_cmp, allocator_type>;
 
         using value_type        = typename container_type::value_type;
         using iterator          = typename container_type::iterator;

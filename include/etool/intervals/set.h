@@ -11,10 +11,11 @@
 
 namespace etool { namespace intervals {
 
-    template <typename KeyT, typename Comp = std::less<KeyT> >
-    class set: public tree<traits::std_set<KeyT, Comp> > {
+    template <typename KeyT, typename Comp = std::less<KeyT>,
+              typename AllocT = std::allocator<KeyT> >
+    class set: public tree<traits::std_set<KeyT, Comp, AllocT> > {
 
-        using parent_type   = tree<traits::std_set<KeyT, Comp> >;
+        using parent_type   = tree<traits::std_set<KeyT, Comp, AllocT> >;
         using key_type = typename parent_type::key_type;
 
     public:
