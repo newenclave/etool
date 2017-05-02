@@ -15,8 +15,8 @@ namespace etool { namespace intervals {
               typename AllocT = std::allocator<KeyT> >
     class set: public tree<traits::std_set<KeyT, Comp, AllocT> > {
 
-        using parent_type   = tree<traits::std_set<KeyT, Comp, AllocT> >;
-        using key_type = typename parent_type::key_type;
+        using parent_type = tree<traits::std_set<KeyT, Comp, AllocT> >;
+        using key_type    = typename parent_type::key_type;
 
     public:
 

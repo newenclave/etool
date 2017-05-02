@@ -11,8 +11,7 @@ namespace etool { namespace intervals {
               typename AllocT = std::allocator<std::pair<const KeyT, ValueT> > >
     class map: public tree<traits::std_map<KeyT, ValueT, Comp, AllocT> > {
 
-        using parent_type   = tree< traits::std_map< KeyT, ValueT,
-                                                     Comp, AllocT> >;
+        using parent_type = tree< traits::std_map<KeyT, ValueT,Comp, AllocT> >;
 
     public:
 
