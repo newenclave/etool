@@ -47,7 +47,7 @@ struct test_cmp {
     }
 };
 
-int main0(  int argc, char* argv[ ] )
+int main(  int argc, char* argv[ ] )
 {
 
     using ival_type = intervals::interval<double>;
@@ -73,7 +73,7 @@ int main0(  int argc, char* argv[ ] )
     return 0;
 }
 
-int main( int argc, char* argv[ ] )
+int main0( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );

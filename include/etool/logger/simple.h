@@ -111,7 +111,7 @@ namespace etool { namespace logger {
             element->lvl         = lev;
             element->thread      = std::this_thread::get_id( );
             element->thread_data = thread_data( );
-            element->call        = std::move(void_call( ));
+            element->call        = void_call( );
 
             element->name.assign( name );
             element->data.swap( data );
