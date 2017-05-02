@@ -31,9 +31,9 @@ namespace etool { namespace intervals {
             }
         }
 
-        iterator insert( const data_type& k )
+        iterator insert( data_type k )
         {
-            return insert(key_type::degenerate( k ));
+            return insert(key_type( std::move(k) ));
         }
 
         iterator insert( key_type k )
@@ -49,9 +49,9 @@ namespace etool { namespace intervals {
             }
         }
 
-        iterator merge( const data_type& k )
+        iterator merge( data_type k )
         {
-            return merge(key_type::degenerate( k ));
+            return merge(key_type( std::move(k) ));
         }
 
         iterator merge( key_type k )
@@ -67,9 +67,9 @@ namespace etool { namespace intervals {
             }
         }
 
-        iterator absorb( const data_type& k )
+        iterator absorb( data_type k )
         {
-            return absorb(key_type::degenerate( k ));
+            return absorb(key_type( std::move(k) ));
         }
 
         iterator absorb( key_type k )

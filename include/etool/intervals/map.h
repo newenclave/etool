@@ -21,7 +21,6 @@ namespace etool { namespace intervals {
         using const_iterator    = typename parent_type::const_iterator;
         using iterator_access   = typename parent_type::iterator_access;
 
-
         iterator insert( value_type val )
         {
             return parent_type::insert_impl(std::move(val));

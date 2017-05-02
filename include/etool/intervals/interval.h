@@ -40,7 +40,7 @@ namespace etool { namespace intervals {
             template <typename ValueT, typename LessComparator, bool>
             struct comparator;
 
-            /// for those who have opetator ==
+            /// for those who have operator ==
             template <typename ValueT, typename LessComparator>
             struct comparator<ValueT, LessComparator, true> {
                 static
@@ -96,7 +96,7 @@ namespace etool { namespace intervals {
             template <typename ValueT, typename LessComparator, bool>
             struct comparator;
 
-            /// for those who have opetator <=
+            /// for those who have operator <=
             template <typename ValueT, typename LessComparator>
             struct comparator<ValueT, LessComparator, true> {
                 static
