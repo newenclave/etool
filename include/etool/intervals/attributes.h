@@ -42,27 +42,6 @@ namespace etool { namespace intervals {
         return static_cast<u16>( lh ) != val;
     }
 
-    template <attributes>
-    struct attribute;
-
-    template <>
-    struct attribute<attributes::CLOSE> {
-        static const attributes value = attributes::CLOSE;
-        attributes get( ) const
-        {
-            return value;
-        }
-    };
-
-    template <>
-    struct attribute<attributes::OPEN> {
-        static const attributes value = attributes::OPEN;
-        attributes get( ) const
-        {
-            return value;
-        }
-    };
-
 }}
 
 #endif // ATTRIBUTES_H

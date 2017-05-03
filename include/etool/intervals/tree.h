@@ -126,9 +126,12 @@ namespace etool { namespace intervals {
         iterator merge_left( iterator itr )
         {
             using I  = iterator_access;
-            iterator prev = std::prev(itr);
-            I::mutable_key(itr).replace_left(I::key(prev));
-            return cont_.erase(prev);
+            if( itr != cont_.begin( ) ) {
+                iterator prev = std::prev(itr);
+                I::mutable_key(itr).replace_left(I::key(prev));
+                return cont_.erase(prev);
+            }
+            return cont_.begin( );
         }
 
         iterator merge_right( iterator itr )
@@ -182,6 +185,30 @@ namespace etool { namespace intervals {
             return std::prev(from);
         }
 
+        std::pair<iterator, iterator>
+        find_intersection( const key_type &key )
+        {
+            using CT = container_type;
+            auto loc = locate<CT, iterator>(cont_, key);
+            if( loc.right.contains ) {
+                return std::make_pair( loc.left.itr, std::next(loc.right.itr) );
+            } else {
+                return std::make_pair( loc.left.itr, loc.right.itr );
+            }
+        }
+
+        std::pair<const_iterator, const_iterator>
+        find_intersection( const key_type &key ) const
+        {
+            using CT = container_type;
+            auto loc = locate<CT, const_iterator>(cont_, key);
+            if( loc.right.contains ) {
+                return std::make_pair( loc.left.itr, std::next(loc.right.itr) );
+            } else {
+                return std::make_pair( loc.left.itr, loc.right.itr );
+            }
+        }
+
     protected:
 
         tree( ) = default;
@@ -224,7 +251,7 @@ namespace etool { namespace intervals {
         iterator insert_impl( value_type ival )
         {
 #ifdef DEBUG
-            if( !I::key(ival).valid( ) ) {
+            if( I::key(ival).invalid( ) ) {
                 throw std::logic_error( "Insert. Invalid value." );
                 return cont_.end( );
             }
@@ -280,7 +307,7 @@ namespace etool { namespace intervals {
             using CT = container_type;
 
 #ifdef DEBUG
-            if( !I::key(ival).valid( ) ) {
+            if( I::key(ival).invalid( ) ) {
                 throw std::logic_error( "Merge. Invalid value." );
                 return cont_.end( );
             }
@@ -320,7 +347,7 @@ namespace etool { namespace intervals {
             using CT = container_type;
 
 #ifdef DEBUG
-            if( !I::key(ival).valid( ) ) {
+            if( I::key(ival).invalid( ) ) {
                 throw std::logic_error( "Merge. Invalid value." );
                 return cont_.end( );
             }
@@ -400,7 +427,7 @@ namespace etool { namespace intervals {
             using I  = iterator_access;
             using CT = container_type;
 #ifdef DEBUG
-            if( !I::key(ival).valid( ) ) {
+            if( I::key(ival).invalid( ) ) {
                 throw std::logic_error( "Cut. Invalid value." );
                 return cont_.end( );
             }
