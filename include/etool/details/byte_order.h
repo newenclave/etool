@@ -3,7 +3,7 @@
 
 #include <cstdint>
 #include <climits>
-#include <stdint.h>
+#include <cstdint>
 
 #include "etool/details/host_byte_order.h"
 #include "etool/details/byte_swap.h"
@@ -25,7 +25,7 @@ namespace etool { namespace details {
 
         template <typename U>
         static
-        size_t write( value_type v, U *out )
+        std::size_t write( value_type v, U *out )
         {
             *reinterpret_cast<value_type *>(out) = v;
             return sizeof(value_type);
@@ -85,7 +85,7 @@ namespace etool { namespace details {
 
         template <typename U>
         static
-        size_t write( value_type v, U *out )
+        std::size_t write( value_type v, U *out )
         {
             std::uint8_t *o = reinterpret_cast<std::uint8_t *>(out);
             o[0] = ( v >>  8 ) & 0xFF;
@@ -118,7 +118,7 @@ namespace etool { namespace details {
 
         template <typename U>
         static
-        size_t write( value_type v, U *out )
+        std::size_t write( value_type v, U *out )
         {
             std::uint8_t *o = reinterpret_cast<std::uint8_t *>(out);
             o[1] = ( v >>  8 ) & 0xFF;
@@ -151,7 +151,7 @@ namespace etool { namespace details {
 
         template <typename U>
         static
-        size_t write( value_type v, U *out )
+        std::size_t write( value_type v, U *out )
         {
             std::uint8_t *o = reinterpret_cast<std::uint8_t *>(out);
             o[0] = ( v >> 24 ) & 0xFF;
@@ -188,7 +188,7 @@ namespace etool { namespace details {
 
         template <typename U>
         static
-        size_t write( value_type v, U *out )
+        std::size_t write( value_type v, U *out )
         {
             std::uint8_t *o = reinterpret_cast<std::uint8_t *>(out);
             o[3] = ( v >> 24 ) & 0xFF;
@@ -227,7 +227,7 @@ namespace etool { namespace details {
 
         template <typename U>
         static
-        size_t write( value_type v, U *out )
+        std::size_t write( value_type v, U *out )
         {
             std::uint8_t *o = reinterpret_cast<std::uint8_t *>(out);
             o[0] = ( v >> 56 ) & 0xFF;
@@ -272,7 +272,7 @@ namespace etool { namespace details {
 
         template <typename U>
         static
-        size_t write( value_type v, U *out )
+        std::size_t write( value_type v, U *out )
         {
             std::uint8_t *o = reinterpret_cast<std::uint8_t *>(out);
             o[7] = ( v >> 56 ) & 0xFF;
