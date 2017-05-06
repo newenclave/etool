@@ -200,6 +200,8 @@ namespace etool { namespace intervals {
         }
 
         interval( )
+            :left_(domain_type( ))
+            ,right_(domain_type( ))
         {
             attrs_[0] = attributes::MIN_INF;
             attrs_[1] = attributes::MIN_INF;
@@ -976,8 +978,8 @@ namespace etool { namespace intervals {
 
     private:
 
-        domain_type left_ { };
-        domain_type right_{ };
+        domain_type left_;
+        domain_type right_;
         attributes attrs_[2];
     };
 
