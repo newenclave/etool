@@ -237,7 +237,7 @@ namespace etool { namespace dumper {
 
         template <typename StreamType>
         static
-        void all( const void *input, size_t len, StreamType &&os )
+        StreamType &all( const void *input, size_t len, StreamType &os )
         {
             const char *inp = static_cast<const char *>(input);
             for( size_t id = 0; id < len; id += info::elements ) {
@@ -249,6 +249,7 @@ namespace etool { namespace dumper {
                 buf[info::line_size] = '\0';
                 os << &buf[0];
             }
+            return os;
         }
 
         static
