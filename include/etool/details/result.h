@@ -101,7 +101,7 @@ namespace etool { namespace detail {
     public:
 
         typedef T value_type;
-        typedef T error_type;
+        typedef E error_type;
 
         struct value_arg {
 
