@@ -83,6 +83,11 @@ namespace etool { namespace slices {
             return val_;
         }
 
+        const pointer_type get( ) const noexcept
+        {
+            return val_;
+        }
+
         reference_type operator *( ) noexcept
         {
             return *val_;
