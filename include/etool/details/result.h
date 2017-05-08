@@ -95,28 +95,72 @@ namespace etool { namespace detail {
     class result {
 
         typename Trait::value_type value_;
-        std::shared_ptr<E const> error_;
+        E                          error_;
+        bool                       failed_;
 
     public:
 
         typedef T value_type;
+        typedef T error_type;
+
+        struct value_arg {
+
+            template <typename ...Args>
+            value_arg( Args&& ...args )
+                :val_(Trait::create(std::forward<Args>(args)...))
+            { }
+
+            value_type &&move( )
+            {
+                return std::move(val_);
+            }
+
+        private:
+            value_type val_;
+        };
+
+        struct error_arg {
+
+            template <typename ...Args>
+            error_arg( Args&& ...args )
+                :val_(std::forward<Args>(args)...)
+            { }
+
+            error_type &&move( )
+            {
+                return std::move(val_);
+            }
+
+        private:
+            error_type val_;
+        };
 
         result( )
             :value_(Trait::create( ))
+            ,failed_(false)
         { }
 
         result( const result &other )
             :value_(Trait::create(other))
+            ,error_(other.error_)
+            ,failed_(other.failed_)
         { }
 
         result( result &&other )
             :value_(std::move(other.value_))
             ,error_(std::move(other.error_))
+            ,failed_(other.failed_)
         { }
 
-        template <typename ...Args>
-        result( Args&& ...args )
-            :value_(Trait::create(std::forward<Args>(args)...))
+        result( value_arg &&val )
+            :value_(val.move( ))
+            ,error_(error_type( ))
+            ,failed_(false)
+        { }
+
+        result( error_arg &&val )
+            :error_(val.move( ))
+            ,failed_(true)
         { }
 
         result &operator = ( const result &other )
@@ -142,36 +186,22 @@ namespace etool { namespace detail {
         static
         result ok( Args&& ...args )
         {
-            return result( std::forward<Args>(args)... );
-        }
-
-        static
-        result ok( )
-        {
-            return result( );
+            return result( value_arg(std::forward<Args>(args)...) );
         }
 
         template <typename ...Args>
         static
         result fail( Args&& ...args )
         {
-            result res;
-            res.error_ = std::make_shared<E>( std::forward<Args>(args)... );
-            return std::move( res );
-        }
-
-        static
-        result fail( )
-        {
-            result res;
-            res.error_ = std::make_shared<E>( );
+            result res( error_arg(std::forward<Args>(args)...) );
             return std::move( res );
         }
 
         void swap( result &other )
         {
-            std::swap( value_, other.value_ );
-            std::swap( error_, other.error_ );
+            std::swap( value_,  other.value_ );
+            std::swap( error_,  other.error_ );
+            std::swap( failed_, other.failed_ );
         }
 
         T &operator *( )
@@ -196,12 +226,12 @@ namespace etool { namespace detail {
 
         operator bool ( ) const
         {
-            return error_.get( ) == nullptr;
+            return !failed_;
         }
 
-        const E *error( ) const
+        const error_type &error( ) const
         {
-            return error_.get( );
+            return error_;
         }
 
     };
@@ -214,7 +244,7 @@ namespace etool { namespace detail {
         if( res ) {
             o << "Ok: "   << *res;
         } else {
-            o << "Fail: " << *res.error( );
+            o << "Fail: " <<  res.error( );
         }
         return o;
     }
