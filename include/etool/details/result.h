@@ -91,7 +91,7 @@ namespace etool { namespace detail {
     }
 
     template <typename T, typename E,
-              typename Trait = traits::shared_ptr_trait<T> >
+              typename Trait = traits::value_trait<T> >
     class result {
 
         typename Trait::value_type value_;
