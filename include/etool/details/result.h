@@ -36,6 +36,12 @@ namespace etool { namespace detail {
             { }
 
             static
+            T &&move( value_type &v )
+            {
+                return std::move(v);
+            }
+
+            static
             T &value( value_type &v )
             {
                 return v;
@@ -75,6 +81,12 @@ namespace etool { namespace detail {
             static
             void destroy( value_type & )
             { }
+
+            static
+            T &&move( value_type &v )
+            {
+                return std::move(*v);
+            }
 
             static
             T &value( value_type &v )
@@ -234,8 +246,12 @@ namespace etool { namespace detail {
             return error_;
         }
 
-    };
+        T &&move( )
+        {
+            return Trait::move(value_);
+        }
 
+    };
 
     template <typename T, typename E>
     inline
