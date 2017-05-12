@@ -264,8 +264,12 @@ namespace etool { namespace dumper {
                             std::string prefix  = "" )
         {
             static const size_t element_buf_len = sizeof(T) * 2 + 1;
-            char buf[element_buf_len];
-            buf[element_buf_len - 1] = '\0';
+            union {
+                char buf[element_buf_len];
+                value_type val;
+            } bv;
+
+            bv.buf[element_buf_len - 1] = '\0';
             const value_type *p = reinterpret_cast<const value_type *>(input);
 
             std::string res;
@@ -274,8 +278,8 @@ namespace etool { namespace dumper {
                     res += postfix;
                 }
                 res += prefix;
-                value_info::getX( *p, buf );
-                res.append( &buf[0], &buf[element_buf_len] );
+                value_info::getX( *p, bv.buf );
+                res.append( &bv.buf[0], &bv.buf[element_buf_len - 1] );
             }
             return std::move(res);
         }
