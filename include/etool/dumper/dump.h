@@ -56,7 +56,7 @@ namespace etool { namespace dumper {
         {
             for( size_t i = 0; i < 16; i++, input++, output++ ) {
                 if( i < len ) {
-                    if( printable( *input ) ) {
+                    if( printable( static_cast<ui8>( *input ) ) ) {
                         *output = *input;
                     } else {
                         *output = '.';
@@ -281,7 +281,7 @@ namespace etool { namespace dumper {
                 value_info::getX( *p, bv.buf );
                 res.append( &bv.buf[0], &bv.buf[element_buf_len - 1] );
             }
-            return std::move(res);
+            return res;
         }
     };
 
