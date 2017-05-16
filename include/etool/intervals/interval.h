@@ -361,12 +361,14 @@ namespace etool { namespace intervals {
             switch ( lf ) {
             case  static_cast<u16>(A::MIN_INF):
                 return true;
-            case ( static_cast<u16>(A::CLOSE) |
-                   static_cast<u16>(A::OPEN) ):
+
+            case ( static_cast<u16>(A::CLOSE) | static_cast<u16>(A::OPEN) ):
                 return  ( rf == static_cast<u16>(A::MAX_INF))
                    || ( ( rf == lf) && cmp::less_equal(left( ), right( )));
+
             case  static_cast<u16>(A::MAX_INF):
                 return  ( rf == static_cast<u16>(A::MAX_INF));
+
             };
             return false;
         }
