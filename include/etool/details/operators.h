@@ -16,6 +16,14 @@ namespace etool { namespace details { namespace operators {
     bool check(...);
     no_type check( const no_type& );
 
+    template <typename T>
+    struct zero_ref {
+        static T &get( )
+        {
+            return *reinterpret_cast<T*>( nullptr );
+        }
+    };
+
     //// operator ==
     namespace equal {
         template<typename T, typename Arg>
@@ -23,8 +31,8 @@ namespace etool { namespace details { namespace operators {
 
         template <typename T, typename Arg = T>
         struct exists {
-            enum { value = ( sizeof( check( *reinterpret_cast<T*>( 0 ) ==
-                                            *reinterpret_cast<Arg*>( 0 ) )
+            enum { value = ( sizeof( check( zero_ref<T>::get( ) ==
+                                            zero_ref<Arg>::get( ) )
                                    ) != sizeof( no_type )
                            )
                  };
@@ -80,8 +88,8 @@ namespace etool { namespace details { namespace operators {
 
         template <typename T, typename Arg = T>
         struct exists {
-            enum { value = ( sizeof( check( *reinterpret_cast<T*>( 0 ) <=
-                                            *reinterpret_cast<Arg*>( 0 ) )
+            enum { value = ( sizeof( check( zero_ref<T>::get( ) <=
+                                            zero_ref<Arg>::get( ) )
                                    ) != sizeof( no_type )
                            )
                  };
