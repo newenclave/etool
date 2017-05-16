@@ -287,16 +287,17 @@ namespace etool { namespace intervals {
 
         bool contains( const domain_type &val ) const
         {
-            if( is_plus_inf<endpoint_name::LEFT>( ) ) {
+            using EPN = endpoint_name;
+            if( is_plus_inf<EPN::LEFT>( ) ) {
                 return false;
             }
 
-            bool bleft = is_minus_inf<endpoint_name::LEFT>( )
-                    ||   is_greater_equal<endpoint_name::LEFT>( val );
+            bool bleft = is_minus_inf<EPN::LEFT>( )
+                    ||   is_greater_equal<EPN::LEFT>( val );
 
             if( bleft ) {
-                return is_plus_inf<endpoint_name::RIGHT>( )
-                    || is_less_equal<endpoint_name::RIGHT>( val );
+                return is_plus_inf<EPN::RIGHT>( )
+                    || is_less_equal<EPN::RIGHT>( val );
             }
             return false;
         }
@@ -313,8 +314,9 @@ namespace etool { namespace intervals {
 
         std::pair<bool, bool> contains( const interval &other ) const
         {
-            return std::make_pair( contains_side<endpoint_name::LEFT>(other),
-                                   contains_side<endpoint_name::RIGHT>(other) );
+            using EPN = endpoint_name;
+            return std::make_pair( contains_side<EPN::LEFT>(other),
+                                   contains_side<EPN::RIGHT>(other) );
         }
 
         void swap( interval &other )
