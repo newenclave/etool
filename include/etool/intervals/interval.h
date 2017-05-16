@@ -83,9 +83,8 @@ namespace etool { namespace intervals {
                 }
             };
 
-            template <typename ValueT, typename LessComparator>
-            using cmp = comparator<ValueT, LessComparator,
-                                   exists<ValueT>::value>;
+            template <typename T, typename LessComparator>
+            using cmp = comparator<T, LessComparator, exists<T>::value>;
 
         }
 
@@ -126,9 +125,8 @@ namespace etool { namespace intervals {
                 }
             };
 
-            template <typename ValueT, typename LessComparator>
-            using cmp = comparator<ValueT, LessComparator,
-                                   exists<ValueT>::value>;
+            template <typename T, typename LessComparator>
+            using cmp = comparator<T, LessComparator, exists<T>::value>;
 
         }
 

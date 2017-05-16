@@ -1,7 +1,6 @@
 #ifndef ETOOL_DETAILS_OPERATORS_H
 #define ETOOL_DETAILS_OPERATORS_H
 
-
 //// derived operators (if some class has only "less")
 namespace etool { namespace details { namespace operators {
 
