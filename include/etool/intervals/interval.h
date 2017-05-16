@@ -353,8 +353,10 @@ namespace etool { namespace intervals {
         {
             using u16 = std::uint16_t;
             using A = attributes;
-            auto lf = static_cast<u16>(factor<endpoint_name::LEFT>( ));
-            auto rf = static_cast<u16>(factor<endpoint_name::RIGHT>( ));
+            using EPN = endpoint_name;
+
+            auto lf = static_cast<u16>(factor<EPN::LEFT>( ));
+            auto rf = static_cast<u16>(factor<EPN::RIGHT>( ));
 
             switch ( lf ) {
             case  static_cast<u16>(A::MIN_INF):
