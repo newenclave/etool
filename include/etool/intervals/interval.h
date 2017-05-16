@@ -352,7 +352,7 @@ namespace etool { namespace intervals {
         bool valid( ) const
         {
             using u16 = std::uint16_t;
-            using A = attributes;
+            using A   = attributes;
             using EPN = endpoint_name;
 
             auto lf = static_cast<u16>(factor<EPN::LEFT>( ));
