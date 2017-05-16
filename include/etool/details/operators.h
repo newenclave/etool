@@ -18,7 +18,7 @@ namespace etool { namespace details { namespace operators {
 
     template <typename T>
     struct zero_ref {
-        static T &get( )
+        static const T &get( )
         {
             return *reinterpret_cast<T*>( nullptr );
         }
