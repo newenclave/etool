@@ -23,8 +23,10 @@ namespace etool { namespace intervals {
         bool check(...);
         no_type check( const no_type& );
 
-        template <typename T>
         struct zero_ref {
+        protected:
+            zero_ref( );
+            template <typename T>
             static const T &get( )
             {
                 return *reinterpret_cast<T*>( nullptr );
@@ -37,12 +39,11 @@ namespace etool { namespace intervals {
             no_type operator == ( const T&, const Arg& );
 
             template <typename T, typename Arg = T>
-            struct exists {
-                enum { value = ( sizeof( check( zero_ref<T>::get( ) ==
-                                                zero_ref<Arg>::get( ) )
-                                       ) != sizeof( no_type )
-                               )
-                     };
+            struct exists: public zero_ref {
+                enum {
+                    res_size = sizeof( check( get<T>( ) == get<Arg>( ) ) ),
+                };
+                static const bool value = ( res_size != sizeof( no_type ) );
             };
 
             template <typename ValueT, typename LessComparator, bool>
@@ -94,13 +95,13 @@ namespace etool { namespace intervals {
             no_type operator <= ( const T&, const Arg& );
 
             template <typename T, typename Arg = T>
-            struct exists {
-                enum { value = ( sizeof( check( zero_ref<T>::get( ) <=
-                                                zero_ref<Arg>::get( ) )
-                                       ) != sizeof( no_type )
-                               )
-                     };
+            struct exists: public zero_ref {
+                enum {
+                    res_size = sizeof( check( get<T>( ) <= get<Arg>( ) ) ),
+                };
+                static const bool value = ( res_size != sizeof( no_type ) );
             };
+
             template <typename ValueT, typename LessComparator, bool>
             struct comparator;
 
