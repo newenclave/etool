@@ -27,10 +27,7 @@ namespace etool { namespace intervals {
         protected:
             zero_ref( );
             template <typename T>
-            static const T &get( )
-            {
-                return *reinterpret_cast<T*>( nullptr );
-            }
+            static const T &get( );
         };
 
         namespace equal {
