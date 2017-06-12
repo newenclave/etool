@@ -59,12 +59,12 @@ namespace etool { namespace trees { namespace trie {
 
             value_type *operator -> ( )
             {
-                return &node_->value( );
+                return node_->value( );
             }
 
             const value_type *operator -> ( ) const
             {
-                return *node_->value( );
+                return node_->value( );
             }
 
             Iter iterator( ) const
