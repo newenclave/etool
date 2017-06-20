@@ -17,7 +17,7 @@ namespace nodes {
         using value_type = ValueT;
         using value_ptr  = std::unique_ptr<value_type>;
 
-        using nodes_type = std::map<key_type, map, Cmp>;
+        using nodes_type = std::map<key_type, map, Comp>;
 
         map *get( const key_type &k )
         {
