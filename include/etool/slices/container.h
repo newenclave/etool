@@ -21,6 +21,11 @@ namespace etool { namespace slices {
             :data(std::move(b), std::move(e))
         { }
 
+        template<typename T>
+        container( T &cont )
+            :data(std::move(std::begin(cont)), std::move(std::end(cont)))
+        { }
+
         iterator begin( ) const
         {
             return data.first;
@@ -29,6 +34,16 @@ namespace etool { namespace slices {
         iterator end( ) const
         {
             return data.second;
+        }
+
+        size_t size( ) const
+        {
+            return std::distance(data.first, data.second);
+        }
+
+        bool empty( ) const
+        {
+            return data.first == data.second;
         }
 
         template <typename Distance>
