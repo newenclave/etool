@@ -24,8 +24,8 @@ namespace etool { namespace observers {
     public:
 
         struct unsubscriber {
-            virtual std::uintptr_t data( ) { return 0; }
             virtual ~unsubscriber( ) { }
+            virtual std::uintptr_t data( ) { return 0; }
             virtual void run( ) = 0;
         };
 
