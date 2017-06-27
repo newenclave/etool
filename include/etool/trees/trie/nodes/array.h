@@ -68,9 +68,13 @@ namespace nodes {
             if( next_.empty( ) ) {
                 return nullptr;
             }
-            auto f = std::lower_bound(next_.begin( ), next_.end( ),
-                                      k, cmp( ) );
-            return (f->equal_keys( k ) ) ? &f->value : nullptr;
+            auto f = std::lower_bound( next_.begin( ), next_.end( ),
+                                       k, cmp( ) );
+            if( f != next_.end( ) ) {
+                return (f->equal_keys( k ) ) ? &f->value : nullptr;
+            } else {
+                return nullptr;
+            }
         }
 
         array *set( const key_type &k )
