@@ -21,10 +21,10 @@ namespace etool { namespace slices {
             :data(std::move(b), std::move(e))
         { }
 
-        template<typename T>
-        container( T &cont )
-            :data(std::move(std::begin(cont)), std::move(std::end(cont)))
-        { }
+//        template<typename T>
+//        container( T &cont )
+//            :data(std::move(std::begin(cont)), std::move(std::end(cont)))
+//        { }
 
         iterator begin( ) const
         {
