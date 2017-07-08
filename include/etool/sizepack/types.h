@@ -34,7 +34,7 @@ namespace etool { namespace sizepack {
     template<>
     struct types<sizeof(std::uint32_t)> {
         typedef std::int32_t        signed_type;
-        typedef std::uint32_t       unsigned_type;
+        typedef std::uint32_t       unsigned_type; //   |   |   |
         static const unsigned_type  top_bit         = 0x80000000;
         static const unsigned_type  top_bit_shift   = 31;
 
@@ -45,7 +45,7 @@ namespace etool { namespace sizepack {
     template<>
     struct types<sizeof(std::uint64_t)> {
         typedef std::int64_t        signed_type;
-        typedef std::uint64_t       unsigned_type;
+        typedef std::uint64_t       unsigned_type; //   |   |   |   |   |
         static const unsigned_type  top_bit         = 0x8000000000000000;
         static const unsigned_type  top_bit_shift   = 63;
 
