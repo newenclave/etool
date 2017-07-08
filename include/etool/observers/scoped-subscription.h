@@ -39,11 +39,7 @@ namespace etool { namespace observers {
             return *this;
         }
 
-        scoped_subscription( scoped_subscription &o )
-        {
-            unsubscriber_.swap( o.unsubscriber_ );
-            o.reset( );
-        }
+        scoped_subscription( scoped_subscription &o ) = delete;
 
         scoped_subscription( )
         { }
