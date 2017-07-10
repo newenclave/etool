@@ -5,87 +5,91 @@
 #include "etool/intervals/set.h"
 #include "etool/intervals/map.h"
 
+#include "etool/observers/simple.h"
+#include "etool/observers/define.h"
+#include "etool/details/type_uid.h"
+
 using namespace etool;
 
-namespace {
-
-    using u64 = std::uint64_t;
-
-    using ival_type = intervals::interval<u64>;
-    using ival_set  = intervals::set<u64>;
-    using ival_map  = intervals::map<u64, std::string>;
-
-}
-
-struct my_int {
-    my_int( int ii ) :i(ii) { }
-    int i;
+struct test {
+    std::string data;
 };
 
-bool operator < (my_int lh, my_int rh )
-{
-    std::cout << "less\n";
-    return lh.i < rh.i;
-}
-
-bool operator == (my_int lh, my_int rh)
-{
-    std::cout << "eq\n";
-    return lh.i == rh.i;
-}
-
-bool operator <= (my_int lh, my_int rh)
-{
-    std::cout << "ls eq\n";
-    return lh.i <= rh.i;
-}
-
-struct test_cmp {
-    bool operator ( ) ( int l, int r ) const
-    {
-        return l < r;
-    }
+struct cool {
+    ETOOL_OBSERVER_DEFINE_COMMON( mutest, void (test &),
+                                  public, details::dummy_mutex );
+    ETOOL_OBSERVER_DEFINE_COMMON( contest, void (const test &),
+                                  public, details::dummy_mutex );
 };
 
-int main0( )
+void add( test &t )
 {
-    using ival_type = intervals::interval<double>;
-    intervals::map<double, std::string> s;
+    t.data += std::string("1");
+}
 
-    s.insert(std::make_pair(ival_type::minus_infinite( ), "-inf"));
-    s.insert(std::make_pair(ival_type::plus_infinite( ), "+inf"));
-
-
-    for( auto &a : s ) {
-        std::cout << a.first << a.second << "\n";
-    }
-
-    return 0;
+void show( const test &t )
+{
+    std::cout << t.data << "\n";
 }
 
 int main(  int argc, char* argv[ ] )
 {
+    std::cout
+            << details::type_uid<test>::get( ) << " "
+            << details::type_uid<const test>::get( ) << " "
+            << details::type_uid<const test *>::get( ) << " "
+            << details::type_uid<const test &>::get( ) << " "
+            << details::type_uid<      test *>::get( ) << " "
+            << details::type_uid<      test &>::get( ) << " "
+            << details::type_uid<test const *>::get( ) << " "
+            << details::type_uid<test const &>::get( ) << " "
+            << "\n";
 
-    using ival_type = intervals::interval<double>;
-    intervals::set<double> s;
+    std::cout
+            << details::type_uid<      test  >::is_const << "0 "
+            << details::type_uid<const test  >::is_const << "1 "
+            << details::type_uid<const test *>::is_const << "1 "
+            << details::type_uid<const test &>::is_const << "1 "
+            << details::type_uid<      test *>::is_const << "0 "
+            << details::type_uid<      test &>::is_const << "0 "
+            << details::type_uid<test const *>::is_const << "1 "
+            << details::type_uid<test const &>::is_const << "1 "
+            << "\n";
+    std::cout
+            << details::type_uid<      test  >::is_ref << "0 "
+            << details::type_uid<const test  >::is_ref << "0 "
+            << details::type_uid<const test *>::is_ref << "0 "
+            << details::type_uid<const test &>::is_ref << "1 "
+            << details::type_uid<      test *>::is_ref << "0 "
+            << details::type_uid<      test &>::is_ref << "1 "
+            << details::type_uid<test const *>::is_ref << "0 "
+            << details::type_uid<test const &>::is_ref << "1 "
+            << "\n";
 
-    s.insert( ival_type::left_closed( -110, -99 ) );
-    s.insert( ival_type::left_closed( 99, 100 ) );
+    std::cout
+            << details::type_uid<      test  >::is_ptr << "0 "
+            << details::type_uid<const test  >::is_ptr << "0 "
+            << details::type_uid<const test *>::is_ptr << "1 "
+            << details::type_uid<const test &>::is_ptr << "0 "
+            << details::type_uid<      test *>::is_ptr << "1 "
+            << details::type_uid<      test &>::is_ptr << "0 "
+            << details::type_uid<test const *>::is_ptr << "1 "
+            << details::type_uid<test const &>::is_ptr << "0 "
+            << "\n";
 
-    for( double i = 0; i<10; i += 3 ) {
-        s.insert( ival_type::left_closed( i, i + 1 ) );
-    }
+    test tt;
+    cool c;
 
-    auto f = s.find_intersection( ival_type::closed( -100, 2 ) );
+    c.subscribe_mutest( add );
+    c.subscribe_mutest( add );
+    c.subscribe_mutest( add );
 
-    for( auto r = f.first; r != f.second; ++r ) {
-        std::cout << *r << "\n";
-    }
-    std::cout << "==================\n";
+    c.subscribe_contest( show );
+    c.subscribe_contest( show );
+    c.subscribe_contest( show );
 
-    for( auto &a : s ) {
-        std::cout << a << "\n";
-    }
+    c.mutest( tt );
+    c.contest( tt );
 
     return 0;
 }
