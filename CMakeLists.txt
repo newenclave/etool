@@ -44,5 +44,9 @@ foreach( src_dir ${src} )
     list(APPEND lib_src ${headers})
 endforeach( )
 
+foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
+  message("${i}")
+endforeach( )
+
 add_executable( ${PROJECT_NAME} ${lib_src} )
 
