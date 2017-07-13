@@ -34,48 +34,6 @@ void show( const test &t )
 
 int main(  int argc, char* argv[ ] )
 {
-    std::cout
-            << details::type_uid<test>::get( ) << " "
-            << details::type_uid<const test>::get( ) << " "
-            << details::type_uid<const test *>::get( ) << " "
-            << details::type_uid<const test &>::get( ) << " "
-            << details::type_uid<      test *>::get( ) << " "
-            << details::type_uid<      test &>::get( ) << " "
-            << details::type_uid<test const *>::get( ) << " "
-            << details::type_uid<test const &>::get( ) << " "
-            << "\n";
-
-    std::cout
-            << details::type_uid<      test  >::is_const << "0 "
-            << details::type_uid<const test  >::is_const << "1 "
-            << details::type_uid<const test *>::is_const << "1 "
-            << details::type_uid<const test &>::is_const << "1 "
-            << details::type_uid<      test *>::is_const << "0 "
-            << details::type_uid<      test &>::is_const << "0 "
-            << details::type_uid<test const *>::is_const << "1 "
-            << details::type_uid<test const &>::is_const << "1 "
-            << "\n";
-    std::cout
-            << details::type_uid<      test  >::is_ref << "0 "
-            << details::type_uid<const test  >::is_ref << "0 "
-            << details::type_uid<const test *>::is_ref << "0 "
-            << details::type_uid<const test &>::is_ref << "1 "
-            << details::type_uid<      test *>::is_ref << "0 "
-            << details::type_uid<      test &>::is_ref << "1 "
-            << details::type_uid<test const *>::is_ref << "0 "
-            << details::type_uid<test const &>::is_ref << "1 "
-            << "\n";
-
-    std::cout
-            << details::type_uid<      test  >::is_ptr << "0 "
-            << details::type_uid<const test  >::is_ptr << "0 "
-            << details::type_uid<const test *>::is_ptr << "1 "
-            << details::type_uid<const test &>::is_ptr << "0 "
-            << details::type_uid<      test *>::is_ptr << "1 "
-            << details::type_uid<      test &>::is_ptr << "0 "
-            << details::type_uid<test const *>::is_ptr << "1 "
-            << details::type_uid<test const &>::is_ptr << "0 "
-            << "\n";
 
     test tt;
     cool c;
