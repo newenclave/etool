@@ -64,22 +64,22 @@ namespace ccout {
     }
 #else
 
-    static const char * cp_none      = "\033[0m";
-    //static const char * cp_none      = "\x1b[0m";
-    //static const char * cp_black     = "\x1b[30;1m";
-    static const char * cp_red       = "\x1b[31;1m";
-    static const char * cp_green     = "\x1b[32;1m";
-    static const char * cp_yellow    = "\x1b[33;1m";
-    //static const char * cp_orange    = "\x1b[33;1m";
-    static const char * cp_blue      = "\x1b[34;1m";
-    //static const char * cp_purple    = "\x1b[35;1m";
-    static const char * cp_cyan      = "\x1b[36;1m";
-    static const char * cp_white     = "\x1b[37;1m";
-
     struct color_map {
         static
         const char *get( std::size_t id )
         {
+            static const char * cp_none      = "\033[0m";
+            //static const char * cp_none      = "\x1b[0m";
+            //static const char * cp_black     = "\x1b[30;1m";
+            static const char * cp_red       = "\x1b[31;1m";
+            static const char * cp_green     = "\x1b[32;1m";
+            static const char * cp_yellow    = "\x1b[33;1m";
+            //static const char * cp_orange    = "\x1b[33;1m";
+            static const char * cp_blue      = "\x1b[34;1m";
+            //static const char * cp_purple    = "\x1b[35;1m";
+            static const char * cp_cyan      = "\x1b[36;1m";
+            static const char * cp_white     = "\x1b[37;1m";
+
             static const char *val[ ] = {
                 cp_none,
                 cp_red, cp_green, cp_blue,
