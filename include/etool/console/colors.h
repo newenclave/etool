@@ -2,6 +2,9 @@
 #define ETOOL_CONDOLE_COLORS_H
 
 #include <iostream>
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 namespace etool { namespace console {
 
