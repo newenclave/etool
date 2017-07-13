@@ -66,7 +66,7 @@ namespace ccout {
         {
             return 7;
         }
-    }
+    };
 #else
 
     struct color_map {
