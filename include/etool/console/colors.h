@@ -56,6 +56,11 @@ namespace ccout {
             };
             return val[id];
         }
+        static
+        std::size_t count( )
+        {
+            return 7;
+        }
     }
 #else
 
@@ -82,19 +87,23 @@ namespace ccout {
             };
             return val[id];
         }
+        static
+        std::size_t count( )
+        {
+            return 7;
+        }
     };
 #endif
-    const size_t color_count = sizeof(color_map)/sizeof(color_map[0]);
 
     inline
     std::ostream &set_stream_color( std::ostream &s, unsigned color )
     {
-        if( color >= color_count ) {
+        if( color >= color_map::count( ) ) {
             color = COLOR_NONE;
         }
 #ifdef _WIN32
         SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ),
-                                 color_map[color] );
+                                 color_map::get(color) );
 #else
         s << color_map::get(color);
 #endif
