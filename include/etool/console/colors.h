@@ -45,11 +45,18 @@ namespace ccout {
                                        | FOREGROUND_INTENSITY,
     };
 
-    const unsigned color_map[ ] = {
-        LightGrey,
-        LightRed, LightGreen, LightBlue,
-        Yellow, White, Cyan
-    };
+    struct color_map {
+        static
+        unsigned get( std::size_t id )
+        {
+            static const unsigned val[ ] = {
+                LightGrey,
+                LightRed, LightGreen, LightBlue,
+                Yellow, White, Cyan
+            };
+            return val[id];
+        }
+    }
 #else
 
     static const char * cp_none      = "\033[0m";
@@ -64,10 +71,17 @@ namespace ccout {
     static const char * cp_cyan      = "\x1b[36;1m";
     static const char * cp_white     = "\x1b[37;1m";
 
-    const char *color_map[ ] = {
-        cp_none,
-        cp_red, cp_green, cp_blue,
-        cp_yellow, cp_white, cp_cyan
+    struct color_map {
+        static
+        const char *get( std::size_t id )
+        {
+            static const char *val[ ] = {
+                cp_none,
+                cp_red, cp_green, cp_blue,
+                cp_yellow, cp_white, cp_cyan
+            };
+            return val[id];
+        }
     };
 #endif
     const size_t color_count = sizeof(color_map)/sizeof(color_map[0]);
@@ -82,7 +96,7 @@ namespace ccout {
         SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ),
                                  color_map[color] );
 #else
-        s << color_map[color];
+        s << color_map::get(color);
 #endif
         return s;
     }
