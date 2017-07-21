@@ -5,7 +5,9 @@
 #include <ostream>
 
 #ifdef _WIN32
+#define NOMINMAX
 #include <windows.h>
+#undef NOMINMAX
 #endif
 
 namespace etool { namespace console {
