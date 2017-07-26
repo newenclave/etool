@@ -54,7 +54,7 @@ namespace nodes {
         struct cmp {
             bool operator ( )( const key_data &d, const key_type &k ) const
             {
-                const Comp compare;
+                Comp compare;
                 return compare( d.key, k );
             }
         };
