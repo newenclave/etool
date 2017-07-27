@@ -28,6 +28,7 @@ namespace nodes {
             key_data( const key_data &other ) = delete;
             key_data& operator = ( const key_data &other ) = delete;
 
+            explicit
             key_data( const key_type &k )
                 :key(k)
             { }
