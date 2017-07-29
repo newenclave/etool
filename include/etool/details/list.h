@@ -14,8 +14,8 @@ namespace etool { namespace details {
             node *next_;
             T data_;
             node( const T &data )
-                :prev_(NULL)
-                ,next_(NULL)
+                :prev_(nullptr)
+                ,next_(nullptr)
                 ,data_(data)
             { }
 
@@ -121,7 +121,7 @@ namespace etool { namespace details {
 
             operator bool ( ) const
             {
-                return node_ != NULL;
+                return node_ != nullptr;
             }
         };
 
@@ -152,14 +152,14 @@ namespace etool { namespace details {
     public:
 
         list( )
-            :front_(NULL)
-            ,back_(NULL)
+            :front_(nullptr)
+            ,back_(nullptr)
             ,size_(0)
         { }
 
         list( const list &other )
-            :front_(NULL)
-            ,back_(NULL)
+            :front_(nullptr)
+            ,back_(nullptr)
             ,size_(0)
         {
             list l(other.begin( ), other.end( ));
@@ -168,8 +168,8 @@ namespace etool { namespace details {
 
         template <typename Itr>
         list( Itr begin, Itr end )
-            :front_(NULL)
-            ,back_(NULL)
+            :front_(nullptr)
+            ,back_(nullptr)
             ,size_(0)
         {
             list l;
@@ -192,7 +192,7 @@ namespace etool { namespace details {
                 delete p;
                 p = tmp;
             }
-            front_ = back_ = NULL;
+            front_ = back_ = nullptr;
         }
 
         iterator begin( )
@@ -207,7 +207,7 @@ namespace etool { namespace details {
 
         iterator end( )
         {
-            return iterator(NULL);
+            return iterator(nullptr);
         }
 
         iterator rend( )
@@ -241,7 +241,7 @@ namespace etool { namespace details {
         void splice_back( list<T> &other )
         {
             if( &other != this ) {
-                if( front_ == NULL ) {
+                if( front_ == nullptr ) {
                     front_ = other.front_;
                     back_  = other.back_;
                 } else if( other.front_ ) {
@@ -249,7 +249,7 @@ namespace etool { namespace details {
                     other.front_->prev_ = back_;
                     back_               = other.back_;
                 }
-                other.front_ = other.back_= NULL;
+                other.front_ = other.back_= nullptr;
                 size_       += other.size( );
                 other.size_  = 0;
             }
@@ -291,21 +291,21 @@ namespace etool { namespace details {
             back_        = other.back_;
             other.back_  = tb;
 
-            size_t ts    = size_;
-            size_        = other.size_;
-            other.size_  = ts;
+            std::size_t ts  = size_;
+            size_           = other.size_;
+            other.size_     = ts;
         }
 
-        size_t size( ) const
+        std::size_t size( ) const
         {
             return size_;
         }
 
     private:
 
-        node   *front_;
-        node   *back_;
-        size_t  size_;
+        node        *front_;
+        node        *back_;
+        std::size_t  size_;
     };
 
 
