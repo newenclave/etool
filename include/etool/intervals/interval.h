@@ -896,7 +896,7 @@ namespace etool { namespace intervals {
         {
             using V = endpoint_type<Side>;
             using ptr = typename V::pointer;
-            const ptr p;
+            ptr p;
             return is_close<Side>( )
                  ? cmp::less_equal( val, value( p ) )
                  : cmp::less( val, value( p ) )
@@ -908,7 +908,7 @@ namespace etool { namespace intervals {
         {
             using V = endpoint_type<Side>;
             using ptr = typename V::pointer;
-            const ptr p;
+            ptr p;
             return is_close<Side>( )
                  ? cmp::greater_equal( val, value( p ) )
                  : cmp::greater( val, value( p ) )
