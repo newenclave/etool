@@ -52,7 +52,7 @@ namespace etool { namespace intervals {
                 static
                 bool less( const ValueT &lh, const ValueT &rh )
                 {
-                    const LessComparator compare;
+                    LessComparator compare;
                     return compare( lh, rh );
                 }
 
