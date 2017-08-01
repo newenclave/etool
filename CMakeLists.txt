@@ -36,6 +36,7 @@ list( APPEND src ./include/etool/cache
                  ./include/etool/catch
                  ./include/etool/hash
                  ./include/etool/console
+                 ./include/etool/charset
                  ./tests
                  )
 
