@@ -113,7 +113,9 @@ namespace etool { namespace detail {
 
         struct value_arg {
 
+
             template <typename ...Args>
+            explicit
             value_arg( Args&& ...args )
                 :val_(Trait::create(std::forward<Args>(args)...))
             { }
@@ -130,6 +132,7 @@ namespace etool { namespace detail {
         struct error_arg {
 
             template <typename ...Args>
+            explicit
             error_arg( Args&& ...args )
                 :val_(std::forward<Args>(args)...)
             { }
@@ -160,12 +163,14 @@ namespace etool { namespace detail {
             ,failed_(other.failed_)
         { }
 
+        explicit
         result( value_arg &&val )
             :value_(val.move( ))
             ,error_(error_type( ))
             ,failed_(false)
         { }
 
+        explicit
         result( error_arg &&val )
             :error_(val.move( ))
             ,failed_(true)
