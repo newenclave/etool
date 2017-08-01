@@ -9,6 +9,7 @@ namespace etool { namespace charset {
 
     struct utf8 {
 
+        using ucs2string = std::basic_string<std::uint16_t>;
         using ucs4string = std::basic_string<std::uint32_t>;
 
     private:
@@ -167,12 +168,12 @@ namespace etool { namespace charset {
 
     public:
         static
-        ucs4string utf8_to_ucs4(const std::string &ucs4 )
+        ucs4string utf8_to_ucs4(const std::string &ut8 )
         {
             ucs4string res;
-            for( std::size_t i = 0; i < ucs4.size( ); ) {
+            for( std::size_t i = 0; i < ut8.size( ); ) {
                 std::uint32_t next = 0;
-                auto s = utf8_to_ucs4(&ucs4[i], ucs4.size( ) - i, &next);
+                auto s = utf8_to_ucs4(&ut8[i], ut8.size( ) - i, &next);
                 if( s == 0 ) {
                     res.push_back( '?' );
                     ++i;
@@ -183,12 +184,40 @@ namespace etool { namespace charset {
             }
             return res;
         }
+
         static
         std::string ucs4_to_utf8(const ucs4string &ucs4 )
         {
             std::string res;
             for( auto &n: ucs4 ) {
                 ucs4_to_utf8( n, res );
+            }
+            return res;
+        }
+
+        static
+        ucs2string utf8_to_ucs2(const std::string &ut8 )
+        {
+            ucs2string res;
+            for( std::size_t i = 0; i < ut8.size( ); ) {
+                std::uint32_t next = 0;
+                auto s = utf8_to_ucs4( &ut8[i], ut8.size( ) - i, &next);
+                if( s == 0 ) {
+                    res.push_back( '?' );
+                    ++i;
+                } else {
+                    res.push_back( static_cast<std::uint16_t>(next & 0xFFFF ));
+                    i += s;
+                }
+            }
+            return res;
+        }
+        static
+        std::string ucs2_to_utf8(const ucs2string &ucs2 )
+        {
+            std::string res;
+            for( auto &n: ucs2 ) {
+                ucs4_to_utf8( static_cast<std::uint32_t>(n), res );
             }
             return res;
         }
