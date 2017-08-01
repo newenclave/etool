@@ -211,6 +211,7 @@ namespace etool { namespace intervals {
             attrs_[1] = attributes::MIN_INF;
         }
 
+        explicit
         interval( const domain_type &val )
             :left_(val)
             ,right_(val)
