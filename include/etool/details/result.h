@@ -106,10 +106,6 @@ namespace etool { namespace detail {
               typename Trait = traits::value_trait<T> >
     class result {
 
-        typename Trait::value_type value_;
-        E                          error_;
-        bool                       failed_;
-
     public:
 
         typedef T value_type;
@@ -177,15 +173,17 @@ namespace etool { namespace detail {
 
         result &operator = ( const result &other )
         {
-            error_ = other.error_;
+            failed_ = other.failed_;
+            error_  = other.error_;
             Trait::copy( value_, other.value_ );
             return *this;
         }
 
         result &operator = ( result &&other )
         {
-            error_ = std::move(other.error_);
-            value_ = std::move(other.value_);
+            failed_ = other.failed_;
+            error_  = std::move(other.error_);
+            value_  = std::move(other.value_);
             return *this;
         }
 
@@ -250,6 +248,10 @@ namespace etool { namespace detail {
         {
             return Trait::move(value_);
         }
+    private:
+        typename Trait::value_type value_;
+        E                          error_;
+        bool                       failed_;
 
     };
 
