@@ -13,7 +13,7 @@
 
 using namespace etool;
 
-int main(  int argc, char* argv[ ] )
+int main(  int /*argc*/, char** /*argv[ ]*/ )
 {
     std::string test = "Hello! йцукен 漢語";
     auto res = charset::utf8::utf8_to_ucs4( test );

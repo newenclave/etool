@@ -537,7 +537,7 @@ namespace etool { namespace intervals {
             using I  = iterator_access;
             using CT = container_type;
 
-            auto res = locate<CT, iterator>( cont_, key );
+            auto res = locate<CT, iterator>( cont_, key_type( key ) );
 
             return I::key(res.left.itr).contains( key )
                  ? res.left.itr
@@ -548,7 +548,7 @@ namespace etool { namespace intervals {
         {
             using I   = iterator_access;
             using CCT = const container_type;
-            auto res  = locate<CCT, const_iterator>( cont_, key );
+            auto res  = locate<CCT, const_iterator>( cont_, key_type( key ) );
 
             return I::key(res.left.itr).contains(key)
                  ? res.left.itr
