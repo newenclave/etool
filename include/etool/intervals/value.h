@@ -21,7 +21,7 @@ namespace etool { namespace intervals {
             ,attr_(a)
         { }
 
-        value( )                             = delete;
+        value( )                             = default;
         value( const value & )               = default;
         value( value && )                    = default;
         value & operator = ( const value & ) = default;

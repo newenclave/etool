@@ -14,31 +14,8 @@
 
 using namespace etool;
 
-
 int main(  int /*argc*/, char** /*argv[ ]*/ )
 {
-    auto val1 = intervals::value<int>::make_open( 10 );
-    auto val2 = intervals::value<int>::make_closed( 10 );
-
-    auto max_inf = intervals::value<int>::make_max_inf( );
-    auto min_inf = intervals::value<int>::make_min_inf( );
-
-    std::cout << std::boolalpha << (val1 <  val2) << "\n";
-    std::cout << std::boolalpha << (val2 <  val2) << "\n";
-    std::cout << std::boolalpha << (val1 == val2) << "\n";
-
-    std::cout << std::boolalpha << (val1 ==  10) << "\n";
-    std::cout << std::boolalpha << (val2 ==  10) << "\n";
-
-    std::cout << std::boolalpha << (val1 < 10) << "\n";
-    std::cout << std::boolalpha << (val2 < 10) << "\n";
-
-    std::cout << std::boolalpha << ( 10 < val1 ) << "\n";
-    std::cout << std::boolalpha << ( 10 < val2 ) << "\n";
-
-    std::cout << val1 << val2 << "\n";
-    std::cout << max_inf << min_inf << "\n";
-
     return 0;
 }
 

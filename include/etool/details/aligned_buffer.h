@@ -9,6 +9,10 @@ namespace etool { namespace details {
     template <typename ValueT>
     struct alignas(alignof(ValueT)) aligned_buffer {
 
+    private:
+        using this_type = aligned_buffer<ValueT>;
+    public:
+
         static_assert( sizeof(ValueT) > 0, "ValueT has size == 0" );
 
         enum { is_array = 0, size = 1 };
@@ -78,6 +82,10 @@ namespace etool { namespace details {
 
     template <typename ValueT, unsigned N>
     struct alignas(alignof(ValueT)) aligned_buffer<ValueT[N]> {
+
+    private:
+        using this_type = aligned_buffer<ValueT[N]>;
+    public:
 
         static_assert( N > 0, "N must be greater then 0." );
 
