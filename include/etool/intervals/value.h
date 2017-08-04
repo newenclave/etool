@@ -21,6 +21,12 @@ namespace etool { namespace intervals {
             ,attr_(a)
         { }
 
+        value( )                             = delete;
+        value( const value & )               = default;
+        value( value && )                    = default;
+        value & operator = ( const value & ) = default;
+        value & operator = ( value && )      = default;
+
         attributes attr( ) const
         {
             return attr_;
@@ -33,16 +39,23 @@ namespace etool { namespace intervals {
 
         template <typename ...Args>
         static
-        value make( Args&& ...args )
+        value make( attributes a, Args&& ...args )
         {
-            return value(attributes::OPEN, std::forward<Args>(args)...);
+            return value( a, std::forward<Args>(args)... );
         }
 
         template <typename ...Args>
         static
-        value make( attributes a, Args&& ...args )
+        value make_open( Args&& ...args )
         {
-            return value( a, std::forward<Args>(args)... );
+            return value( attributes::OPEN, std::forward<Args>(args)...);
+        }
+
+        template <typename ...Args>
+        static
+        value make_closed( Args&& ...args )
+        {
+            return value( attributes::CLOSE, std::forward<Args>(args)...);
         }
 
         template <typename ...Args>
@@ -59,29 +72,119 @@ namespace etool { namespace intervals {
             return value(attributes::MIN_INF, std::forward<Args>(args)...);
         }
 
+        bool is_open( ) const
+        {
+            return attr( ) == attributes::OPEN;
+        }
+
+        bool is_closed( ) const
+        {
+            return attr( ) == attributes::CLOSE;
+        }
+
+        bool is_min( ) const
+        {
+            return attr( ) == attributes::MIN_INF;
+        }
+
+        bool is_max( ) const
+        {
+            return attr( ) == attributes::MAX_INF;
+        }
+
         struct cmp {
             using ocmp = operators::cmp<domain_type, Comparator>;
 
             static
             bool less( const value &lh, const value &rh )
             {
-                if( rh.attr( ) == attributes::MAX_INF ) {
-                    return (lh.attr( ) != attributes::MAX_INF);
-                } else if( rh.attr( ) == attributes::MIN_INF ) {
+                if( rh.is_max( ) ) {
+                    return !lh.is_max( );
+                } else if( rh.is_min( ) ) {
                     return false;
                 }
 
-                switch(lh.attr( )) {
+                if( lh.is_max( ) ) {
+                    return false;
+                } else if( lh.is_min( ) ) {
+                    return !rh.is_min( );
+                }
+
+                if( lh.is_open( ) ) {
+                    return rh.is_open( )
+                         ? ocmp::less( lh.get( ), rh.get( ) )
+                         : ocmp::less_equal( lh.get( ), rh.get( ) )
+                         ;
+                } else if( lh.is_closed( ) ) {
+                    return rh.is_open( )
+                        ? ocmp::less_equal( lh.get( ), rh.get( ) )
+                        : ocmp::less( lh.get( ), rh.get( ) )
+                        ;
+                }
+                return false;
+            }
+
+            static
+            bool less( const value &lh, const domain_type &rh )
+            {
+                switch (lh.attr( )) {
                 case attributes::MAX_INF:
                     return false;
                 case attributes::MIN_INF:
-                    return rh.attr( ) != attributes::MIN_INF;
-                case attributes::OPEN:
-
+                    return true;
                 case attributes::CLOSE:
-                    break;
+                    return ocmp::less( lh.get( ), rh );
+                case attributes::OPEN:
+                    return ocmp::less_equal( lh.get( ), rh );
                 }
-                return false;
+            }
+
+            static
+            bool less( const domain_type &lh, const value &rh )
+            {
+                switch (rh.attr( )) {
+                case attributes::MAX_INF:
+                    return true;
+                case attributes::MIN_INF:
+                    return false;
+                case attributes::CLOSE:
+                    return ocmp::less( lh, rh.get( ) );
+                case attributes::OPEN:
+                    return ocmp::less_equal( lh, rh.get( ) );
+                }
+            }
+
+            static
+            bool equal( const value &lh, const value &rh )
+            {
+                switch (lh.attr( )) {
+                case attributes::MAX_INF:
+                case attributes::MIN_INF:
+                    return rh.attr( ) == lh.attr( );
+                case attributes::CLOSE:
+                case attributes::OPEN:
+                    return (rh.attr( ) == lh.attr( ))
+                        && ocmp::equal( lh.get( ), rh.get( ) );
+                }
+            }
+
+            static
+            bool equal( const value &lh, const domain_type &rh )
+            {
+                switch (lh.attr( )) {
+                case attributes::MAX_INF:
+                case attributes::MIN_INF:
+                case attributes::OPEN:
+                    return false;
+                case attributes::CLOSE:
+                    return ocmp::equal( lh.get( ), rh );
+                }
+            }
+
+            static
+            bool equal( const domain_type &lh, const value &rh  )
+            {
+                return equal( rh, lh );
             }
         };
 
@@ -89,6 +192,54 @@ namespace etool { namespace intervals {
         domain_type val_;
         attributes  attr_;
     };
+
+    template <typename D, typename C>
+    inline
+    bool operator < ( const value<D, C> &lh, const value<D, C> &rh )
+    {
+        using cmp = typename value<D, C>::cmp;
+        return cmp::less( lh, rh );
+    }
+
+    template <typename D, typename C>
+    inline
+    bool operator < ( const value<D, C> &lh, const D &rh )
+    {
+        using cmp = typename value<D, C>::cmp;
+        return cmp::less( lh, rh );
+    }
+
+    template <typename D, typename C>
+    inline
+    bool operator < ( const D &lh, const value<D, C> &rh )
+    {
+        using cmp = typename value<D, C>::cmp;
+        return cmp::less( lh, rh );
+    }
+
+    template <typename D, typename C>
+    inline
+    bool operator == ( const value<D, C> &lh, const value<D, C> &rh )
+    {
+        using cmp = typename value<D, C>::cmp;
+        return cmp::equal( lh, rh );
+    }
+
+    template <typename D, typename C>
+    inline
+    bool operator == ( const value<D, C> &lh, const D &rh )
+    {
+        using cmp = typename value<D, C>::cmp;
+        return cmp::equal( lh, rh );
+    }
+
+    template <typename D, typename C>
+    inline
+    bool operator == ( const D &lh, const value<D, C> &rh )
+    {
+        using cmp = typename value<D, C>::cmp;
+        return cmp::equal( lh, rh );
+    }
 
     template <typename D, typename C>
     inline
