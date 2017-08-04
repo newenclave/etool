@@ -13,7 +13,7 @@
 
 using namespace etool;
 
-int main(  int /*argc*/, char** /*argv[ ]*/ )
+int main0(  int /*argc*/, char** /*argv[ ]*/ )
 {
     std::string test = "Hello! йцукен 漢語";
     auto res = charset::utf8::utf8_to_ucs4( test );
@@ -29,7 +29,7 @@ int main(  int /*argc*/, char** /*argv[ ]*/ )
     return 0;
 }
 
-int main1( int argc, char* argv[ ] )
+int main( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );
