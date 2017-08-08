@@ -63,6 +63,16 @@ namespace etool { namespace slices {
             return val_ + size( );
         }
 
+        const value_type *begin( ) const noexcept
+        {
+            return val_;
+        }
+
+        const value_type *end( ) const noexcept
+        {
+            return val_ + size( );
+        }
+
         size_type size( ) const noexcept
         {
             return len_;
