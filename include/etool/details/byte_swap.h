@@ -17,10 +17,10 @@ namespace etool { namespace details {
         void place_swap( value_type &v )
         {
             std::uint8_t *in  = reinterpret_cast<std::uint8_t *>(&v);
-            static const size_t length = sizeof(value_type);
-            static const size_t middle = length / 2;
+            static const std::size_t length = sizeof(value_type);
+            static const std::size_t middle = length / 2;
 
-            for( size_t i=0; i < middle; ++i ) {
+            for( std::size_t i=0; i < middle; ++i ) {
                 std::uint8_t tmp    = in[length - 1 - i];
                 in[length - 1 - i]  = in[i];
                 in[i]               = tmp;
