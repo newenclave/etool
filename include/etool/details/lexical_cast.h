@@ -108,6 +108,63 @@ namespace etool { namespace details {
         }
     };
 
+    template <>
+    struct lexical_cast_impl<std::wstring, const std::wstring::value_type *> {
+        static
+        std::wstring cast( const std::wstring::value_type *from )
+        {
+            return from;
+        }
+    };
+
+    template <typename T>
+    struct lexical_cast_impl<std::string, T> {
+        static
+        std::string cast( T from )
+        {
+            std::ostringstream oss;
+            oss << from;
+            return oss.str( );
+        }
+    };
+
+    template <typename T>
+    struct lexical_cast_impl<std::wstring, T> {
+        static
+        std::wstring cast( T from )
+        {
+            std::wostringstream oss;
+            oss << from;
+            return oss.str( );
+        }
+    };
+
+    template <typename T>
+    struct lexical_cast_impl<T, std::wstring> {
+        static
+        T cast( std::wstring from )
+        {
+            std::wstringstream wss;
+            wss << from;
+            T res { };
+            wss >> res;
+            return res;
+        }
+    };
+
+    template <typename T>
+    struct lexical_cast_impl<T, const std::wstring::value_type *> {
+        static
+        T cast( const std::wstring::value_type *from )
+        {
+            std::wstringstream wss;
+            wss << from;
+            T res { };
+            wss >> res;
+            return res;
+        }
+    };
+
     /////////////// Floating
     /// Wstring
     template <>
@@ -121,7 +178,7 @@ namespace etool { namespace details {
     };
 
     template <>
-    struct lexical_cast_impl<float, std::wstring::value_type  *> {
+    struct lexical_cast_impl<float, const std::wstring::value_type  *> {
         using char_type = std::wstring::value_type;
         static
         float cast( const char_type *from )
@@ -141,7 +198,7 @@ namespace etool { namespace details {
     };
 
     template <>
-    struct lexical_cast_impl<double, std::wstring::value_type  *> {
+    struct lexical_cast_impl<double, const std::wstring::value_type  *> {
         using char_type = std::wstring::value_type;
         static
         double cast( const char_type *from )
@@ -162,7 +219,7 @@ namespace etool { namespace details {
     };
 
     template <>
-    struct lexical_cast_impl<long double, std::wstring::value_type  *> {
+    struct lexical_cast_impl<long double, const std::wstring::value_type  *> {
         using char_type = std::wstring::value_type;
         static
         long double cast( const char_type *from )

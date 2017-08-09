@@ -17,7 +17,7 @@ using namespace etool;
 
 int main(  int /*argc*/, char** /*argv[ ]*/ )
 {
-    std::cout << details::lexical_cast<double>("-4.667") << "\n";
+    std::cout << details::lexical_cast<double>(L"-4.667") << "\n";
     return 0;
 }
 
