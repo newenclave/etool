@@ -2,6 +2,7 @@
 #define ETOOL_DETAILS_BYTE_SWAP_H
 
 #include <cstdint>
+#include <string>
 
 namespace etool { namespace details {
 
@@ -110,6 +111,28 @@ namespace etool { namespace details {
                    ( ( v & 0x0000000000FF0000 ) << 24) |
                    ( ( v & 0x000000000000FF00 ) << 40) |
                    ( ( v & 0x00000000000000FF ) << 56) ;
+        }
+    };
+
+    template <>
+    struct byte_swap<std::string> {
+        typedef std::string value_type;
+
+        static void
+        place_swap( value_type &v )
+        {
+            auto size   = v.size( );
+            auto middle = size / 2;
+            for( std::size_t i= 0; i < middle; ++i ) {
+                std::swap(v[i], v[size - i - 1]);
+            }
+        }
+
+        static
+        value_type swap( value_type v )
+        {
+            place_swap( v );
+            return v;
         }
     };
 

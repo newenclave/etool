@@ -46,15 +46,21 @@ namespace etool { namespace details {
         }
 
         static
-        result from_hex( const std::string &bytes )
+        result from_hex( const std::string &hex )
+        {
+            return from_hex(hex.c_str( ), hex.size( ));
+        }
+
+        static
+        result from_hex( const char *hex, std::size_t len )
         {
             std::string res;
-            if( bytes.size( ) % 2 != 0 ) {
+            if( len % 2 != 0 ) {
                 return result::fail( "Bad serialized string." );
             }
-            for( std::size_t i=0; i<bytes.size( ); i += 2 ) {
-                auto h = char2int( bytes[i] );
-                auto l = char2int( bytes[i + 1] );
+            for( std::size_t i=0; i<len; i += 2 ) {
+                auto h = char2int( hex[i] );
+                auto l = char2int( hex[i + 1] );
                 if( (h == 0xFF) || (l == 0xFF) ) {
                     return result::fail( "Bad serialized string." );
                 }
@@ -63,6 +69,7 @@ namespace etool { namespace details {
             }
             return result::ok(res);
         }
+
     };
 
 }}
