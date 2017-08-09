@@ -29,12 +29,29 @@ namespace etool { namespace details {
         }
 
         static
-        result to_hex( const std::string &hex )
+        result to_Hex( const std::string &hex )
         {
             static const char vals[] = {
                 '0', '1', '2','3', '4',
                 '5', '6', '7','8', '9',
                 'A', 'B', 'C','D', 'E', 'F',
+            };
+            std::string res;
+            for( auto &h: hex ) {
+                auto val = static_cast<std::uint8_t>(h);
+                res.push_back( vals[(val >> 4) & 0xF] );
+                res.push_back( vals[(val     ) & 0xF] );
+            }
+            return result::ok(res);
+        }
+
+        static
+        result to_hex( const std::string &hex )
+        {
+            static const char vals[] = {
+                '0', '1', '2','3', '4',
+                '5', '6', '7','8', '9',
+                'a', 'b', 'c','d', 'e', 'f',
             };
             std::string res;
             for( auto &h: hex ) {
