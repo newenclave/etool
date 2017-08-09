@@ -64,8 +64,7 @@ namespace etool { namespace details {
                 if( (h == 0xFF) || (l == 0xFF) ) {
                     return result::fail( "Bad serialized string." );
                 }
-                res.push_back( static_cast<char>( h ) );
-                res.push_back( static_cast<char>( l ) );
+                res.push_back( static_cast<char>( (h << 4) | l ) );
             }
             return result::ok(res);
         }
