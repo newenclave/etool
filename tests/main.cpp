@@ -9,6 +9,7 @@
 #include "etool/observers/simple.h"
 #include "etool/observers/define.h"
 #include "etool/details/type_uid.h"
+#include "etool/details/lexical_cast.h"
 
 #include "etool/charset/utf8.h"
 
@@ -16,6 +17,7 @@ using namespace etool;
 
 int main(  int /*argc*/, char** /*argv[ ]*/ )
 {
+    std::cout << details::lexical_cast<double>("-4.667") << "\n";
     return 0;
 }
 
