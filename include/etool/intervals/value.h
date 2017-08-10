@@ -129,14 +129,14 @@ namespace etool { namespace intervals {
             bool less( const value &lh, const domain_type &rh )
             {
                 switch (lh.attr( )) {
-                case attributes::MAX_INF:
-                    return false;
                 case attributes::MIN_INF:
                     return true;
                 case attributes::CLOSE:
                     return ocmp::less( lh.get( ), rh );
                 case attributes::OPEN:
                     return ocmp::less_equal( lh.get( ), rh );
+                case attributes::MAX_INF:
+                    return false;
                 }
             }
 
@@ -144,14 +144,14 @@ namespace etool { namespace intervals {
             bool less( const domain_type &lh, const value &rh )
             {
                 switch (rh.attr( )) {
-                case attributes::MAX_INF:
-                    return true;
                 case attributes::MIN_INF:
                     return false;
                 case attributes::CLOSE:
                     return ocmp::less( lh, rh.get( ) );
                 case attributes::OPEN:
                     return ocmp::less_equal( lh, rh.get( ) );
+                case attributes::MAX_INF:
+                    return true;
                 }
             }
 
@@ -159,8 +159,8 @@ namespace etool { namespace intervals {
             bool equal( const value &lh, const value &rh )
             {
                 switch (lh.attr( )) {
-                case attributes::MAX_INF:
                 case attributes::MIN_INF:
+                case attributes::MAX_INF:
                     return rh.attr( ) == lh.attr( );
                 case attributes::CLOSE:
                 case attributes::OPEN:
@@ -173,8 +173,8 @@ namespace etool { namespace intervals {
             bool equal( const value &lh, const domain_type &rh )
             {
                 switch (lh.attr( )) {
-                case attributes::MAX_INF:
                 case attributes::MIN_INF:
+                case attributes::MAX_INF:
                 case attributes::OPEN:
                     return false;
                 case attributes::CLOSE:
