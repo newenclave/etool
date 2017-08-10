@@ -8,7 +8,7 @@ namespace etool { namespace details {
 
     struct byte_hex {
 
-        using result = detail::result<std::string, std::string>;
+        using result = details::result<std::string, std::string>;
 
         static
         std::uint8_t char2int( char cc )

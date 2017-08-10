@@ -4,7 +4,7 @@
 #include <sstream>
 #include <memory>
 
-namespace etool { namespace detail {
+namespace etool { namespace details {
 
     namespace traits {
 
