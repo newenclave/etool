@@ -93,6 +93,7 @@ namespace etool { namespace intervals {
         }
 
         struct cmp {
+
             using ocmp = operators::cmp<domain_type, Comparator>;
 
             static
@@ -117,9 +118,9 @@ namespace etool { namespace intervals {
                          ;
                 } else if( lh.is_closed( ) ) {
                     return rh.is_open( )
-                        ? ocmp::less_equal( lh.get( ), rh.get( ) )
-                        : ocmp::less( lh.get( ), rh.get( ) )
-                        ;
+                         ? ocmp::less_equal( lh.get( ), rh.get( ) )
+                         : ocmp::less( lh.get( ), rh.get( ) )
+                         ;
                 }
                 return false;
             }
@@ -255,6 +256,7 @@ namespace etool { namespace intervals {
         case attributes::OPEN:
         case attributes::CLOSE:
             o << v.get( );
+            break;
         }
         return o;
     }
