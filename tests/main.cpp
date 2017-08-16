@@ -11,6 +11,7 @@
 #include "etool/details/type_uid.h"
 #include "etool/details/lexical_cast.h"
 #include "etool/slices/memory.h"
+#include "etool/details/aligned_buffer.h"
 
 #include "etool/charset/utf8.h"
 
@@ -18,6 +19,10 @@ using namespace etool;
 
 int main(  int /*argc*/, char** /*argv[ ]*/ )
 {
+    details::aligned_buffer<int[10], 128> ai;
+
+    std::cout << ai[1] << "\n";
+
     return 0;
 }
 

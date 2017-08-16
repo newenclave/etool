@@ -6,12 +6,16 @@
 
 namespace etool { namespace details {
 
-    template <typename ValueT>
-    struct alignas(alignof(ValueT)) aligned_buffer {
+    template <typename ValueT, std::size_t AlignVal = alignof(ValueT)>
+    struct alignas(AlignVal) aligned_buffer {
 
     private:
         using this_type = aligned_buffer<ValueT>;
     public:
+
+        using value_type = ValueT;
+        using pointer    = value_type *;
+        using referefce  = value_type &;
 
         static_assert( sizeof(ValueT) > 0, "ValueT has size == 0" );
 
@@ -19,14 +23,14 @@ namespace etool { namespace details {
 
         using value_buffer = std::uint8_t[sizeof(ValueT)];
 
-        ValueT *get( )
+        pointer get( )
         {
-            return reinterpret_cast<ValueT *>(value);
+            return reinterpret_cast<pointer>(value);
         }
 
-        const ValueT *get( ) const
+        const pointer get( ) const
         {
-            return reinterpret_cast<const ValueT *>(value);
+            return reinterpret_cast<const pointer>(value);
         }
 
         struct scoped_new {
@@ -80,8 +84,8 @@ namespace etool { namespace details {
         value_buffer value;
     };
 
-    template <typename ValueT, unsigned N>
-    struct alignas(alignof(ValueT)) aligned_buffer<ValueT[N]> {
+    template <typename ValueT, unsigned N, std::size_t AlignVal>
+    struct alignas(AlignVal) aligned_buffer<ValueT[N], AlignVal> {
 
     private:
         using this_type = aligned_buffer<ValueT[N]>;
@@ -89,17 +93,31 @@ namespace etool { namespace details {
 
         static_assert( N > 0, "N must be greater then 0." );
 
+        using value_type    = ValueT;
+        using value_buffer  = std::uint8_t[sizeof(value_type) * N];
+        using pointer       = value_type *;
+        using referefce     = value_type &;
+
         enum { is_array = 1, size = N };
 
-        using value_buffer = std::uint8_t[sizeof(ValueT) * N];
-        ValueT *get( )
+        value_type & operator [ ](std::size_t pos)
         {
-            return reinterpret_cast<ValueT *>(value);
+            return get( )[pos];
         }
 
-        const ValueT *get( ) const
+        const value_type & operator [ ](std::size_t pos) const
         {
-            return reinterpret_cast<const ValueT *>(value);
+            return get( )[pos];
+        }
+
+        pointer get( )
+        {
+            return reinterpret_cast<pointer>(value);
+        }
+
+        const pointer get( ) const
+        {
+            return reinterpret_cast<const pointer>(value);
         }
 
         struct scoped_new {
