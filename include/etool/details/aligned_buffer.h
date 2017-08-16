@@ -23,12 +23,12 @@ namespace etool { namespace details {
 
         using value_buffer = std::uint8_t[sizeof(ValueT)];
 
-        pointer get( )
+        pointer get( ) noexcept
         {
             return reinterpret_cast<pointer>(value);
         }
 
-        const pointer get( ) const
+        const pointer get( ) const noexcept
         {
             return reinterpret_cast<const pointer>(value);
         }
@@ -69,9 +69,11 @@ namespace etool { namespace details {
                 v->~value_type( );
             }
 
-            void release( ) noexcept
+            value_type * release( ) noexcept
             {
+                auto tmp = ptr_;
                 ptr_ = nullptr;
+                return tmp;
             }
 
         private:
@@ -84,7 +86,7 @@ namespace etool { namespace details {
         value_buffer value;
     };
 
-    template <typename ValueT, unsigned N, std::size_t AlignVal>
+    template <typename ValueT, std::size_t N, std::size_t AlignVal>
     struct alignas(AlignVal) aligned_buffer<ValueT[N], AlignVal> {
 
     private:
@@ -100,22 +102,22 @@ namespace etool { namespace details {
 
         enum { is_array = 1, size = N };
 
-        value_type & operator [ ]( std::size_t pos )
+        value_type & operator [ ]( std::size_t pos ) noexcept
         {
             return get( )[pos];
         }
 
-        const value_type & operator [ ]( std::size_t pos ) const
+        const value_type & operator [ ]( std::size_t pos ) const noexcept
         {
             return get( )[pos];
         }
 
-        value_type *get( )
+        value_type *get( ) noexcept
         {
             return reinterpret_cast<value_type *>(value);
         }
 
-        const value_type *get( ) const
+        const value_type *get( ) const noexcept
         {
             return reinterpret_cast<const value_type *>(value);
         }
@@ -157,14 +159,16 @@ namespace etool { namespace details {
             static
             void destroy( value_type *v )
             {
-                for( unsigned i = 0; i<N; ++i  ) {
+                for( std::size_t i = 0; i<N; ++i ) {
                     v[i].~value_type( );
                 }
             }
 
-            void release( ) noexcept
+            value_type * release( ) noexcept
             {
+                auto tmp = ptr_;
                 ptr_ = nullptr;
+                return tmp;
             }
 
         private:
