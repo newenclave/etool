@@ -25,6 +25,7 @@ int main(  int /*argc*/, char** /*argv[ ]*/ )
     console::info::set_pos( 10, 20 );
     ai[1] = -111;
     std::cout << ai[1] << "\n";
+    console::info::clear( );
 
     return 0;
 }

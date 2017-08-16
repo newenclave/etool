@@ -92,7 +92,7 @@ namespace etool { namespace console {
                 std::cout.write( ws.c_str( ),
                                  static_cast<std::streamsize>(ws.size( )) );
             }
-            // clear command does "write("\E[H\E[2J", 7 )", we don't want
+            // clear command that does "write("\E[H\E[2J", 7 )" we don't want
             std::cout.flush( );
         }
 
@@ -108,7 +108,7 @@ namespace etool { namespace console {
             //write( STDIN_FILENO, s.c_str( ), s.size( ) );
         }
 
-        //    void set_console_size( const position_type &cs )
+        //    void set_size( const coord &cs )
         //    {
         //        struct winsize w = { 0, 0, 0, 0 };
         //        w.ws_col = cs.first;
