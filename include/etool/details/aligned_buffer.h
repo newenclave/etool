@@ -17,7 +17,7 @@ namespace etool { namespace details {
         using pointer    = value_type *;
         using referefce  = value_type &;
 
-        static_assert( sizeof(ValueT) > 0, "ValueT has size == 0" );
+        static_assert( sizeof(value_type) > 0, "value_type has size == 0" );
 
         enum { is_array = 0, size = 1 };
 
@@ -50,23 +50,23 @@ namespace etool { namespace details {
             }
 
             template <typename ...ArgT>
-            scoped_new( ValueT *v, ArgT...args )
+            scoped_new( value_type *v, ArgT...args )
                 :ptr_(v)
             {
-                new (v) ValueT(std::forward<ArgT>(args)...);
+                new (v) value_type(std::forward<ArgT>(args)...);
             }
 
             template <typename ...ArgT>
             static
-            void create( ValueT *v, ArgT...args )
+            void create( value_type *v, ArgT...args )
             {
-                new (v) ValueT(std::forward<ArgT>(args)...);
+                new (v) value_type(std::forward<ArgT>(args)...);
             }
 
             static
-            void destroy( ValueT *v )
+            void destroy( value_type *v )
             {
-                v->~ValueT( );
+                v->~value_type( );
             }
 
             void release( ) noexcept
@@ -76,7 +76,7 @@ namespace etool { namespace details {
 
         private:
 
-            ValueT * ptr_ = nullptr;
+            value_type * ptr_ = nullptr;
         };
 
     private:
@@ -100,24 +100,24 @@ namespace etool { namespace details {
 
         enum { is_array = 1, size = N };
 
-        value_type & operator [ ](std::size_t pos)
+        value_type & operator [ ]( std::size_t pos )
         {
             return get( )[pos];
         }
 
-        const value_type & operator [ ](std::size_t pos) const
+        const value_type & operator [ ]( std::size_t pos ) const
         {
             return get( )[pos];
         }
 
-        pointer get( )
+        value_type *get( )
         {
-            return reinterpret_cast<pointer>(value);
+            return reinterpret_cast<value_type *>(value);
         }
 
-        const pointer get( ) const
+        const value_type *get( ) const
         {
-            return reinterpret_cast<const pointer>(value);
+            return reinterpret_cast<const value_type *>(value);
         }
 
         struct scoped_new {
@@ -137,28 +137,28 @@ namespace etool { namespace details {
             }
 
             template <typename ...ArgT>
-            scoped_new( ValueT *v, ArgT...args )
+            scoped_new( value_type *v, ArgT...args )
                 :ptr_(v)
             {
                 for( unsigned i = 0; i<N; ++i  ) {
-                    new (&v[i]) ValueT(std::forward<ArgT>(args)...);
+                    new (&v[i]) value_type(std::forward<ArgT>(args)...);
                 }
             }
 
             template <typename ...ArgT>
             static
-            void create( ValueT *v, ArgT...args )
+            void create( value_type *v, ArgT...args )
             {
                 for( auto i = 0; i<N; ++i  ) {
-                    new (&v[i]) ValueT(std::forward<ArgT>(args)...);
+                    new (&v[i]) value_type(std::forward<ArgT>(args)...);
                 }
             }
 
             static
-            void destroy( ValueT *v )
+            void destroy( value_type *v )
             {
                 for( unsigned i = 0; i<N; ++i  ) {
-                    v[i].~ValueT( );
+                    v[i].~value_type( );
                 }
             }
 
@@ -168,7 +168,7 @@ namespace etool { namespace details {
             }
 
         private:
-            ValueT * ptr_ = nullptr;
+            value_type * ptr_ = nullptr;
         };
 
     private:
