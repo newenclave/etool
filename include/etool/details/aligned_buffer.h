@@ -142,16 +142,14 @@ namespace etool { namespace details {
             scoped_new( value_type *v, ArgT...args )
                 :ptr_(v)
             {
-                for( unsigned i = 0; i<N; ++i  ) {
-                    new (&v[i]) value_type(std::forward<ArgT>(args)...);
-                }
+                create( ptr_, std::forward<ArgT>(args)... );
             }
 
             template <typename ...ArgT>
             static
             void create( value_type *v, ArgT...args )
             {
-                for( auto i = 0; i<N; ++i  ) {
+                for( std::size_t i = 0; i<N; ++i  ) {
                     new (&v[i]) value_type(std::forward<ArgT>(args)...);
                 }
             }

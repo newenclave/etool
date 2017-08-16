@@ -3,11 +3,15 @@
 
 #include <iostream>
 #include <ostream>
+#include <sstream>
 
 #ifdef _WIN32
 #define NOMINMAX
 #include <windows.h>
 #undef NOMINMAX
+#else
+#include <sys/ioctl.h>
+#include <unistd.h>
 #endif
 
 namespace etool { namespace console {

@@ -12,6 +12,7 @@
 #include "etool/details/lexical_cast.h"
 #include "etool/slices/memory.h"
 #include "etool/details/aligned_buffer.h"
+#include "etool/console/geometry.h"
 
 #include "etool/charset/utf8.h"
 
@@ -21,6 +22,8 @@ int main(  int /*argc*/, char** /*argv[ ]*/ )
 {
     details::aligned_buffer<int[10], 128> ai;
 
+    console::info::set_pos( 10, 20 );
+    ai[1] = -111;
     std::cout << ai[1] << "\n";
 
     return 0;
