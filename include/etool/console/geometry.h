@@ -108,13 +108,14 @@ namespace etool { namespace console {
             //write( STDIN_FILENO, s.c_str( ), s.size( ) );
         }
 
-        //    void set_size( const coord &cs )
-        //    {
-        //        struct winsize w = { 0, 0, 0, 0 };
-        //        w.ws_col = cs.first;
-        //        w.ws_row = cs.second;
-        //        ioctl( 0, TIOCSWINSZ, &w);
-        //    }
+        static
+        void set_size( std::uint16_t x, std::uint16_t y )
+        {
+            struct winsize w = { 0, 0, 0, 0 };
+            w.ws_col = x;
+            w.ws_row = y;
+            ioctl( 0, TIOCSWINSZ, &w);
+        }
 #endif
 
     };
