@@ -3,6 +3,11 @@
 
 /// copy-paste from Boost
 ///
+
+#define ETOOL_LITTLE_ENDIAN_ORDER 1234
+#define ETOOL_BIG_ENDIAN_ORDER    4321
+#define ETOOL_PDP_ENDIAN_ORDER    3412
+
 #if defined(__GLIBC__) || defined(__gnu_linux__)
 
 #   include <endian.h>
@@ -17,16 +22,16 @@
 #   endif
 #   define ETOOL_BYTE_ORDER __BYTE_ORDER
 
-#elif defined(_BIG_ENDIAN)    && !defined(_LITTLE_ENDIAN)      || \
-    defined(__BIG_ENDIAN__)   && !defined(__LITTLE_ENDIAN__)   || \
-    defined(_STLP_BIG_ENDIAN) && !defined(_STLP_LITTLE_ENDIAN)
+#elif defined(_BIG_ENDIAN)      && !defined(_LITTLE_ENDIAN)     \
+   || defined(__BIG_ENDIAN__)   && !defined(__LITTLE_ENDIAN__)  \
+   || defined(_STLP_BIG_ENDIAN) && !defined(_STLP_LITTLE_ENDIAN)
 
-# define ETOOL_BIG_ENDIAN
-# define ETOOL_BYTE_ORDER 4321
+#   define ETOOL_BIG_ENDIAN
+#   define ETOOL_BYTE_ORDER 4321
 
-#elif defined(_LITTLE_ENDIAN)    && !defined(_BIG_ENDIAN)      || \
-    defined(__LITTLE_ENDIAN__)   && !defined(__BIG_ENDIAN__)   || \
-    defined(_STLP_LITTLE_ENDIAN) && !defined(_STLP_BIG_ENDIAN)
+#elif defined(_LITTLE_ENDIAN)      && !defined(_BIG_ENDIAN)     \
+   || defined(__LITTLE_ENDIAN__)   && !defined(__BIG_ENDIAN__)  \
+   || defined(_STLP_LITTLE_ENDIAN) && !defined(_STLP_BIG_ENDIAN)
 
 #   define ETOOL_LITTLE_ENDIAN
 #   define ETOOL_BYTE_ORDER 1234
