@@ -16,18 +16,17 @@
 #include "etool/console/geometry.h"
 
 #include "etool/charset/utf8.h"
+#include "etool/details/endian.h"
 
 using namespace etool;
 
 int main(  int /*argc*/, char** /*argv[ ]*/ )
 {
-    using res = details::result<std::string, const char *>;
-
-    auto t = res::ok("dfdasfsdfs");
-    auto e = res::fail("dfdasfsdfs");
-
-    std::cout << t << "\n";
-    std::cout << e << "\n";
+#ifdef ETOOL_LITTLE_ENDIAN
+    std::cout << "Little\n";
+#else
+    std::cout << "Big\n";
+#endif
 
     return 0;
 }
