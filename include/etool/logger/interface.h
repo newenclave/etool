@@ -38,7 +38,7 @@ namespace etool { namespace logger {
             ~string_accumulator( )
             {
                 if( act_ && ( level_ <= parent_->level_ ) ) {
-                    parent_->send_data( level_, name_, std::move(oss_.str( )) );
+                    parent_->send_data( level_, name_, oss_.str( ) );
                 }
             }
 
@@ -76,26 +76,22 @@ namespace etool { namespace logger {
 
         string_accumulator operator ( )( int lev, const std::string &name )
         {
-            string_accumulator res( this, lev, name );
-            return res;
+            return string_accumulator( this, lev, name );
         }
 
         string_accumulator operator ( )( int lev )
         {
-            string_accumulator res( this, lev, "" );
-            return res;
+            return string_accumulator( this, lev, "" );
         }
 
         string_accumulator operator ( )( const std::string &name )
         {
-            string_accumulator res( this, level_, name );
-            return res;
+            return string_accumulator( this, level_, name );
         }
 
         string_accumulator operator ( )( )
         {
-            string_accumulator res( this, level_, "" );
-            return res;
+            return string_accumulator( this, level_, "" );
         }
 
         interface( int lev )
