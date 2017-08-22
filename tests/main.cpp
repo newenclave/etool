@@ -20,14 +20,15 @@
 
 using namespace etool;
 
+using observer = observers::simple<void (void)>;
+
 int main(  int /*argc*/, char** /*argv[ ]*/ )
 {
-#ifdef ETOOL_LITTLE_ENDIAN
-    std::cout << "Little\n";
-#else
-    std::cout << "Big\n";
-#endif
-
+    observer ob;
+    auto ss = ob.subscribe( [&ob]( ) {
+        std::cout << "!\n";
+    } );
+    ob( );
     return 0;
 }
 

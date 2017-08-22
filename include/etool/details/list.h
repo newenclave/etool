@@ -2,6 +2,7 @@
 #define ETOOL_DETAILS_LIST_H
 
 #include <cstdint>
+#include <utility>
 
 namespace etool { namespace details {
 
@@ -10,13 +11,22 @@ namespace etool { namespace details {
     class list {
 
         struct node {
+
             node *prev_;
             node *next_;
             T data_;
+
             node( const T &data )
                 :prev_(nullptr)
                 ,next_(nullptr)
                 ,data_(data)
+            { }
+
+            template <typename ...Args>
+            node( Args&& ...data )
+                :prev_(nullptr)
+                ,next_(nullptr)
+                ,data_(std::forward<Args>(data)...)
             { }
 
             T &get( )
@@ -268,9 +278,37 @@ namespace etool { namespace details {
             size_++;
         }
 
+        template <typename ...Args>
+        void emplace_back( Args&&... data )
+        {
+            node *new_node = new node(std::forward<Args>(data)...);
+            if( front_ ) {
+                new_node->prev_ = back_;
+                back_->next_    = new_node;
+                back_           = new_node;
+            } else {
+                back_ = front_  = new_node;
+            }
+            size_++;
+        }
+
         void push_front( const T &data )
         {
             node *new_node = new node(data);
+            if( front_ ) {
+                new_node->next_ = front_;
+                front_->prev_   = new_node;
+                front_          = new_node;
+            } else {
+                back_ = front_  = new_node;
+            }
+            size_++;
+        }
+
+        template <typename ...Args>
+        void emplace_front( Args&&... data )
+        {
+            node *new_node = new node(std::forward<Args>(data)...);
             if( front_ ) {
                 new_node->next_ = front_;
                 front_->prev_   = new_node;

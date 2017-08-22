@@ -180,7 +180,7 @@ namespace etool { namespace observers {
             {
                 guard_type l(tmp_lock_);
                 size_t next = id_++;
-                added_.push_back( slot_info(call, next) );
+                added_.emplace_back( slot_info(call, next) );
                 return next;
             }
 
@@ -196,7 +196,7 @@ namespace etool { namespace observers {
             typedef typename base_type::impl_sptr impl_sptr;
             typedef typename base_type::impl_wptr impl_wptr;
 
-            unsubscriber( impl_wptr p, size_t k )
+            unsubscriber( impl_wptr p, std::size_t k )
                 :parent(p)
                 ,key(k)
             { }
@@ -214,14 +214,14 @@ namespace etool { namespace observers {
                 }
             }
 
-            impl_wptr parent;
-            size_t    key;
+            impl_wptr   parent;
+            std::size_t key;
         };
 
     public:
 
-        typedef observers::subscription subscription;
-        typedef observers::scoped_subscription scoped_subscription;
+        using subscription        = observers::subscription;
+        using scoped_subscription = observers::scoped_subscription;
 
         friend class observers::subscription;
         friend class observers::scoped_subscription;

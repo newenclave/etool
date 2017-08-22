@@ -13,9 +13,6 @@ namespace etool { namespace observers {
 
         friend class etool::observers::scoped_subscription;
 
-        static void unsubscribe_dummy( )
-        { }
-
         void reset( )
         {
             unsubscriber_.reset( );
