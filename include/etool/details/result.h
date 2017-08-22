@@ -255,7 +255,7 @@ namespace etool { namespace details {
         }
     private:
         typename Trait::value_type value_;
-        E                          error_;
+        error_type                 error_;
         bool                       failed_;
 
     };

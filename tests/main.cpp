@@ -18,7 +18,8 @@
 
 using namespace etool;
 
-int main(  int /*argc*/, char** /*argv[ ]*/ )
+
+int main1(  int /*argc*/, char** /*argv[ ]*/ )
 {
     details::aligned_buffer<int[10], 128> ai;
 
@@ -35,7 +36,7 @@ int main0(  int /*argc*/, char** /*argv[ ]*/ )
     return 0;
 }
 
-int main1( int argc, char* argv[ ] )
+int main( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );

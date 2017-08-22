@@ -2,6 +2,7 @@
 #define ETOOL_QUEUES_CONDITION_TRAITS_PRIORITY_H
 
 #include <vector>
+#include <functional>
 #include <algorithm>
 
 namespace etool { namespace queues { namespace condition {
@@ -38,7 +39,7 @@ namespace traits {
         void pop( queue_type &q )
         {
             std::pop_heap( q.begin( ), q.end( ), LessType( ) );
-            return q.resize( q.size( ) - 1 );
+            return q.pop_back( );
         }
 
         static

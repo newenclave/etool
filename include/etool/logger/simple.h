@@ -165,7 +165,7 @@ namespace etool { namespace logger {
         void dispatch( void_call call )
         {
             auto element = cache_.get( );
-            element->call.swap(call);
+            element->call.swap( call );
             queue_.push( std::move( element ) );
         }
 
