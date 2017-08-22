@@ -77,25 +77,25 @@ namespace etool { namespace logger {
         string_accumulator operator ( )( int lev, const std::string &name )
         {
             string_accumulator res( this, lev, name );
-            return std::move(res);
+            return res;
         }
 
         string_accumulator operator ( )( int lev )
         {
             string_accumulator res( this, lev, "" );
-            return std::move(res);
+            return res;
         }
 
         string_accumulator operator ( )( const std::string &name )
         {
             string_accumulator res( this, level_, name );
-            return std::move(res);
+            return res;
         }
 
         string_accumulator operator ( )( )
         {
             string_accumulator res( this, level_, "" );
-            return std::move(res);
+            return res;
         }
 
         interface( int lev )

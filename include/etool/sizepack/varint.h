@@ -51,7 +51,7 @@ namespace etool { namespace sizepack {
         {
             std::string res;
             append( size, res );
-            return std::move(res);
+            return res;
         }
 
         static void pack( size_type size, std::string &res )

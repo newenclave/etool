@@ -22,14 +22,14 @@ namespace etool { namespace details {
             static
             value_type create(  )
             {
-                return std::move(value_type( ));
+                return value_type( );
             }
 
             template <typename ...Args>
             static
             value_type create( Args&&...args )
             {
-                return std::move(value_type(std::forward<Args>( args )... ));
+                return value_type(std::forward<Args>( args )... );
             }
 
             static

@@ -97,7 +97,7 @@ namespace etool { namespace trees { namespace trie {
         template <typename IterT>
         result_iterator<IterT> get( IterT b, const IterT &e, bool greedy )
         {
-           return std::move( get_s(&root_, b, e, greedy) );
+           return get_s( &root_, b, e, greedy );
         }
 
     private:

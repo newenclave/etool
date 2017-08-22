@@ -17,7 +17,7 @@ namespace traits {
         value_type create( Args && ...args )
         {
             value_type res( new T(std::forward<Args>(args)...) );
-            return std::move( res );
+            return res;
         }
 
         static

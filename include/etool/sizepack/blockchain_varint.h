@@ -113,7 +113,7 @@ namespace etool { namespace sizepack {
         {
             std::string res;
             pack( size, res );
-            return std::move(res);
+            return res;
         }
 
         static
