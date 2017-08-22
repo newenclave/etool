@@ -32,13 +32,14 @@ namespace etool { namespace details {
         result to_Hex( const std::string &hex )
         {
             static const char vals[] = {
-                '0', '1', '2','3', '4',
-                '5', '6', '7','8', '9',
-                'A', 'B', 'C','D', 'E', 'F',
+                '0', '1', '2', '3', '4',
+                '5', '6', '7', '8', '9',
+                'A', 'B', 'C', 'D', 'E', 'F',
             };
             std::string res;
+            res.reserve( hex.size( ) * 2 );
             for( auto &h: hex ) {
-                auto val = static_cast<std::uint8_t>(h);
+                const auto val = static_cast<std::uint8_t>(h);
                 res.push_back( vals[(val >> 4) & 0xF] );
                 res.push_back( vals[(val     ) & 0xF] );
             }
@@ -49,13 +50,14 @@ namespace etool { namespace details {
         result to_hex( const std::string &hex )
         {
             static const char vals[] = {
-                '0', '1', '2','3', '4',
-                '5', '6', '7','8', '9',
-                'a', 'b', 'c','d', 'e', 'f',
+                '0', '1', '2', '3', '4',
+                '5', '6', '7', '8', '9',
+                'a', 'b', 'c', 'd', 'e', 'f',
             };
             std::string res;
+            res.reserve( hex.size( ) * 2 );
             for( auto &h: hex ) {
-                auto val = static_cast<std::uint8_t>(h);
+                const auto val = static_cast<std::uint8_t>(h);
                 res.push_back( vals[(val >> 4) & 0xF] );
                 res.push_back( vals[(val     ) & 0xF] );
             }

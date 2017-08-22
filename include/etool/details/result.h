@@ -1,5 +1,5 @@
-#ifndef RESULT_H
-#define RESULT_H
+#ifndef ETOOL_DETAILS_RESULT_H
+#define ETOOL_DETAILS_RESULT_H
 
 #include <sstream>
 #include <memory>
@@ -9,7 +9,8 @@ namespace etool { namespace details {
     namespace traits {
 
         template <typename T>
-        struct value_trait {
+        struct value {
+
             typedef T value_type;
 
             static
@@ -36,19 +37,19 @@ namespace etool { namespace details {
             { }
 
             static
-            T &&move( value_type &v )
+            value_type &&move( value_type &v )
             {
                 return std::move(v);
             }
 
             static
-            T &value( value_type &v )
+            value_type &get( value_type &v )
             {
                 return v;
             }
 
             static
-            const T &value( value_type const &v )
+            const value_type &get( value_type const &v )
             {
                 return v;
             }
@@ -56,9 +57,10 @@ namespace etool { namespace details {
         };
 
         template <typename T>
-        struct shared_ptr_trait {
+        struct shared_ptr {
 
             typedef std::shared_ptr<T> value_type;
+
             static
             void copy( value_type &v, const value_type &from )
             {
@@ -89,13 +91,13 @@ namespace etool { namespace details {
             }
 
             static
-            T &value( value_type &v )
+            T &get( value_type &v )
             {
                 return *v;
             }
 
             static
-            const T &value( value_type const &v )
+            const T &get( value_type const &v )
             {
                 return *v;
             }
@@ -103,7 +105,7 @@ namespace etool { namespace details {
     }
 
     template <typename T, typename E,
-              typename Trait = traits::value_trait<T> >
+              typename Trait = traits::value<T> >
     class result {
 
     public:
@@ -208,8 +210,7 @@ namespace etool { namespace details {
         static
         result fail( Args&& ...args )
         {
-            result res( error_arg(std::forward<Args>(args)...) );
-            return std::move( res );
+            return result( error_arg(std::forward<Args>(args)...) );
         }
 
         void swap( result &other )
@@ -219,24 +220,24 @@ namespace etool { namespace details {
             std::swap( failed_, other.failed_ );
         }
 
-        T &operator *( )
+        value_type &operator *( )
         {
-            return Trait::value(value_);
+            return Trait::get(value_);
         }
 
-        const T &operator *( ) const
+        const value_type &operator *( ) const
         {
-            return Trait::value(value_);
+            return Trait::get(value_);
         }
 
-        T *operator -> ( )
+        value_type *operator -> ( )
         {
-            return &Trait::value(value_);
+            return &Trait::get(value_);
         }
 
-        const T *operator -> ( ) const
+        const value_type *operator -> ( ) const
         {
-            return &Trait::value(value_);
+            return &Trait::get(value_);
         }
 
         operator bool ( ) const
@@ -249,15 +250,21 @@ namespace etool { namespace details {
             return error_;
         }
 
-        T &&move( )
+        error_type &error( )
+        {
+            return error_;
+        }
+
+        value_type &&move( )
         {
             return Trait::move(value_);
         }
+
     private:
+
         typename Trait::value_type value_;
         error_type                 error_;
         bool                       failed_;
-
     };
 
     template <typename T, typename E>

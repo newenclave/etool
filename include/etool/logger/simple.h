@@ -77,7 +77,7 @@ namespace etool { namespace logger {
 
         simple( int lvl )
             :etool::logger::interface(lvl)
-            ,cache_(100)
+            ,cache_(10)
         { }
 
         ~simple( )

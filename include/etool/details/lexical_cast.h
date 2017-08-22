@@ -10,10 +10,14 @@ namespace etool { namespace details {
 
     template <typename FloatT, typename CharT>
     struct lexical_cast_floating {
+
+        using float_type = FloatT;
+        using char_type  = CharT;
+
         static
         bool valid_for_dec( int cc )
         {
-            return (cc >= '0') && (cc <= '9');
+            return ( '0' <= cc ) && ( cc <= '9' );
         }
 
         static
@@ -23,41 +27,49 @@ namespace etool { namespace details {
         }
 
         static
-        FloatT cast( const CharT *s )
+        bool is_exp( int cc )
         {
-            FloatT a = FloatT(0.0);
-            int    e = 0;
-            int    c = 0;
-            FloatT m = FloatT(1);
+            return ( cc == 'e' || cc == 'E' );
+        }
+
+        static
+        float_type cast( const char_type *s )
+        {
+            float_type  a = float_type(0.0);
+            int         e = 0;
+            int         c = 0;
+            float_type  m = float_type(1);
 
             if( *s == '-' ) {
-                m = FloatT( -1 );
+                m = float_type( -1 );
                 ++s;
             }
 
             while( *s && valid_for_dec(c = *s++) ) {
                 if( !is_gap(c) ) {
-                    a = a * FloatT(10.0) + (c - '0');
+                    a = a * float_type(10.0) + (c - '0');
                 }
             }
 
             if( c == '.' ) {
                 while( *s && valid_for_dec(c = *s++)) {
                     if( !is_gap(c) ) {
-                        a = a * FloatT(10.0) + (c - '0');
-                        e = e-1;
+                        a = a * float_type(10.0) + (c - '0');
+                        e = e - 1;
                     }
                 }
             }
 
-            if( (c == 'e' || c == 'E') ) {
+            if( is_exp( c ) ) {
+
                 int sign = 1;
                 int i = 0;
+
                 c = *s++;
 
-                if (c == '+') {
+                if( c == '+' ) {
                     c = *s++;
-                } else if (c == '-') {
+                } else if( c == '-' ) {
                     c = *s++;
                     sign = -1;
                 }
@@ -77,12 +89,12 @@ namespace etool { namespace details {
             }
 
             while( e > 0 ) {
-                a *= FloatT(10.0);
+                a *= float_type(10.0);
                 e--;
             }
 
             while( e < 0 ) {
-                a *= FloatT(0.1);
+                a *= float_type(0.1);
                 e++;
             }
 
