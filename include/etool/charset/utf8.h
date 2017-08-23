@@ -114,26 +114,26 @@ namespace etool { namespace charset {
                 break;
             case 2:
                 b = static_cast<std::uint8_t>(utf8[1]);
-                res = ( static_cast<std::uint32_t>(a-0xC0) <<  6 ) +
-                        static_cast<std::uint32_t>(b-0x80);
+                res = ( static_cast<std::uint32_t>(a - 0xC0) <<  6 ) +
+                        static_cast<std::uint32_t>(b - 0x80);
                 break;
             case 3:
                 b = static_cast<std::uint8_t>(utf8[1]);
                 c = static_cast<std::uint8_t>(utf8[2]);
 
-                res = ( static_cast<std::uint32_t>(a-0xE0) << 12 ) +
-                      ( static_cast<std::uint32_t>(b-0x80) <<  6 ) +
-                        static_cast<std::uint32_t>(c-0x80);
+                res = ( static_cast<std::uint32_t>(a - 0xE0) << 12 ) +
+                      ( static_cast<std::uint32_t>(b - 0x80) <<  6 ) +
+                        static_cast<std::uint32_t>(c - 0x80);
                 break;
             case 4:
                 b = static_cast<std::uint8_t>(utf8[1]);
                 c = static_cast<std::uint8_t>(utf8[2]);
                 d = static_cast<std::uint8_t>(utf8[3]);
 
-                res = ( static_cast<std::uint32_t>(a-0xF0) << 18 ) +
-                      ( static_cast<std::uint32_t>(b-0x80) << 12 ) +
-                      ( static_cast<std::uint32_t>(c-0x80) <<  6 ) +
-                        static_cast<std::uint32_t>(d-0x80);
+                res = ( static_cast<std::uint32_t>(a - 0xF0) << 18 ) +
+                      ( static_cast<std::uint32_t>(b - 0x80) << 12 ) +
+                      ( static_cast<std::uint32_t>(c - 0x80) <<  6 ) +
+                        static_cast<std::uint32_t>(d - 0x80);
                 break;
             case 5:
                 b = static_cast<std::uint8_t>(utf8[1]);
@@ -141,11 +141,11 @@ namespace etool { namespace charset {
                 d = static_cast<std::uint8_t>(utf8[3]);
                 e = static_cast<std::uint8_t>(utf8[4]);
 
-                res =  ( static_cast<std::uint32_t>(a-0xF8) << 24 ) +
-                       ( static_cast<std::uint32_t>(b-0x80) << 18 ) +
-                       ( static_cast<std::uint32_t>(c-0x80) << 12 ) +
-                       ( static_cast<std::uint32_t>(d-0x80) <<  6 ) +
-                         static_cast<std::uint32_t>(e-0x80);
+                res =  ( static_cast<std::uint32_t>(a - 0xF8) << 24 ) +
+                       ( static_cast<std::uint32_t>(b - 0x80) << 18 ) +
+                       ( static_cast<std::uint32_t>(c - 0x80) << 12 ) +
+                       ( static_cast<std::uint32_t>(d - 0x80) <<  6 ) +
+                         static_cast<std::uint32_t>(e - 0x80);
                 break;
             case 6:
                 b = static_cast<std::uint8_t>(utf8[1]);
@@ -154,12 +154,12 @@ namespace etool { namespace charset {
                 e = static_cast<std::uint8_t>(utf8[4]);
                 f = static_cast<std::uint8_t>(utf8[5]);
 
-                res = ( static_cast<std::uint32_t>(a-0xFC) << 30 ) +
-                      ( static_cast<std::uint32_t>(b-0x80) << 24 ) +
-                      ( static_cast<std::uint32_t>(c-0x80) << 18 ) +
-                      ( static_cast<std::uint32_t>(d-0x80) << 12 ) +
-                      ( static_cast<std::uint32_t>(e-0x80) <<  6 ) +
-                        static_cast<std::uint32_t>(f-0x80);
+                res = ( static_cast<std::uint32_t>(a - 0xFC) << 30 ) +
+                      ( static_cast<std::uint32_t>(b - 0x80) << 24 ) +
+                      ( static_cast<std::uint32_t>(c - 0x80) << 18 ) +
+                      ( static_cast<std::uint32_t>(d - 0x80) << 12 ) +
+                      ( static_cast<std::uint32_t>(e - 0x80) <<  6 ) +
+                        static_cast<std::uint32_t>(f - 0x80);
                 break;
             }
             *ucs = res;
