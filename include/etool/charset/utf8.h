@@ -60,26 +60,27 @@ namespace etool { namespace charset {
             } else if( ucs <= ranges(1) ) {
 
                 tmp.push_back(static_cast<char>(0xC0 | ( ucs >>  6 )) );
-                tmp.push_back(static_cast<char>(0x80 | ( ucs & 0x3F )));
+                tmp.push_back(static_cast<char>(0x80 | ( ucs         & 0x3F)));
 
             } else if( ucs <= ranges(2) ) {
+
                 tmp.push_back(static_cast<char>(0xE0 | ( ucs >> 12 )));
-                tmp.push_back(static_cast<char>(0x80 | ((ucs >>  6 ) % 0x40)));
-                tmp.push_back(static_cast<char>(0x80 | ( ucs % 0x0040)));
+                tmp.push_back(static_cast<char>(0x80 | ((ucs >>  6 ) & 0x3F)));
+                tmp.push_back(static_cast<char>(0x80 | ( ucs         & 0x3F)));
 
             } else if( ucs <= ranges(3) ) {
 
                 tmp.push_back(static_cast<char>(0xF0 | ( ucs >> 18 )));
                 tmp.push_back(static_cast<char>(0x80 | ((ucs >> 12 ) & 0x3F)));
                 tmp.push_back(static_cast<char>(0x80 | ((ucs >>  6 ) & 0x3F)));
-                tmp.push_back(static_cast<char>(0x80 | ( ucs & 0x3F)));
+                tmp.push_back(static_cast<char>(0x80 | ( ucs         & 0x3F)));
 
             } else if( ucs <= ranges(4) ) {
                 tmp.push_back(static_cast<char>(0xF8 | ( ucs >> 24 )));
                 tmp.push_back(static_cast<char>(0x80 | ((ucs >> 18 ) & 0x3F)));
                 tmp.push_back(static_cast<char>(0x80 | ((ucs >> 12 ) & 0x3F)));
                 tmp.push_back(static_cast<char>(0x80 | ((ucs >>  6 ) & 0x3F)));
-                tmp.push_back(static_cast<char>(0x80 | ( ucs & 0x3F)));
+                tmp.push_back(static_cast<char>(0x80 | ( ucs         & 0x3F)));
 
             } else if( ucs <= ranges(5) ) {
                 tmp.push_back(static_cast<char>(0xFC | ( ucs >> 30 )));
@@ -87,7 +88,7 @@ namespace etool { namespace charset {
                 tmp.push_back(static_cast<char>(0x80 | ((ucs >> 18 ) & 0x3F)));
                 tmp.push_back(static_cast<char>(0x80 | ((ucs >> 12 ) & 0x3F)));
                 tmp.push_back(static_cast<char>(0x80 | ((ucs >>  6 ) & 0x3F)));
-                tmp.push_back(static_cast<char>(0x80 | ( ucs & 0x3F)));
+                tmp.push_back(static_cast<char>(0x80 | ( ucs         & 0x3F)));
             }
             out.append( tmp.begin( ), tmp.end( ) );
             return tmp.size( );
