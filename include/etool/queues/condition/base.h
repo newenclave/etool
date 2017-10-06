@@ -165,6 +165,10 @@ namespace etool { namespace queues { namespace condition {
                 :parent_(parent)
             { }
 
+            not_empty( const not_empty &other )
+                :parent_(other.parent)
+            { }
+
             not_empty &operator = (const not_empty& other)
             {
                 parent_ = other.parent_;
