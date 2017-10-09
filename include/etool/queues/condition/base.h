@@ -10,9 +10,9 @@
 namespace etool { namespace queues { namespace condition {
 
     enum result {
-        WAIT_OK       = 0,
-        WAIT_CANCELED = 1,
-        WAIT_TIMEOUT  = 2,
+        QUEUE_WAIT_OK       = 0,
+        QUEUE_WAIT_CANCELED = 1,
+        QUEUE_WAIT_TIMEOUT  = 2,
     };
 
     template <typename ValueType,
@@ -83,14 +83,14 @@ namespace etool { namespace queues { namespace condition {
             bool wr = queue_cond_.wait_for( l, dur, not_empty(this) );
             if( wr ) {
                 if( cancel_ ) {
-                    return WAIT_CANCELED;
+                    return QUEUE_WAIT_CANCELED;
                 } else {
                     std::swap(out, q_traits::front( queue_ ));
                     q_traits::pop( queue_ );
-                    return WAIT_OK;
+                    return QUEUE_WAIT_OK;
                 }
             }
-            return WAIT_TIMEOUT;
+            return QUEUE_WAIT_TIMEOUT;
         }
 
         bool pop( value_type &out )         /// ignores "cancel"
@@ -114,11 +114,11 @@ namespace etool { namespace queues { namespace condition {
             locker_type l(queue_lock_);
             queue_cond_.wait( l, not_empty(this) );
             if( cancel_ ) {
-                return WAIT_CANCELED;
+                return QUEUE_WAIT_CANCELED;
             } else {
                 std::swap(out, q_traits::front( queue_ ));
                 q_traits::pop( queue_ );
-                return WAIT_OK;
+                return QUEUE_WAIT_OK;
             }
         }
 
@@ -126,13 +126,13 @@ namespace etool { namespace queues { namespace condition {
         {
             locker_type l(queue_lock_);
             if( cancel_ ) {
-                return WAIT_CANCELED;
+                return QUEUE_WAIT_CANCELED;
             } else if( !q_traits::empty( queue_ ) ) {
                 std::swap(out, q_traits::front( queue_ ));
                 q_traits::pop( queue_ );
-                return WAIT_OK;
+                return QUEUE_WAIT_OK;
             } else {
-                return WAIT_TIMEOUT;
+                return QUEUE_WAIT_TIMEOUT;
             }
         }
 

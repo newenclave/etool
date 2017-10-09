@@ -137,7 +137,7 @@ namespace etool { namespace logger {
         void attach( )
         {
             queue_element data;
-            while( qresult::WAIT_OK == queue_.wait( data ) ) {
+            while( qresult::QUEUE_WAIT_OK == queue_.wait( data ) ) {
                 if( data->call ) {
                     data->call( );
                 } else {
