@@ -25,6 +25,8 @@ list( APPEND src ./include/etool/cache
                  ./include/etool/observers/traits/
                  ./include/etool/queues/condition
                  ./include/etool/queues/condition/traits
+                 ./include/etool/queues/delayed
+                 ./include/etool/queues/delayed/traits
                  ./include/etool/sizepack
                  ./include/etool/cache/traits
                  ./include/etool/cache
@@ -46,9 +48,6 @@ foreach( src_dir ${src} )
     list(APPEND lib_src ${headers})
 endforeach( )
 
-foreach(i ${CMAKE_CXX_COMPILE_FEATURES})
-  message("${i}")
-endforeach( )
-
 add_executable( ${PROJECT_NAME} ${lib_src} )
+target_link_libraries(${PROJECT_NAME} "pthread")
 

@@ -184,6 +184,28 @@ namespace etool { namespace observers {
                 return next;
             }
 
+            template <typename ...Args>
+            void call( Args&& ...args )
+            {
+                guard_type l(list_lock_);
+                splice_added( );
+                typename impl::list_iterator b(list_.begin( ));
+                while( b ) {
+                    if( is_removed( b->id_ ) ) {
+                        b = impl::itr_erase( list_, b );
+                    } else {
+                        if( !slot_traits::expired( b->slot_ ) ) {
+                            slot_traits::exec( b->slot_,
+                                               std::forward<Args>(args)... );
+                            ++b;
+                        } else {
+                            b = impl::itr_erase( list_, b );
+                        }
+                    }
+                }
+                clear_removed( );
+            }
+
         };
 
         typedef std::shared_ptr<impl>   impl_sptr;
@@ -218,6 +240,21 @@ namespace etool { namespace observers {
             std::size_t key;
         };
 
+        impl &get_impl( )
+        {
+            return *impl_;
+        }
+
+        impl_wptr get_impl_wptr( )
+        {
+            return impl_;
+        }
+
+        const impl &get_impl( ) const
+        {
+            return *impl_;
+        }
+
     public:
 
         using subscription        = observers::subscription;
@@ -237,13 +274,11 @@ namespace etool { namespace observers {
         base( base &&o )
         {
             impl_.swap( o.impl_ );
-            o.impl_ = std::make_shared<impl>( );
-        }
+       }
 
         base & operator = ( base &&o )
         {
             impl_.swap( o.impl_ );
-            o.impl_ = std::make_shared<impl>( );
             return *this;
         }
 
@@ -251,10 +286,10 @@ namespace etool { namespace observers {
 
         subscription subscribe( slot_type call )
         {
-            size_t next = impl_->connect( call );
+            size_t next = get_impl().connect( call );
 
             subscription::unsubscriber_sptr us =
-                    std::make_shared<unsubscriber>(impl_wptr(impl_), next);
+                    std::make_shared<unsubscriber>(get_impl_wptr( ), next);
 
             return subscription( us );
         }
@@ -276,7 +311,7 @@ namespace etool { namespace observers {
 
         void unsubscribe_all(  )
         {
-            impl_->clear( );
+            get_impl().clear( );
         }
 
         void disconnect_all_slots(  )
@@ -287,22 +322,7 @@ namespace etool { namespace observers {
         template <typename ...Args>
         void operator ( ) ( Args&& ...args )
         {
-            guard_type l(impl_->list_lock_);
-            impl_->splice_added( );
-            typename impl::list_iterator b(impl_->list_.begin( ));
-            while( b ) {
-                if( impl_->is_removed( b->id_ ) ) {
-                    b = impl::itr_erase( impl_->list_, b );
-                } else {
-                    slot_traits::exec( b->slot_, std::forward<Args>(args)... );
-                    if( slot_traits::expired( b->slot_ ) ) {
-                        b = impl::itr_erase( impl_->list_, b );
-                    } else {
-                        ++b;
-                    }
-                }
-            }
-            impl_->clear_removed( );
+            get_impl( ).call( std::forward<Args>( args )... );
         }
 
     private:
