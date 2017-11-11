@@ -53,7 +53,7 @@ int main0(  int /*argc*/, char** /*argv[ ]*/ )
     return 0;
 }
 
-int main( int argc, char* argv[ ] )
+int main__( int argc, char* argv[ ] )
 {
     int result = Catch::Session( ).run( argc, argv );
     return ( result < 0xff ? result : 0xff );
@@ -74,10 +74,11 @@ void sleep_task( )
 void spam_task( )
 {
     ++counter ;
+    //queue.post_task([](){ spam_task();});
     queue.post_delayed_task(0ms, [](){ spam_task(); });
 }
 
-int main__()
+int main()
 {
     sleep_task();
     spam_task();

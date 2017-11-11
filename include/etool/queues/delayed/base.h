@@ -146,8 +146,8 @@ namespace etool { namespace queues { namespace delayed {
         template <typename TaskT>
         struct templ_task_wrapper
         {
-            templ_task_wrapper(TaskT task) :
-                m_task(std::move(task))
+            templ_task_wrapper(TaskT task)
+                :m_task(std::move(task))
             {}
 
             templ_task_wrapper(std::nullptr_t)
@@ -609,9 +609,9 @@ namespace etool { namespace queues { namespace delayed {
         template <typename TaskT>
         struct post_task_wrapper
         {
-            post_task_wrapper(base &queue, TaskT task) :
-                queue_(queue),
-                task_(std::move(task))
+            post_task_wrapper(base &queue, TaskT task)
+                :queue_(queue)
+                ,task_(std::move(task))
             {}
 
             post_task_wrapper(post_task_wrapper &&other) = default;
