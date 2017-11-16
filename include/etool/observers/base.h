@@ -26,6 +26,10 @@ namespace etool { namespace observers {
 
     private:
 
+        struct special {
+            static const std::size_t unsubscribe_all = 1;
+        };
+
         typedef MutexType                     mutex_type;
         typedef std::lock_guard<mutex_type>   guard_type;
 
@@ -53,10 +57,11 @@ namespace etool { namespace observers {
 
             mutable mutex_type  list_lock_;
             mutable mutex_type  tmp_lock_;
-            size_t              id_;
+            std::size_t         id_;
+            std::thread::id     current_process_{};
 
             impl( )
-                :id_(1)
+                :id_(10)
             { }
 
             ~impl( )
@@ -90,6 +95,18 @@ namespace etool { namespace observers {
             {
                 guard_type lck(tmp_lock_);
                 return (removed_.erase( itr ) != 0);
+            }
+
+            bool check_clean( )
+            {
+                guard_type lck(tmp_lock_);
+                if ( removed_.erase(special::unsubscribe_all) != 0 ) {
+                    clear_added_unsafe( );
+                    clear_main_unsafe( );
+                    removed_.clear( );
+                    return true;
+                }
+                return false;
             }
 
             static
@@ -141,33 +158,42 @@ namespace etool { namespace observers {
                 list_iterator bl(list_.begin( ));
 
                 for( ; (b!=e) && bl; ++b ) {
-                    for( ; bl && (bl->id_ < *b); ++bl );
+                    for (; bl && (bl->id_ < *b); ++bl)
+                    { }
                     if( bl && (bl->id_ == *b) ) {
                         bl = itr_erase( list_, bl );
                     }
                 }
             }
 
-            void clear_unsafe( ) /// unsafe
+            void clear_added_unsafe( )
             {
-                list_iterator b = list_.begin( );
+                list_iterator b = added_.begin();
+                while (b) {
+                    b = itr_erase(added_, b);
+                }
+            }
+
+            void clear_main_unsafe( )
+            {
+                list_iterator b = list_.begin();
                 while( b ) {
                     b = itr_erase( list_, b );
                 }
+            }
 
-                b = added_.begin( );
-                while( b ) {
-                    b = itr_erase( added_, b );
-                }
-
+            void clear_unsafe( ) /// unsafe
+            {
+                clear_main_unsafe( );
+                clear_added_unsafe( );
                 removed_.clear( );
             }
 
             void clear( )
             {
-                guard_type l0(list_lock_);
-                guard_type l1(tmp_lock_);
-                clear_unsafe( );
+                guard_type lock(tmp_lock_);
+                removed_.insert(special::unsubscribe_all);
+                clear_added_unsafe( );
             }
 
             void splice_added( )
@@ -176,10 +202,15 @@ namespace etool { namespace observers {
                 list_.splice_back( added_ );
             }
 
-            size_t connect( slot_type call )
+            std::size_t next_id()
+            {
+                return id_ += 2;
+            }
+
+            std::size_t connect( slot_type call )
             {
                 guard_type l(tmp_lock_);
-                size_t next = id_++;
+                std::size_t next = next_id();
                 added_.emplace_back( slot_info(call, next) );
                 return next;
             }
@@ -187,8 +218,19 @@ namespace etool { namespace observers {
             template <typename ...Args>
             void call( Args&& ...args )
             {
+                static const std::thread::id empty_thread;
                 guard_type l(list_lock_);
-                splice_added( );
+
+                bool first_thread = (current_process_ == empty_thread);
+
+                if (first_thread) {
+                    if( check_clean( ) ) {
+                        return;
+                    }
+                    splice_added();
+                    current_process_ = std::this_thread::get_id();
+                }
+
                 typename impl::list_iterator b(list_.begin( ));
                 while( b ) {
                     if( is_removed( b->id_ ) ) {
@@ -203,9 +245,11 @@ namespace etool { namespace observers {
                         }
                     }
                 }
-                clear_removed( );
+                if (first_thread) {
+                    clear_removed();
+                     current_process_ = empty_thread;
+                }
             }
-
         };
 
         typedef std::shared_ptr<impl>   impl_sptr;

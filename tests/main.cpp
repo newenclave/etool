@@ -22,9 +22,46 @@
 
 #include "etool/queues/delayed/base.h"
 
-#include "all.hpp"
+#include "boost/signals2.hpp"
 
 using namespace etool;
+
+std::size_t test_count = 5000000;
+std::size_t signal_count = 1;
+auto test = 0ul;
+// using mutex_type = std::recursive_mutex;
+using mutex_type = boost::signals2::dummy_mutex;
+
+
+namespace bs {
+    const std::string name = "boost";
+    using signal = boost::signals2::signal_type<void(void),
+        boost::signals2::keywords::mutex_type<mutex_type> >::type;
+    signal S;
+}
+
+namespace es {
+    const std::string name = "etool";
+    using signal = observers::simple<void(), mutex_type>;
+    signal S;
+}
+
+namespace test_ns = bs;
+
+namespace tests {
+    template <typename SignalType>
+    void simple_call(SignalType &S)
+    {
+        for (auto i = 0ul; i < signal_count; i++)
+        {
+            S.connect([&]() {++test; });
+        }
+        for (auto i = 0ul; i < test_count; ++i)
+        {
+            S();
+        }
+    }
+}
 
 std::chrono::milliseconds operator "" ms ( unsigned long long d)
 {
@@ -36,86 +73,19 @@ std::chrono::hours operator "" h ( unsigned long long d)
     return std::chrono::hours(d);
 }
 
-using observer = observers::simple<void (void)>;
-
-int main1(  int /*argc*/, char** /*argv[ ]*/ )
+int main_(int argc, char* argv[])
 {
-    observer ob;
-    auto ss = ob.subscribe( [&ob]( ) {
-        std::cout << "!\n";
-    } );
-    ob( );
-    return 0;
-}
-
-int main0(  int /*argc*/, char** /*argv[ ]*/ )
-{
-    return 0;
-}
-
-int main__( int argc, char* argv[ ] )
-{
-    int result = Catch::Session( ).run( argc, argv );
-    return ( result < 0xff ? result : 0xff );
-}
-
-namespace {
-    etool::queues::delayed::base queue;
-    std::atomic<std::size_t> counter {0};
-}
-
-void sleep_task( )
-{
-    std::cout << counter << "\n";
-    counter = 0;
-    queue.post_delayed_task(1000ms, [](){ sleep_task();});
-}
-
-void spam_task( )
-{
-    ++counter ;
-    //queue.post_task([](){ spam_task();});
-    queue.post_delayed_task(0ms, [](){ spam_task(); });
-}
-
-int main()
-{
-    sleep_task();
-    spam_task();
-    queue.post_delayed_task(1h, [](){
-        std::cout << "Stop!\n";
-        queue.stop( );
-    });
-    queue.run();
+    std::cout << "Start test for " << test_ns::name << std::endl;
+    auto start = std::chrono::high_resolution_clock::now().time_since_epoch();
+    tests::simple_call(test_ns::S);
+    auto stop = std::chrono::high_resolution_clock::now().time_since_epoch();
+    std::cout << "TOTAL: " << test << " in time " << (stop - start).count() << std::endl;
     return 1;
 }
 
-namespace {
-    timertt::default_timer_heap_thread ttq;
-
-    void spam_tt()
-    {
-        ++counter;
-        ttq.activate(0ms, [](){spam_tt();});
-    }
-    void second_tt()
-    {
-        std::cout << counter << "\n";
-        counter = 0;
-        ttq.activate(1000ms, [](){second_tt();});
-    }
-}
-
-
-int main_( )
+int main(int argc, char* argv[])
 {
-    ttq.start();
-
-    spam_tt();
-    second_tt();
-
-    //ttq.shutdown();
-    ttq.join();
-    return 1;
+    int result = Catch::Session().run(argc, argv);
+    return (result < 0xff ? result : 0xff);
 }
 

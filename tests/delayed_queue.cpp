@@ -4,7 +4,7 @@
 
 using namespace etool;
 
-TEST_CASE( "The delayed queueu", "[delayed queue]" ) {
+TEST_CASE( "The delayed queue", "[delayed queue]" ) {
 
     queues::delayed::base queue;
     int test = 0;

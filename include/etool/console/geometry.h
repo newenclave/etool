@@ -58,7 +58,7 @@ namespace etool { namespace console {
             columns = csbi.srWindow.Right  - csbi.srWindow.Left + 1;
             rows    = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
-            return pos::coord( columns, rows );
+            return info::coord( columns, rows );
         }
 
         static

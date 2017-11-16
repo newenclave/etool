@@ -167,13 +167,20 @@ namespace etool { namespace details {
             ,size_(0)
         { }
 
-        list( const list &other )
+        list(const list &other)
             :front_(nullptr)
-            ,back_(nullptr)
-            ,size_(0)
+            , back_(nullptr)
+            , size_(0)
         {
-            list l(other.begin( ), other.end( ));
-            swap( l );
+            list l(other.begin(), other.end());
+            swap(l);
+        }
+
+        list& operator = (const list &other)
+        {
+            list tmp(other);
+            swap(tmp);
+            return *this;
         }
 
         template <typename Itr>

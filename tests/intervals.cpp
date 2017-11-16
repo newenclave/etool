@@ -105,7 +105,7 @@ TEST_CASE( "SET", "[set]") {
     }
 
     SECTION( "merge values" ) {
-        u64 maximum = ud( rd ) % 100;
+        u64 maximum = (ud( rd ) % 100) + 1;
         for( u64 i = 0; i<maximum; i++ ) {
             /// "[i , i + 1]"
             is.merge( ival_type::closed( i, i + 1 ) );
@@ -116,7 +116,7 @@ TEST_CASE( "SET", "[set]") {
     }
 
     SECTION( "absorb values" ) {
-        u64 maximum = ud( rd ) % 100;
+        u64 maximum = (ud(rd) % 100) + 1;
         for( u64 i = 0; i<maximum; i++ ) {
             /// "[i , i + 1)"
             is.absorb( ival_type::left_closed( i, i + 1 ) );
