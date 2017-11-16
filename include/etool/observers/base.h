@@ -5,6 +5,7 @@
 
 #include <mutex>
 #include <memory>
+#include <thread>
 
 #include "etool/details/list.h"
 #include "etool/observers/traits/simple.h"
