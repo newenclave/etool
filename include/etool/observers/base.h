@@ -58,7 +58,7 @@ namespace etool { namespace observers {
             mutable mutex_type  list_lock_;
             mutable mutex_type  tmp_lock_;
             std::size_t         id_;
-            std::thread::id     current_process_{};
+            std::thread::id     current_thread_{};
 
             impl( )
                 :id_(10)
@@ -221,14 +221,14 @@ namespace etool { namespace observers {
                 static const std::thread::id empty_thread;
                 guard_type l(list_lock_);
 
-                bool first_thread = (current_process_ == empty_thread);
+                bool first_thread = (current_thread_ == empty_thread);
 
                 if (first_thread) {
                     if( check_clean( ) ) {
                         return;
                     }
                     splice_added();
-                    current_process_ = std::this_thread::get_id();
+                    current_thread_ = std::this_thread::get_id();
                 }
 
                 typename impl::list_iterator b(list_.begin( ));
@@ -247,7 +247,7 @@ namespace etool { namespace observers {
                 }
                 if (first_thread) {
                     clear_removed();
-                     current_process_ = empty_thread;
+                     current_thread_ = empty_thread;
                 }
             }
         };

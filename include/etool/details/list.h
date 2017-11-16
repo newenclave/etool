@@ -169,8 +169,8 @@ namespace etool { namespace details {
 
         list(const list &other)
             :front_(nullptr)
-            , back_(nullptr)
-            , size_(0)
+            ,back_(nullptr)
+            ,size_(0)
         {
             list l(other.begin(), other.end());
             swap(l);
