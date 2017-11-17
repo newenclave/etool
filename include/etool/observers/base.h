@@ -27,7 +27,7 @@ namespace etool { namespace observers {
     private:
 
         struct special {
-            static const std::size_t unsubscribe_all = 1;
+            enum { unsubscribe_all = 1 };
         };
 
         typedef MutexType                     mutex_type;
@@ -188,7 +188,7 @@ namespace etool { namespace observers {
             void clear( )
             {
                 guard_type lock(tmp_lock_);
-                removed_.insert(special::unsubscribe_all);
+                removed_.insert(this_type::special::unsubscribe_all);
                 clear_added_unsafe( );
             }
 
