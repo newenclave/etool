@@ -238,8 +238,9 @@ namespace etool { namespace observers {
                         }
                     }
                 }
-                if (--current_enter_ == 0) {
-                    clear_removed();
+
+                if( --current_enter_ == 0 ) {
+                    clear_removed( );
                 }
             }
         };

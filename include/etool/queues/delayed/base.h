@@ -4,18 +4,18 @@
 #include <memory>
 #include <functional>
 #include <chrono>
-#include <mutex>
 #include <queue>
 #include <vector>
 #include <map>
 #include <set>
 #include <atomic>
 #include <algorithm>
-#include <condition_variable>
+
+#include "etool/queues/delayed/traits/stl_condition.h"
 
 namespace etool { namespace queues { namespace delayed {
 
-
+    template <typename ConditionTrait = traits::stl_condition>
     class base {
 
         using duration_resolution = std::chrono::nanoseconds;
@@ -25,6 +25,9 @@ namespace etool { namespace queues { namespace delayed {
             auto now = high_resolution_clock::now().time_since_epoch();
             return duration_cast<duration_resolution>(now).count();
         }
+        
+        using condition_trait = ConditionTrait;
+        using this_type = base<condition_trait>;
 
         using task_token_type = std::size_t;
         struct delayed_task_info
@@ -79,10 +82,11 @@ namespace etool { namespace queues { namespace delayed {
 
         class delayed_task
         {
-            friend class base;
+            //friend class base;
         public:
 
-            delayed_task(base::impl &queue, const delayed_task_info &task)
+            delayed_task( typename base::impl &queue,
+                          const delayed_task_info &task )
                 :queue_(&queue)
                 ,info_(task)
             {}
@@ -132,7 +136,7 @@ namespace etool { namespace queues { namespace delayed {
             }
 
         private:
-            base::impl *queue_ = nullptr;
+            typename base::impl *queue_ = nullptr;
             delayed_task_info info_;
         };
 
@@ -189,7 +193,9 @@ namespace etool { namespace queues { namespace delayed {
             TaskT m_task;
         };
 
-        using mutex_type = std::mutex;
+        using mutex_type = typename condition_trait::mutex_type;
+        using condition_variable_type = typename condition_trait::condition_variable_type;
+
         using delayed_task_wrapper = templ_task_wrapper<delayed_task_type>;
         using task_wrapper = templ_task_wrapper<task_type>;
 
@@ -570,7 +576,7 @@ namespace etool { namespace queues { namespace delayed {
 
             std::vector<delayed_task_info> delayed_;
             task_queue_type task_queue_;
-            std::condition_variable work_cond_;
+            condition_variable_type work_cond_;
             mutable mutex_type work_lock_;
 
             /*

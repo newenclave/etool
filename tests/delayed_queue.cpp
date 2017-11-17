@@ -6,7 +6,7 @@ using namespace etool;
 
 TEST_CASE( "The delayed queue", "[delayed queue]" ) {
 
-    queues::delayed::base queue;
+    queues::delayed::base<> queue;
     int test = 0;
 
     SECTION( "regular" ) {
