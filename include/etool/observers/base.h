@@ -214,7 +214,6 @@ namespace etool { namespace observers {
             template <typename ...Args>
             void call( Args&& ...args )
             {
-                static const std::thread::id empty_thread;
                 guard_type l(list_lock_);
 
                 if (++current_enter_ == 1) {
