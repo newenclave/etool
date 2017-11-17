@@ -83,9 +83,25 @@ int main_(int argc, char* argv[])
     return 1;
 }
 
-int main(int argc, char* argv[])
+int main__(int argc, char* argv[])
 {
     int result = Catch::Session().run(argc, argv);
     return (result < 0xff ? result : 0xff);
 }
 
+namespace {
+
+    queues::delayed::base<> dq;
+    int test = 0;
+    void spam()
+    {
+       std::cout << test++ << "\n";
+       dq.post_delayed_task(1000ms, spam);
+    }
+}
+
+int main ()
+{
+    spam();
+    dq.run();
+}

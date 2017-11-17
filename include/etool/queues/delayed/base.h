@@ -22,10 +22,10 @@ namespace etool { namespace queues { namespace delayed {
         static std::uint64_t now_ticks()
         {
             using namespace std::chrono;
-            auto now = high_resolution_clock::now().time_since_epoch();
+            auto now = steady_clock::now() - steady_clock::time_point();
             return duration_cast<duration_resolution>(now).count();
         }
-        
+
         using condition_trait = ConditionTrait;
         using this_type = base<condition_trait>;
 
@@ -529,12 +529,13 @@ namespace etool { namespace queues { namespace delayed {
                             continue;
                         }
 
+                        //auto now = std::chrono::steady_clock::now();
                         auto now = now_ticks();
 
                         if ( next.expires_ > now ) {
-                            auto timeout = duration_resolution(next.expires_
-                                                               - now);
-                            auto wait_res = work_cond_.wait_for(lock, timeout,
+                            auto point = std::chrono::steady_clock::time_point()
+                                    + duration_resolution(next.expires_);
+                            auto wait_res = work_cond_.wait_until(lock, point,
                                 [this, &next]( ) {
                                     return !enabled_ ||
                                         !task_queue_.empty( ) ||
