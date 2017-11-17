@@ -5,7 +5,6 @@
 
 #include <mutex>
 #include <memory>
-#include <thread>
 
 #include "etool/details/list.h"
 #include "etool/observers/traits/simple.h"
@@ -58,12 +57,8 @@ namespace etool { namespace observers {
 
             mutable mutex_type  list_lock_;
             mutable mutex_type  tmp_lock_;
-            std::size_t         id_;
-            std::thread::id     current_thread_{};
-
-            impl( )
-                :id_(10)
-            { }
+            std::size_t         id_ = 10;
+            std::uint32_t       current_enter_ = 0;
 
             ~impl( )
             {
@@ -222,14 +217,11 @@ namespace etool { namespace observers {
                 static const std::thread::id empty_thread;
                 guard_type l(list_lock_);
 
-                bool first_thread = (current_thread_ == empty_thread);
-
-                if (first_thread) {
+                if (++current_enter_ == 1) {
                     if( check_clean( ) ) {
                         return;
                     }
                     splice_added();
-                    current_thread_ = std::this_thread::get_id();
                 }
 
                 typename impl::list_iterator b(list_.begin( ));
@@ -246,9 +238,8 @@ namespace etool { namespace observers {
                         }
                     }
                 }
-                if (first_thread) {
+                if (--current_enter_ == 0) {
                     clear_removed();
-                     current_thread_ = empty_thread;
                 }
             }
         };
