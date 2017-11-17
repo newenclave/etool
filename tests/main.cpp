@@ -73,7 +73,7 @@ std::chrono::hours operator "" h ( unsigned long long d)
     return std::chrono::hours(d);
 }
 
-int main(int argc, char* argv[])
+int main_(int argc, char* argv[])
 {
     std::cout << "Start test for " << test_ns::name << std::endl;
     auto start = std::chrono::high_resolution_clock::now().time_since_epoch();
@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
     return 1;
 }
 
-int main_(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     int result = Catch::Session().run(argc, argv);
     return (result < 0xff ? result : 0xff);

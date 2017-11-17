@@ -8,22 +8,21 @@ using namespace etool;
 
 TEST_CASE("Observers", "[observer]") {
 
-    observers::simple<void(), std::recursive_mutex> signal {};
+    observers::simple<void()> observer;
 
     SECTION("simple_call") {
         int test = 0;
-        signal();
-//        auto call1 = [&]() { if (test++ == 0) { observer.unsubscribe_all(); } };
-//        auto call2 = [&]() {
-//            if (++test == 2) {
-//                observer();
-//            };
-//        };
-//        auto call3 = [&]() { ++test; };
-//        observer.connect(call1);
-//        observer.connect(call2);
-//        observer.connect(call3);
-//        observer();
+        auto call1 = [&]() { if (test++ == 0) { observer.unsubscribe_all(); } };
+        auto call2 = [&]() {
+            if (++test == 2) {
+                observer();
+            };
+        };
+        auto call3 = [&]() { ++test; };
+        observer.connect(call1);
+        observer.connect(call2);
+        observer.connect(call3);
+        observer();
         REQUIRE(test == 6);
     }
 }
