@@ -194,12 +194,14 @@ namespace etool { namespace queues { namespace delayed {
         };
 
         using mutex_type = typename condition_trait::mutex_type;
-        using condition_variable_type = typename condition_trait::condition_variable_type;
+        using condition_variable_type =
+                    typename condition_trait::condition_variable_type;
 
         using delayed_task_wrapper = templ_task_wrapper<delayed_task_type>;
         using task_wrapper = templ_task_wrapper<task_type>;
 
-        using delayed_task_map = std::map<task_token_type, delayed_task_wrapper>;
+        using delayed_task_map = std::map<task_token_type,
+                                          delayed_task_wrapper>;
         using delayed_task_set = std::set<task_token_type>;
         using task_queue_type = std::queue<task_wrapper>;
 
