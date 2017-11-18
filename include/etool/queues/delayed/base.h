@@ -18,11 +18,13 @@ namespace etool { namespace queues { namespace delayed {
     template <typename ConditionTrait = traits::stl_condition>
     class base {
 
+        using monotonic_clock = std::chrono::steady_clock;
+        using time_point = monotonic_clock::time_point;
         using duration_resolution = std::chrono::nanoseconds;
         static std::uint64_t now_ticks()
         {
             using namespace std::chrono;
-            auto now = steady_clock::now() - steady_clock::time_point();
+            auto now = monotonic_clock::now() - time_point();
             return duration_cast<duration_resolution>(now).count();
         }
 
@@ -535,7 +537,7 @@ namespace etool { namespace queues { namespace delayed {
                         auto now = now_ticks();
 
                         if ( next.expires_ > now ) {
-                            auto point = std::chrono::steady_clock::time_point()
+                            auto point = time_point()
                                     + duration_resolution(next.expires_);
                             auto wait_res = work_cond_.wait_until(lock, point,
                                 [this, &next]( ) {
