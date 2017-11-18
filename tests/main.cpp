@@ -20,7 +20,7 @@
 #include "etool/charset/utf8.h"
 #include "etool/details/endian.h"
 
-#include "etool/queues/delayed/base.h"
+#include "etool/queues/delayed/simple.h"
 
 #include "boost/signals2.hpp"
 
@@ -91,7 +91,7 @@ int main__(int argc, char* argv[])
 
 namespace {
 
-    queues::delayed::base<> dq;
+    queues::delayed::simple dq;
     int test = 0;
     void spam()
     {
@@ -102,11 +102,6 @@ namespace {
 
 int main ()
 {
-    auto start = std::chrono::steady_clock::now();
-    auto stop = std::chrono::steady_clock::now() + 1000ms;
-    std::cout << sizeof(start) << "\n";
-    std::cout << (start < stop) << "\n";
-
     spam();
     dq.run();
 }

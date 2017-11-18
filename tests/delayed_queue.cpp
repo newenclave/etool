@@ -1,4 +1,4 @@
-#include "etool/queues/delayed/base.h"
+#include "etool/queues/delayed/simple.h"
 
 #include "catch.hpp"
 
@@ -6,7 +6,7 @@ using namespace etool;
 
 TEST_CASE( "The delayed queue", "[delayed queue]" ) {
 
-    queues::delayed::base<> queue;
+    queues::delayed::simple queue;
     int test = 0;
 
     SECTION( "regular" ) {

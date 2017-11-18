@@ -10,12 +10,11 @@
 #include <set>
 #include <atomic>
 #include <algorithm>
-
-#include "etool/queues/delayed/traits/stl_condition.h"
+#include <mutex>
 
 namespace etool { namespace queues { namespace delayed {
 
-    template <typename ConditionTrait = traits::stl_condition>
+    template <typename ConditionTrait>
     class base {
 
         using monotonic_clock = std::chrono::steady_clock;
@@ -28,10 +27,9 @@ namespace etool { namespace queues { namespace delayed {
         }
 
         template <typename Duration>
-        static time_point now(Duration plus)
+        static time_point from_now(Duration plus)
         {
-            using namespace std::chrono;
-            return monotonic_clock::now() + plus;
+            return now() + plus;
         }
 
         using condition_trait = ConditionTrait;
@@ -344,7 +342,7 @@ namespace etool { namespace queues { namespace delayed {
                 }
 
                 auto id = next_id( );
-                delayed_task_info taskInfo(id, now(dur));
+                delayed_task_info taskInfo(id, from_now(dur));
 
                 delayed_task res(*this, taskInfo);
                 activate_delayed_task(id, std::move(handler));
