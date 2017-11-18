@@ -22,7 +22,6 @@ namespace etool { namespace queues { namespace delayed {
         using duration_resolution = std::chrono::nanoseconds;
         static time_point now()
         {
-            using namespace std::chrono;
             return monotonic_clock::now();
         }
 

@@ -26,6 +26,8 @@
 
 using namespace etool;
 
+using namespace std::chrono;
+
 std::size_t test_count = 5000000;
 std::size_t signal_count = 1;
 auto test = 0ul;
@@ -63,16 +65,6 @@ namespace tests {
     }
 }
 
-std::chrono::milliseconds operator "" ms ( unsigned long long d)
-{
-    return std::chrono::milliseconds(d);
-}
-
-std::chrono::hours operator "" h ( unsigned long long d)
-{
-    return std::chrono::hours(d);
-}
-
 int main_(int argc, char* argv[])
 {
     std::cout << "Start test for " << test_ns::name << std::endl;
@@ -83,7 +75,7 @@ int main_(int argc, char* argv[])
     return 1;
 }
 
-int main__(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     int result = Catch::Session().run(argc, argv);
     return (result < 0xff ? result : 0xff);
@@ -96,11 +88,11 @@ namespace {
     void spam()
     {
        std::cout << test++ << "\n";
-       dq.post_delayed_task(1000ms, spam);
+       dq.post_delayed_task(milliseconds(1000), spam);
     }
 }
 
-int main ()
+int main__()
 {
     spam();
     dq.run();
