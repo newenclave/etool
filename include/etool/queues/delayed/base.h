@@ -21,11 +21,17 @@ namespace etool { namespace queues { namespace delayed {
         using monotonic_clock = std::chrono::steady_clock;
         using time_point = monotonic_clock::time_point;
         using duration_resolution = std::chrono::nanoseconds;
-        static std::uint64_t now_ticks()
+        static time_point now()
         {
             using namespace std::chrono;
-            auto now = monotonic_clock::now() - time_point();
-            return duration_cast<duration_resolution>(now).count();
+            return monotonic_clock::now();
+        }
+
+        template <typename Duration>
+        static time_point now(Duration plus)
+        {
+            using namespace std::chrono;
+            return monotonic_clock::now() + plus;
         }
 
         using condition_trait = ConditionTrait;
@@ -34,7 +40,7 @@ namespace etool { namespace queues { namespace delayed {
         using task_token_type = std::size_t;
         struct delayed_task_info
         {
-            delayed_task_info(task_token_type id, std::uint64_t expires)
+            delayed_task_info(task_token_type id, time_point expires)
                 :id_(id)
                 ,expires_(expires)
             { }
@@ -47,7 +53,7 @@ namespace etool { namespace queues { namespace delayed {
 
             operator bool( ) const
             {
-                return (expires_ != 0) || (id_ != 0);
+                return (expires_ != time_point()) || (id_ != 0);
             }
 
             static
@@ -58,7 +64,7 @@ namespace etool { namespace queues { namespace delayed {
             }
 
             task_token_type id_ = 0;
-            std::uint64_t expires_ = 0;
+            time_point expires_;
         };
 
         struct impl;
@@ -338,9 +344,7 @@ namespace etool { namespace queues { namespace delayed {
                 }
 
                 auto id = next_id( );
-                delayed_task_info taskInfo(id,
-                        now_ticks() +
-                            duration_cast<duration_resolution>(dur).count());
+                delayed_task_info taskInfo(id, now(dur));
 
                 delayed_task res(*this, taskInfo);
                 activate_delayed_task(id, std::move(handler));
@@ -534,17 +538,16 @@ namespace etool { namespace queues { namespace delayed {
                         }
 
                         //auto now = std::chrono::steady_clock::now();
-                        auto now = now_ticks();
+                        auto now_ticks = now();
 
-                        if ( next.expires_ > now ) {
-                            auto point = time_point()
-                                    + duration_resolution(next.expires_);
-                            auto wait_res = work_cond_.wait_until(lock, point,
-                                [this, &next]( ) {
-                                    return !enabled_ ||
-                                        !task_queue_.empty( ) ||
-                                        !is_in_process( next.id_ );
-                                });
+                        if ( next.expires_ > now_ticks ) {
+                            auto wait_res =
+                                work_cond_.wait_until(lock, next.expires_,
+                                    [this, &next]( ) {
+                                        return !enabled_ ||
+                                            !task_queue_.empty( ) ||
+                                            !is_in_process( next.id_ );
+                                    });
 
                             if( !is_in_process( next.id_ )) {
                                 return [next_delay_task]( ) {

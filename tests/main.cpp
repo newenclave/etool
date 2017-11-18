@@ -102,6 +102,11 @@ namespace {
 
 int main ()
 {
+    auto start = std::chrono::steady_clock::now();
+    auto stop = std::chrono::steady_clock::now() + 1000ms;
+    std::cout << sizeof(start) << "\n";
+    std::cout << (start < stop) << "\n";
+
     spam();
     dq.run();
 }
