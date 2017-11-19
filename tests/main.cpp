@@ -48,7 +48,7 @@ namespace es {
     signal S;
 }
 
-namespace test_ns = bs;
+namespace test_ns = es;
 
 namespace tests {
     template <typename SignalType>
@@ -94,6 +94,7 @@ namespace {
 
 int main__()
 {
+
     spam();
     dq.run();
 }
