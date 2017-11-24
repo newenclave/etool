@@ -84,7 +84,6 @@ int main(int argc, char* argv[])
 namespace {
 
     queues::delayed::simple dq;
-    int test = 0;
     void spam()
     {
        std::cout << test++ << "\n";
@@ -97,4 +96,5 @@ int main__()
 
     spam();
     dq.run();
+    return 0;
 }
