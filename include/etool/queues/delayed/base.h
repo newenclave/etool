@@ -347,8 +347,8 @@ namespace etool { namespace queues { namespace delayed {
                 activate_delayed_task(id, std::move(handler));
 
                 /*
-                *   Posting task makes Delayed and Regular task more competitive
-                *   Also it makes the logic of WaitNext more clear
+                *   Posting task makes Delayed and Regular tasks more competitive
+                *   Also it makes the logic of wait_next more clear
                 */
                 post_task([this, taskInfo]() {
                     std::lock_guard<mutex_type> lock(work_lock_);
