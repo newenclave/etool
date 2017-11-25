@@ -156,7 +156,7 @@ namespace etool { namespace queues { namespace delayed {
         struct templ_task_wrapper
         {
             templ_task_wrapper(TaskT task)
-                :m_task(std::move(task))
+                :task_(std::move(task))
             {}
 
             templ_task_wrapper(std::nullptr_t)
@@ -180,22 +180,22 @@ namespace etool { namespace queues { namespace delayed {
 
             operator bool() const
             {
-                return m_task.operator bool();
+                return task_.operator bool();
             }
 
             template <typename ...Args>
             void operator ()(Args&& ...args) const
             {
-                m_task(std::forward<decltype(args)>(args)...);
+                task_(std::forward<decltype(args)>(args)...);
             }
 
             void swap(templ_task_wrapper &other)
             {
-                std::swap(m_task, other.m_task);
+                std::swap(task_, other.task_);
             }
 
         private:
-            TaskT m_task;
+            TaskT task_;
         };
 
         using mutex_type = typename condition_trait::mutex_type;
@@ -416,8 +416,8 @@ namespace etool { namespace queues { namespace delayed {
 
             /*
             *   Returns a deleyed task by its token id
-            *   if the task exists in the wait map "m_inWait".
-            *   Also the call insert the Id to the process set "m_inProcess"
+            *   if the task exists in the wait map "in_wait_".
+            *   Also the call insert the Id to the process set "in_process_"
             */
             delayed_task_wrapper pop_if_active(task_token_type id)
             {
@@ -461,7 +461,7 @@ namespace etool { namespace queues { namespace delayed {
 
             task_token_type next_id( )
             {
-                return m_id++;
+                return id_++;
             }
 
             /*
@@ -577,7 +577,7 @@ namespace etool { namespace queues { namespace delayed {
 
             //////////////// values ////////////////
             bool enabled_ = true;
-            std::atomic<task_token_type> m_id{ 100 };
+            std::atomic<task_token_type> id_{ 100 };
 
             std::vector<delayed_task_info> delayed_;
             task_queue_type task_queue_;
@@ -588,12 +588,12 @@ namespace etool { namespace queues { namespace delayed {
             *   The wait map and the process set are used for control
             *       the execution of delayed call.
             *   As far as delayed task can be cancelled, we have to know
-            *   where is the task now.
-            *   if the task is in the "m_inWait" map,
+            *   where the task is now.
+            *   if the task is in the "in_wait_" map,
             *       so none of the threads has it.
-            *   if the task is in the "m_inProcess" set, some of the thread has
+            *   if the task is in the "in_process_" set, some of the thread has
             *       activated the task and now is waiting the time of the task.
-            *   Both map and set should be processed under "m_activeLock" mutex
+            *   Both map and set should be processed under "active_lock_" mutex
             */
             delayed_task_map in_wait_;
             delayed_task_set in_process_;
