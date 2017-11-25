@@ -423,8 +423,7 @@ namespace etool { namespace queues { namespace delayed {
             {
                 std::lock_guard<mutex_type> lock(active_lock_);
                 auto f = in_wait_.find(id);
-                if (f != in_wait_.end())
-                {
+                if (f != in_wait_.end()) {
                     auto task = std::move(f->second);
                     in_process_.insert(f->first);
                     in_wait_.erase(f);
