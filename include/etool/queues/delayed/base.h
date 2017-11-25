@@ -467,11 +467,11 @@ namespace etool { namespace queues { namespace delayed {
             /*
             *   Obtains next regulag task if the queue is not empty
             *   returns empty object if no task was found.
-            *   Must be called under m_workLock mutex protection
+            *   Must be called under work_lock_ mutex protection
             */
             task_wrapper pop_task( )
             {
-                // call under m_workLock mutex
+                // call under work_lock_ mutex
                 if ( !task_queue_.empty( ) ) {
                     auto task = std::move( task_queue_.front( ) );
                     task_queue_.pop( );
@@ -482,11 +482,11 @@ namespace etool { namespace queues { namespace delayed {
 
             /*
             *   Pushes a task info to the delayed heap.
-            *   Must be called under m_workLock mutex protection
+            *   Must be called under work_lock_ mutex protection
             */
             void register_delayed_task( delayed_task_info value )
             {
-                // call under m_workLock mutex
+                // call under work_lock_ mutex
                 delayed_.emplace_back(std::move(value));
                 std::push_heap( delayed_.begin( ), delayed_.end( ),
                                 &delayed_task_info::heap_compare);
@@ -494,11 +494,11 @@ namespace etool { namespace queues { namespace delayed {
 
             /*
             *   Returns next delayed task information if it exists.
-            *   Must be called under m_workLock mutex protection
+            *   Must be called under work_lock_ mutex protection
             */
             delayed_task_info pop_delayed_task_info( )
             {
-                // call under m_workLock mutex
+                // call under work_lock_ mutex
                 if ( !delayed_.empty( ) ) {
                     std::pop_heap( delayed_.begin( ), delayed_.end( ),
                                    &delayed_task_info::heap_compare );
