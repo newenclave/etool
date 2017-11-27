@@ -521,7 +521,8 @@ namespace etool { namespace queues { namespace delayed {
                     auto next = pop_delayed_task_info();
                     if (!next) {
                         work_cond_.wait(lock, [this]( ) {
-                            return !enabled_ || !task_queue_.empty();
+                            return !enabled_ 
+                                || !task_queue_.empty();
                         });
 
                         if( auto task = pop_task( ) ) {
@@ -540,9 +541,9 @@ namespace etool { namespace queues { namespace delayed {
                             auto wait_res =
                                 work_cond_.wait_until(lock, next.expires_,
                                     [this, &next]( ) {
-                                        return !enabled_ ||
-                                            !task_queue_.empty( ) ||
-                                            !is_in_process( next.id_ );
+                                        return !enabled_ 
+                                            || !task_queue_.empty( ) 
+                                            || !is_in_process( next.id_ );
                                     });
 
                             if( !is_in_process( next.id_ )) {
