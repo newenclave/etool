@@ -119,8 +119,8 @@ namespace etool { namespace queues { namespace delayed {
                     }
                     auto now = steady_clock::now();
                     while(point > now) {
-                        auto diff = duration_cast<milliseconds>
-                                            (point - now).count();
+                        auto diff = 
+                            duration_cast<milliseconds>(point - now).count();
                         BOOL res = SleepConditionVariableCS(&cv_, 
                                             lock.mutex()->get(), 
                                             static_cast<DWORD>(diff));

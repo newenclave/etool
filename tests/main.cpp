@@ -88,7 +88,7 @@ namespace {
     void spam()
     {
        std::cout << test++ << "\n";
-       dq.post_delayed_task(milliseconds(1000), spam);
+       dq.post_delayed_task(microseconds(10), spam);
     }
 }
 
