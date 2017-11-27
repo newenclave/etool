@@ -21,6 +21,7 @@
 #include "etool/details/endian.h"
 
 #include "etool/queues/delayed/simple.h"
+#include "etool/queues/delayed/traits/winapi_condition.h"
 
 #include "boost/signals2.hpp"
 
@@ -83,7 +84,7 @@ int main(int argc, char* argv[])
 
 namespace {
 
-    queues::delayed::simple dq;
+    queues::delayed::base<queues::delayed::traits::winapi_condition> dq;
     void spam()
     {
        std::cout << test++ << "\n";
@@ -91,9 +92,8 @@ namespace {
     }
 }
 
-int main__()
+int main___()
 {
-
     spam();
     dq.run();
     return 0;
