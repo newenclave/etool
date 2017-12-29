@@ -22,8 +22,6 @@
 
 #include "etool/queues/delayed/simple.h"
 
-#include "boost/signals2.hpp"
-
 using namespace etool;
 
 using namespace std::chrono;
@@ -31,49 +29,6 @@ using namespace std::chrono;
 std::size_t test_count = 5000000;
 std::size_t signal_count = 1;
 auto test = 0ul;
-// using mutex_type = std::recursive_mutex;
-using mutex_type = boost::signals2::dummy_mutex;
-
-
-namespace bs {
-    const std::string name = "boost";
-    using signal = boost::signals2::signal_type<void(void),
-        boost::signals2::keywords::mutex_type<mutex_type> >::type;
-    signal S;
-}
-
-namespace es {
-    const std::string name = "etool";
-    using signal = observers::simple<void(), mutex_type>;
-    signal S;
-}
-
-namespace test_ns = es;
-
-namespace tests {
-    template <typename SignalType>
-    void simple_call(SignalType &S)
-    {
-        for (auto i = 0ul; i < signal_count; i++)
-        {
-            S.connect([&]() {++test; });
-        }
-        for (auto i = 0ul; i < test_count; ++i)
-        {
-            S();
-        }
-    }
-}
-
-int main_(int argc, char* argv[])
-{
-    std::cout << "Start test for " << test_ns::name << std::endl;
-    auto start = std::chrono::high_resolution_clock::now().time_since_epoch();
-    tests::simple_call(test_ns::S);
-    auto stop = std::chrono::high_resolution_clock::now().time_since_epoch();
-    std::cout << "TOTAL: " << test << " in time " << (stop - start).count() << std::endl;
-    return 1;
-}
 
 int main(int argc, char* argv[])
 {

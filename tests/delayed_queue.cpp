@@ -35,6 +35,5 @@ TEST_CASE( "The delayed queue", "[delayed queue]" ) {
         REQUIRE(test == 1);
         REQUIRE((stop - start) >= microseconds(100));
     }
-
 }
 
