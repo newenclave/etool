@@ -24,22 +24,23 @@ namespace etool { namespace trees { namespace trie {
         base& operator = ( base && ) = default;
 
         template <typename Iter>
-        class result_iterator {
+        class result_view {
         public:
 
-            ~result_iterator( ) = default;
-            result_iterator ( const result_iterator &  ) = default;
-            result_iterator (       result_iterator && ) = default;
-            result_iterator & operator = ( const result_iterator &  ) = default;
-            result_iterator & operator = (       result_iterator && ) = default;
+            ~result_view( ) = default;
+            result_view ( const result_view &  ) = default;
+            result_view (       result_view && ) = default;
+            result_view & operator = ( const result_view &  ) = default;
+            result_view & operator = (       result_view && ) = default;
 
-            result_iterator( )
+            result_view( )
                 :node_(nullptr)
             { }
 
-            result_iterator( node_type *node, Iter itr )
+            result_view( node_type *node, Iter itrbegin, Iter itrend )
                 :node_(node)
-                ,iter_(itr)
+                ,begin_(itrbegin)
+                ,end_(itrend)
             { }
 
             operator bool ( ) const
@@ -67,14 +68,20 @@ namespace etool { namespace trees { namespace trie {
                 return node_->value( );
             }
 
-            Iter iterator( ) const
+            Iter begin() const
             {
-                return iter_;
+                return begin_;
+            }
+
+            Iter end() const
+            {
+                return end_;
             }
 
         private:
             node_type *node_;
-            Iter       iter_;
+            Iter       begin_;
+            Iter       end_;
         };
 
         template <typename IterT>
@@ -95,7 +102,7 @@ namespace etool { namespace trees { namespace trie {
         }
 
         template <typename IterT>
-        result_iterator<IterT> get( IterT b, const IterT &e, bool greedy )
+        result_view<IterT> get( IterT b, const IterT &e, bool greedy )
         {
            return get_s( &root_, b, e, greedy );
         }
@@ -115,10 +122,10 @@ namespace etool { namespace trees { namespace trie {
 
         template <typename IterT>
         static
-        result_iterator<IterT> get_s( node_type *next_table,
+        result_view<IterT> get_s( node_type *next_table,
                                       IterT b, const IterT &e, bool greedy )
         {
-            using result_type = result_iterator<IterT>;
+            using result_type = result_view<IterT>;
 
             node_type *last_final = nullptr;
 
