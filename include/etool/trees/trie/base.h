@@ -130,7 +130,7 @@ namespace etool { namespace trees { namespace trie {
             node_type *last_final = nullptr;
 
             if( b == e ) {
-                return result_type(nullptr, e);
+                return result_type(nullptr, b, e);
             }
 
             IterT bb = b;
@@ -158,7 +158,7 @@ namespace etool { namespace trees { namespace trie {
             }
 
             return last_final ? result_type(last_final, b, bb)
-                              : result_type(nullptr, e);
+                              : result_type(nullptr, e, e);
         }
 
         node_type root_;
