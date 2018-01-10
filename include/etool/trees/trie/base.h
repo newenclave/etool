@@ -157,7 +157,7 @@ namespace etool { namespace trees { namespace trie {
                 }
             }
 
-            return last_final ? result_type(last_final, bb)
+            return last_final ? result_type(last_final, b, bb)
                               : result_type(nullptr, e);
         }
 
