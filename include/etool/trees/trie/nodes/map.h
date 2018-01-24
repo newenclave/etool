@@ -19,11 +19,17 @@ namespace nodes {
 
         using nodes_type = std::map<key_type, map, Comp>;
 
-        map *get( const key_type &k )
-        {
-            auto f = next_.find( k );
-            return (f == next_.end( )) ? nullptr : &f->second;
-        }
+		map *get(const key_type &k)
+		{
+			auto f = next_.find(k);
+			return (f == next_.end()) ? nullptr : &f->second;
+		}
+
+		const map *get(const key_type &k) const
+		{
+			auto f = next_.find(k);
+			return (f == next_.end()) ? nullptr : &f->second;
+		}
 
         map *set( const key_type &k )
         {

@@ -45,7 +45,7 @@ namespace nodes {
                 return *this;
             }
 
-            bool equal_keys( const key_type &rh )
+            bool equal_keys( const key_type &rh ) const
             {
                 return (!(key < rh)) && (!(rh < key));
             }
@@ -77,6 +77,21 @@ namespace nodes {
                 return nullptr;
             }
         }
+
+		const array *get(const key_type &k) const
+		{
+			if (next_.empty()) {
+				return nullptr;
+			}
+			auto f = std::lower_bound(next_.begin(), next_.end(),
+				k, cmp());
+			if (f != next_.end()) {
+				return (f->equal_keys(k)) ? &f->value : nullptr;
+			}
+			else {
+				return nullptr;
+			}
+		}
 
         array *set( const key_type &k )
         {

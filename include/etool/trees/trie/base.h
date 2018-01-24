@@ -149,11 +149,17 @@ namespace etool { namespace trees { namespace trie {
             set( ptr, ptr + len, std::move(value) );
         }
 
-        template <typename IterT>
-        result_view<IterT> get( IterT b, const IterT &e, bool greedy ) 
-        {
-           return get_s( &root_, b, e, greedy );
-        }
+		template <typename IterT>
+		result_view<IterT> get(IterT b, const IterT &e, bool greedy)
+		{
+			return get_s<result_view>(&root_, b, e, greedy);
+		}
+
+		template <typename IterT>
+		const_result_view<IterT> get(IterT b, const IterT &e, bool greedy) const
+		{
+			return get_s<const_result_view>(&root_, b, e, greedy);
+		}
 
     private:
 
@@ -168,14 +174,15 @@ namespace etool { namespace trees { namespace trie {
             last->set_value(std::move(value));
         }
 
-        template <typename IterT>
+        template <template <typename> class ResultType, 
+                  typename IterT, typename NodeType>
         static
-        result_view<IterT> get_s( node_type *next_table,
-                                  IterT b, const IterT &e, bool greedy )
+        ResultType<IterT> get_s( NodeType next_table,
+                                 IterT b, const IterT &e, bool greedy )
         {
-            using result_type = result_view<IterT>;
+            using result_type = ResultType<IterT>;
 
-            node_type *last_final = nullptr;
+			NodeType last_final = nullptr;
 
             if( b == e ) {
                 return result_type(nullptr, b, e);
