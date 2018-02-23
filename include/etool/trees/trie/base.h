@@ -1,6 +1,8 @@
 #ifndef ETOOL_TREES_TRIE_BASE_H
 #define ETOOL_TREES_TRIE_BASE_H
 
+#include <stack>
+
 #include "etool/trees/trie/nodes/map.h"
 #include "etool/trees/trie/nodes/array.h"
 
@@ -161,7 +163,52 @@ namespace etool { namespace trees { namespace trie {
 			return get_s<const_result_view>(&root_, b, e, greedy);
 		}
 
-    private:
+		using node_stack = std::stack<node_type *>;
+
+		template <typename IterT>
+		std::size_t remove(IterT b, const IterT &e)
+		{
+			//auto stack = get_node_stack(b, e);
+			//while(!stack.empty()) {
+			//	node_type *top = stack.top();
+			//	top->reset_value();
+			//	if (top->empty()) {
+
+			//	}
+			//}
+			return 0;
+		}
+
+		template <typename IterT>
+		node_stack get_node_stack(IterT begin, const IterT &end) 
+		{
+			return get_node_stack(&root_, begin, end);
+		}
+
+		template <typename IterT>
+		static
+		node_stack get_node_stack(node_type *node, IterT begin, const IterT &end)
+		{
+			node_stack result;
+			if (begin == end) {
+				return node_stack();
+			}
+
+			for (; begin != end; ++begin) {
+				result.push(node);
+				node = node->get(*begin);
+				if (!node) {
+					break;
+				}
+			}
+			if (node && node->value()) {
+				result.push(node);
+				return result;
+			}
+			return node_stack();
+		}
+
+	private:
 
         template <typename IterT>
         static

@@ -42,6 +42,27 @@ namespace nodes {
             val_.reset( new value_type(std::move(val) ) );
         }
 
+		std::size_t remove( const map *node )
+		{
+			for (auto b = next_.begin(); b != next_.end(); ++b) {
+				if (&b->second == node) {
+					next_.erase(b);
+					return 1;
+				}
+			}
+			return 0;
+		}
+
+		void reset_value()
+		{
+			val_.reset();
+		}
+
+		bool empty() const 
+		{
+			return next_.empty();
+		}
+
         value_type *value( )
         {
             return val_.get( );

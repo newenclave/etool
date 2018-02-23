@@ -8,7 +8,7 @@ namespace etool { namespace details { namespace operators {
         bool b[2];
         bool do_not_use( ) const { return b[0]; } /// avoid warning for
     public:
-        no_type(  );
+        no_type( );
         ~no_type( );
     };
 

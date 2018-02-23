@@ -110,10 +110,31 @@ namespace nodes {
             }
         }
 
-        void set_value( value_type val )
-        {
-            val_.reset( new value_type(std::move(val) ) );
-        }
+		std::size_t remove(const array *node) 
+		{
+			for (auto b = next_.begin(); b != next_.end(); ++b) {
+				if(&b->value == node) {
+					next_.erase(b);
+					return 1;
+				}
+			}
+			return 0;
+		}
+
+		void set_value(value_type val)
+		{
+			val_.reset(new value_type(std::move(val)));
+		}
+
+		void reset_value( )
+		{
+			val_.reset();
+		}
+
+		bool empty() const
+		{
+			return next_.empty();
+		}
 
         value_type *value( )
         {

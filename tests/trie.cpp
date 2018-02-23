@@ -27,7 +27,7 @@ namespace {
 		return tt;
 	}
 
-	std::string replace_values(const std::string &data, const trie_type replacement) 
+	std::string replace_values(const std::string &data, const trie_type &replacement) 
 	{
 		std::string result;
 		auto begin = data.cbegin();
