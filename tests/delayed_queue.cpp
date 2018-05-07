@@ -35,5 +35,12 @@ TEST_CASE( "The delayed queue", "[delayed queue]" ) {
         REQUIRE(test == 1);
         REQUIRE((stop - start) >= microseconds(100));
     }
+	SECTION("all regular task shod be called in proper order") {
+		std::vector<int> results;
+		for (int i = 0; i < 10; i++) {
+			queue.post_task([&results, i]() { results.push_back(i); });
+		}
+		REQUIRE(results == std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+	}
 }
 

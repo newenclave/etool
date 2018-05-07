@@ -25,37 +25,37 @@ namespace etool { namespace trees { namespace trie {
         base( base && ) = default;
         base& operator = ( base && ) = default;
 
-		template <typename Iter>
-		class const_result_view {
-		public:
+        template <typename Iter>
+        class const_result_view {
+        public:
 
-			~const_result_view( ) = default;
-			const_result_view(const const_result_view &) = default;
-			const_result_view(const_result_view &&) = default;
-			const_result_view &operator = (const const_result_view &) = default;
-			const_result_view &operator = (const_result_view &&) = default;
-			const_result_view( ) = default;
+            ~const_result_view( ) = default;
+            const_result_view(const const_result_view &) = default;
+            const_result_view(const_result_view &&) = default;
+            const_result_view &operator = (const const_result_view &) = default;
+            const_result_view &operator = (const_result_view &&) = default;
+            const_result_view( ) = default;
 
-			const_result_view(const node_type *node, Iter itrbegin, Iter itrend)
-				:node_(node)
-				,begin_(itrbegin)
-				,end_(itrend)
-			{ }
+            const_result_view(const node_type *node, Iter itrbegin, Iter itrend)
+                :node_(node)
+                ,begin_(itrbegin)
+                ,end_(itrend)
+            { }
 
-			operator bool( ) const
-			{
-				return node_ != nullptr;
-			}
+            operator bool( ) const
+            {
+                return node_ != nullptr;
+            }
 
-			const value_type &operator *( ) const
-			{
-				return *node_->value();
-			}
+            const value_type &operator *( ) const
+            {
+                return *node_->value();
+            }
 
-			const value_type *operator ->( ) const
-			{
-				return node_->value( );
-			}
+            const value_type *operator ->( ) const
+            {
+                return node_->value( );
+        	}
 
 			Iter begin() const
 			{
