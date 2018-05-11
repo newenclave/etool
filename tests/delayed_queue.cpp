@@ -5,6 +5,7 @@
 using namespace etool;
 using std::chrono::microseconds;
 using std::chrono::milliseconds;
+using namespace std::chrono_literals;
 
 namespace {
     std::chrono::steady_clock::time_point now()
@@ -29,18 +30,19 @@ TEST_CASE( "The delayed queue", "[delayed queue]" ) {
     SECTION("delayed task should not run earlear") {
         int test = 0;
         auto start = now();
-        queue.post_delayed_task(microseconds(100), [&]() { test++; });
+        queue.post_delayed_task(100us, [&]() { test++; });
         queue.run(2);
         auto stop = now();
         REQUIRE(test == 1);
-        REQUIRE((stop - start) >= microseconds(100));
+        REQUIRE((stop - start) >= 100us);
     }
-	SECTION("all regular task shod be called in proper order") {
-		std::vector<int> results;
-		for (int i = 0; i < 10; i++) {
-			queue.post_task([&results, i]() { results.push_back(i); });
-		}
-		REQUIRE(results == std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
-	}
+    SECTION("all regular task should be called in proper order") {
+        std::vector<int> results;
+        for (int i = 0; i < 10; i++) {
+            queue.post_task([&results, i]() { results.push_back(i); });
+        }
+		queue.run(10);
+        REQUIRE(results == std::vector<int>({0, 1, 2, 3, 4, 5, 6, 7, 8, 9}));
+    }
 }
 

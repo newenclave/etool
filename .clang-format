@@ -1,23 +1,18 @@
----
 Language: Cpp
 BasedOnStyle: WebKit
-AlignTrailingComments: false
-AlignEscapedNewlines: DontAlign
-KeepEmptyLinesAtTheStartOfBlocks: false
-BreakBeforeBinaryOperators: None
-PointerAlignment: Right
-BreakBeforeTernaryOperators: false
-IndentCaseLabels: true
-ColumnLimit: 0
 NamespaceIndentation: Inner
-ReflowComments: false
-SortIncludes: false
-SortUsingDeclarations: false
-UseTab: Never
+ColumnLimit: 80
+UseTab: ForIndentation
 TabWidth: 4
 IndentWidth: 4
+CompactNamespaces: true
+AlignAfterOpenBracket: Align
+AllowShortFunctionsOnASingleLine: Empty
+ReflowComments: true
+AccessModifierOffset: -4
+
+
 BreakBeforeBraces: Custom
-ColumnLimit: 80
 BraceWrapping:
     AfterClass: false
     AfterStruct: false
@@ -30,4 +25,6 @@ BraceWrapping:
     SplitEmptyFunction: true
     SplitEmptyRecord: true
     SplitEmptyNamespace: true
-...
+
+
+

@@ -89,8 +89,8 @@ namespace nodes {
                 return (f->equal_keys(k)) ? &f->value : nullptr;
             } else {
                 return nullptr;
-        	}
-		}
+            }
+        }
 
         array *set( const key_type &k )
         {
@@ -109,31 +109,31 @@ namespace nodes {
             }
         }
 
-		std::size_t remove(const array *node) 
-		{
-			for (auto b = next_.begin(); b != next_.end(); ++b) {
-				if(&b->value == node) {
-					next_.erase(b);
-					return 1;
-				}
-			}
-			return 0;
-		}
+        std::size_t remove(const array *node) 
+        {
+            for (auto b = next_.begin(); b != next_.end(); ++b) {
+                if(&b->value == node) {
+                    next_.erase(b);
+                    return 1;
+                }
+            }
+            return 0;
+        }
 
-		void set_value(value_type val)
-		{
-			val_.reset(new value_type(std::move(val)));
-		}
+        void set_value(value_type val)
+        {
+            val_.reset(new value_type(std::move(val)));
+        }
 
-		void reset_value( )
-		{
-			val_.reset();
-		}
+        void reset_value( )
+        {
+            val_.reset();
+        }
 
-		bool empty() const
-		{
-			return next_.empty();
-		}
+        bool empty() const
+        {
+            return next_.empty();
+        }
 
         value_type *value( )
         {

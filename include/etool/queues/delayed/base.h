@@ -509,9 +509,9 @@ namespace etool { namespace queues { namespace delayed {
             }
 
             /*
-                Obtains next task from the queue
-                First of all it checks if there are some delayed task here
-                And if there are not, just waits for a regular task
+            *   Obtains next task from the queue
+            *   First of all it checks if there are some delayed task here
+            *   And if there are not, just waits for a regular task
             */
             task_type wait_next( )
             {
@@ -534,7 +534,6 @@ namespace etool { namespace queues { namespace delayed {
                             continue;
                         }
 
-                        //auto now = std::chrono::steady_clock::now();
                         auto now_ticks = now();
 
                         if ( next.expires_ > now_ticks ) {
