@@ -2,7 +2,7 @@ Language: Cpp
 BasedOnStyle: WebKit
 NamespaceIndentation: Inner
 ColumnLimit: 80
-UseTab: ForIndentation
+UseTab: Never
 TabWidth: 4
 IndentWidth: 4
 CompactNamespaces: true
@@ -10,7 +10,6 @@ AlignAfterOpenBracket: Align
 AllowShortFunctionsOnASingleLine: Empty
 ReflowComments: true
 AccessModifierOffset: -4
-
 
 BreakBeforeBraces: Custom
 BraceWrapping:
