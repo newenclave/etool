@@ -11,12 +11,15 @@ namespace etool { namespace trees { namespace trie {
     template <typename KeyT, typename ValueT, typename Comp = std::less<KeyT>,
               template <typename,
                         typename,
-                        typename> class NodeT = nodes::array>
+                        typename> class NodeT = nodes::map>
     class base {
     public:
         using key_type   = KeyT;
         using value_type = ValueT;
         using node_type  = NodeT<KeyT, ValueT, Comp>;
+
+		using node_stack = std::stack<std::pair<node_type *,
+			typename node_type::iterator> >;
 
     public:
         base( ) = default;
@@ -163,24 +166,31 @@ namespace etool { namespace trees { namespace trie {
 			return get_s<const_result_view>(&root_, b, e, greedy);
 		}
 
-		using node_stack = std::stack<node_type *>;
-
 		template <typename IterT>
 		std::size_t remove(IterT b, const IterT &e)
 		{
-			//auto stack = get_node_stack(b, e);
-			//while(!stack.empty()) {
-			//	node_type *top = stack.top();
-			//	top->reset_value();
-			//	if (top->empty()) {
-
-			//	}
-			//}
+			auto st = get_node_stack(b, e);
+			if (!st.empty()) {
+				st.top().first->get_node(st.top().second)->reset_value();
+			}
+			while (!st.empty()) {
+				auto last = std::move(st.top());
+				st.pop();
+				auto node = last.first->get_node(last.second);
+				if (node->empty() && !node->value()) {
+					last.first->erase(last.second);
+				}
+				else {
+					break;
+				}
+			}
 			return 0;
 		}
 
+	private:
+
 		template <typename IterT>
-		node_stack get_node_stack(IterT begin, const IterT &end) 
+		node_stack get_node_stack(IterT begin, const IterT &end)
 		{
 			return get_node_stack(&root_, begin, end);
 		}
@@ -194,18 +204,23 @@ namespace etool { namespace trees { namespace trie {
 				return node_stack();
 			}
 
+			typename node_type::iterator itr;
 			for (; begin != end; ++begin) {
-				result.push(node);
-				node = node->get(*begin);
+				itr = node->get(*begin);
+				node_type *old = node;
+				if (!node->is_end(itr)) {
+					node = node->get_node(itr);
+				} else {
+					node = nullptr;
+				}
+
 				if (!node) {
 					break;
 				}
+				result.push(std::make_pair(old, itr));
 			}
-			if (node && node->value()) {
-				result.push(node);
-				return result;
-			}
-			return node_stack();
+
+			return result;
 		}
 
 	private:
@@ -216,7 +231,8 @@ namespace etool { namespace trees { namespace trie {
                     IterT begin, const IterT &end, value_type value )
         {
             for( ;begin != end; ++begin ) {
-                last = last->set( *begin );
+				auto itr = last->set(*begin);
+				last = last->get_node(itr);
             }
             last->set_value(std::move(value));
         }
@@ -240,12 +256,12 @@ namespace etool { namespace trees { namespace trie {
             ++bb;
 
             for( ; b!=e; ++b ) {
-
-                next_table = next_table->get( *b );
-
-                if( !next_table ) {
-                    break;
-                }
+				auto itr = next_table->get(*b);
+				if (!next_table->is_end(itr)) {
+					next_table = next_table->get_node(itr);
+				} else {
+					break;
+				}
 
                 if( next_table->value( ) ) {
 

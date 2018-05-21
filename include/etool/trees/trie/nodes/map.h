@@ -17,24 +17,44 @@ namespace nodes {
         using value_type = ValueT;
         using value_ptr  = std::unique_ptr<value_type>;
 
-        using nodes_type = std::map<key_type, map, Comp>;
+		using nodes_type = std::map<key_type, map, Comp>;
+		using iterator = typename nodes_type::iterator;
+		using const_iterator = typename nodes_type::const_iterator;
 
-		map *get(const key_type &k)
+		void erase(const_iterator itr)
 		{
-			auto f = next_.find(k);
-			return (f == next_.end()) ? nullptr : &f->second;
+			next_.erase(itr);
 		}
 
-		const map *get(const key_type &k) const
+		bool is_end(const_iterator itr) const
 		{
-			auto f = next_.find(k);
-			return (f == next_.end()) ? nullptr : &f->second;
+			return itr == next_.end();
 		}
 
-        map *set( const key_type &k )
+		map *get_node(iterator itr)
+		{
+			return &itr->second;
+		}
+
+		const map *get_node(const_iterator itr) const
+		{
+			return &itr->second;
+		}
+
+		iterator get(const key_type &k)
+		{
+			return next_.find(k);
+		}
+
+		const_iterator get(const key_type &k) const
+		{
+			return next_.find(k);
+		}
+
+        iterator set( const key_type &k )
         {
             auto f = next_.insert( std::make_pair( k, map( ) ) );
-            return &f.first->second;
+            return f.first;
         }
 
         void set_value( value_type val )

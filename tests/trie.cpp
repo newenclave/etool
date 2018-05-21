@@ -3,7 +3,6 @@
 #include "catch.hpp"
 #include "etool/trees/trie/base.h"
 
-
 namespace {
 	using trie_type = etool::trees::trie::base<char, std::string>;
 
@@ -42,6 +41,11 @@ namespace {
 		}
 		return result;
 	}
+
+	std::string operator "" _s(const char *data, std::size_t)
+	{
+		return data;
+	}
 }
 
 SCENARIO("The Trie", "[trie]") {
@@ -52,6 +56,19 @@ SCENARIO("The Trie", "[trie]") {
 			REQUIRE(expected == replace_values(test, make_replace_trie()));
 		}
 	}
+	GIVEN("Some values to remove") {
+		trie_type test;
+		auto value = "123"_s;
+		test.set(value, "123");
+		test.set("123456", "123456");
+		test.set("456"_s, "456");
+		WHEN("Remove is called") {
+			test.remove(value.begin(), value.end());
+			auto res = test.get(value.begin(), value.end(), true);
+			REQUIRE(!res);
+		}
+	}
 }
 
 
+ 

@@ -64,47 +64,70 @@ namespace nodes {
 
     public:
 
-        array *get( const key_type &k )
+		using iterator = typename container::iterator;
+		using const_iterator = typename container::const_iterator;
+
+		void erase(const_iterator itr)
+		{
+			next_.erase(itr);
+		}
+
+		bool is_end(const_iterator itr) const 
+		{
+			return itr == next_.end();
+		}
+
+		array *get_node(iterator itr)
+		{
+			return &itr->value;
+		}
+
+		const array *get_node(const_iterator itr) const
+		{
+			return &itr->value;
+		}
+
+        iterator get( const key_type &k )
         {
             if( next_.empty( ) ) {
-                return nullptr;
+                return next_.end();
             }
             auto f = std::lower_bound( next_.begin( ), next_.end( ),
                                        k, cmp( ) );
             if( f != next_.end( ) ) {
-                return (f->equal_keys( k ) ) ? &f->value : nullptr;
+                return (f->equal_keys( k ) ) ? f : next_.end();
             } else {
-                return nullptr;
+                return next_.end();
             }
         }
 
-        const array *get(const key_type &k) const
+        const_iterator get(const key_type &k) const
         {
             if (next_.empty()) {
-                return nullptr;
+                return next_.end();
             }
             auto f = std::lower_bound(next_.begin(), next_.end(),
                 k, cmp());
             if (f != next_.end()) {
-                return (f->equal_keys(k)) ? &f->value : nullptr;
+                return (f->equal_keys(k)) ? f : next_.end();
             } else {
-                return nullptr;
+                return next_.end();
             }
         }
 
-        array *set( const key_type &k )
+        iterator set( const key_type &k )
         {
             if( next_.empty( ) ) {
                 next_.emplace_back( key_data(k) );
-                return &next_.begin( )->value;
+                return next_.begin();
             } else {
                 auto f = std::lower_bound(next_.begin( ), next_.end( ),
                                           k, cmp( ) );
                 if( f != next_.end( ) && f->equal_keys( k ) ) {
-                    return &f->value;
+                    return f;
                 } else {
                     auto nf = next_.emplace( f, key_data(k) );
-                    return &nf->value;
+                    return nf;
                 }
             }
         }
