@@ -9,10 +9,8 @@
 namespace etool { namespace trees { namespace trie {
 
     template <typename KeyT, typename ValueT, typename Comp = std::less<KeyT>,
-              template <
-				typename, 
-				typename, 
-				typename> class NodeT = nodes::array>
+              template <typename, typename, typename> class NodeT
+              = nodes::array>
     class base {
     public:
         using key_type = KeyT;
@@ -29,7 +27,8 @@ namespace etool { namespace trees { namespace trie {
         base(base&&) = default;
         base& operator=(base&&) = default;
 
-        template <typename Iter> class const_result_view {
+        template <typename Iter>
+        class const_result_view {
         public:
             ~const_result_view() = default;
             const_result_view(const const_result_view&) = default;
@@ -76,7 +75,8 @@ namespace etool { namespace trees { namespace trie {
             Iter end_;
         };
 
-        template <typename Iter> class result_view {
+        template <typename Iter>
+        class result_view {
         public:
             ~result_view() = default;
             result_view(const result_view&) = default;
@@ -166,7 +166,8 @@ namespace etool { namespace trees { namespace trie {
             return get_s<const_result_view>(&root_, b, e, greedy);
         }
 
-        template <typename IterT> std::size_t remove(IterT b, const IterT& e)
+        template <typename IterT>
+        std::size_t remove(IterT b, const IterT& e)
         {
             auto st = get_node_stack(b, e);
             if (!st.empty()) {

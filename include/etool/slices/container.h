@@ -6,7 +6,8 @@
 
 namespace etool { namespace slices {
 
-    template <typename ItrT> struct container {
+    template <typename ItrT>
+    struct container {
 
         using iterator = ItrT;
 
@@ -47,13 +48,15 @@ namespace etool { namespace slices {
             return data.first == data.second;
         }
 
-        template <typename Distance> container& operator+=(Distance len)
+        template <typename Distance>
+        container& operator+=(Distance len)
         {
             std::advance(data.first, len);
             return *this;
         }
 
-        template <typename Distance> container& operator-=(Distance len)
+        template <typename Distance>
+        container& operator-=(Distance len)
         {
             std::advance(data.first, -len);
             return *this;

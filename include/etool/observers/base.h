@@ -14,7 +14,8 @@
 
 namespace etool { namespace observers {
 
-    template <typename SlotType, typename MutexType> class base {
+    template <typename SlotType, typename MutexType>
+    class base {
 
         typedef base<SlotType, MutexType> this_type;
 
@@ -208,7 +209,8 @@ namespace etool { namespace observers {
                 return next;
             }
 
-            template <typename... Args> void call(Args&&... args)
+            template <typename... Args>
+            void call(Args&&... args)
             {
                 guard_type l(list_lock_);
 
@@ -352,7 +354,8 @@ namespace etool { namespace observers {
             unsubscribe_all();
         }
 
-        template <typename... Args> void operator()(Args&&... args)
+        template <typename... Args>
+        void operator()(Args&&... args)
         {
             get_impl().call(std::forward<Args>(args)...);
         }

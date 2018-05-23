@@ -43,7 +43,8 @@ namespace etool { namespace cache {
             clear_unsafe();
         }
 
-        template <typename... Args> value_type get(Args&&... args)
+        template <typename... Args>
+        value_type get(Args&&... args)
         {
             locker_type l(cache_lock_);
             if (cache_.empty()) {

@@ -31,7 +31,8 @@ namespace etool { namespace slices {
         memory& operator=(memory&&) = default;
         memory& operator=(const memory&) = default;
 
-        template <typename U, typename S = size_type> memory<U, S> rebind()
+        template <typename U, typename S = size_type>
+        memory<U, S> rebind()
         {
             S new_size = (sizeof(value_type) * len_) / sizeof(U);
             memory<U, S> tmp(reinterpret_cast<U*>(val_), new_size);

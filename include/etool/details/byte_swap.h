@@ -6,9 +6,11 @@
 
 namespace etool { namespace details {
 
-    template <typename T> struct byte_swap;
+    template <typename T>
+    struct byte_swap;
 
-    template <typename T> struct byte_swap {
+    template <typename T>
+    struct byte_swap {
 
         typedef T value_type;
 
@@ -32,7 +34,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct byte_swap<std::uint8_t> {
+    template <>
+    struct byte_swap<std::uint8_t> {
 
         typedef std::uint8_t value_type;
 
@@ -44,7 +47,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct byte_swap<std::uint16_t> {
+    template <>
+    struct byte_swap<std::uint16_t> {
         typedef std::uint16_t value_type;
 
         static void place_swap(value_type& v)
@@ -58,7 +62,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct byte_swap<std::uint32_t> {
+    template <>
+    struct byte_swap<std::uint32_t> {
         typedef std::uint32_t value_type;
 
         static void place_swap(value_type& v)
@@ -73,7 +78,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct byte_swap<std::uint64_t> {
+    template <>
+    struct byte_swap<std::uint64_t> {
         typedef std::uint64_t value_type;
 
         static void place_swap(value_type& v)
@@ -94,7 +100,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct byte_swap<std::string> {
+    template <>
+    struct byte_swap<std::string> {
         typedef std::string value_type;
 
         static void place_swap(value_type& v)

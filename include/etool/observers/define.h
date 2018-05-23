@@ -8,6 +8,7 @@
 #include <mutex>
 
 #define ETOOL_OBSERVER_DEFINE_COMMON(Name, Sig, Visible, Mutex)                \
+    \
 public:                                                                        \
     typedef etool::observers::simple<Sig, Mutex> Name##_type;                  \
     typedef typename Name##_type::slot_type Name##_slot_type;                  \

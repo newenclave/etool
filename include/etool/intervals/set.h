@@ -23,7 +23,8 @@ namespace etool { namespace intervals {
         using iterator = typename parent_type::iterator;
         using const_iterator = typename parent_type::const_iterator;
 
-        template <typename IterT> void insert(IterT begin, IterT end)
+        template <typename IterT>
+        void insert(IterT begin, IterT end)
         {
             for (; begin != end; ++begin) {
                 insert(*begin);
@@ -40,7 +41,8 @@ namespace etool { namespace intervals {
             return parent_type::insert_impl(std::move(k));
         }
 
-        template <typename IterT> void merge(IterT begin, IterT end)
+        template <typename IterT>
+        void merge(IterT begin, IterT end)
         {
             for (; begin != end; ++begin) {
                 merge(*begin);
@@ -57,7 +59,8 @@ namespace etool { namespace intervals {
             return parent_type::merge_impl(std::move(k));
         }
 
-        template <typename IterT> void absorb(IterT begin, IterT end)
+        template <typename IterT>
+        void absorb(IterT begin, IterT end)
         {
             for (; begin != end; ++begin) {
                 absorb(*begin);
@@ -74,7 +77,8 @@ namespace etool { namespace intervals {
             return parent_type::absorb_impl(std::move(k));
         }
 
-        template <typename IterT> void cut(IterT begin, IterT end)
+        template <typename IterT>
+        void cut(IterT begin, IterT end)
         {
             for (; begin != end; ++begin) {
                 cut(*begin);

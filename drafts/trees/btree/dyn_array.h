@@ -6,7 +6,8 @@
 
 namespace etool {
 
-template <typename T, std::size_t Max> struct dyn_array {
+template <typename T, std::size_t Max>
+struct dyn_array {
 
     using value_type = T;
 
@@ -20,12 +21,14 @@ template <typename T, std::size_t Max> struct dyn_array {
 
     dyn_array() = default;
 
-    template <std::size_t S> dyn_array(const dyn_array<value_type, S>& other)
+    template <std::size_t S>
+    dyn_array(const dyn_array<value_type, S>& other)
     {
         operator=(other);
     }
 
-    template <std::size_t S> dyn_array(dyn_array<value_type, S>&& other)
+    template <std::size_t S>
+    dyn_array(dyn_array<value_type, S>&& other)
     {
         operator=(other);
     }
@@ -143,7 +146,8 @@ template <typename T, std::size_t Max> struct dyn_array {
         return pos;
     }
 
-    template <typename ItrT> void assign(ItrT b, ItrT e)
+    template <typename ItrT>
+    void assign(ItrT b, ItrT e)
     {
         std::size_t count = 0;
         while ((count != max_size()) && (b != e)) {
@@ -154,7 +158,8 @@ template <typename T, std::size_t Max> struct dyn_array {
         }
     }
 
-    template <typename ItrT> void assign_move(ItrT b, ItrT e)
+    template <typename ItrT>
+    void assign_move(ItrT b, ItrT e)
     {
         std::size_t count = 0;
         while ((count != max_size()) && (b != e)) {

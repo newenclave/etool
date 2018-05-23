@@ -8,7 +8,8 @@ namespace etool { namespace intervals {
 
     enum class endpoint_name { LEFT = 0, RIGHT = 1 };
 
-    template <endpoint_name Name> struct endpoint_type {
+    template <endpoint_name Name>
+    struct endpoint_type {
 
         static const endpoint_name name = Name;
 

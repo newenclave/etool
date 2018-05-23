@@ -142,29 +142,36 @@ namespace etool { namespace dumper {
         }
     };
 
-    template <typename T> struct T_to_hex;
+    template <typename T>
+    struct T_to_hex;
 
-    template <> struct T_to_hex<ui8> {
+    template <>
+    struct T_to_hex<ui8> {
         typedef info hex_type;
     };
 
-    template <> struct T_to_hex<char> {
+    template <>
+    struct T_to_hex<char> {
         typedef info hex_type;
     };
 
-    template <> struct T_to_hex<ui16> {
+    template <>
+    struct T_to_hex<ui16> {
         typedef ui16_to_hex hex_type;
     };
 
-    template <> struct T_to_hex<ui32> {
+    template <>
+    struct T_to_hex<ui32> {
         typedef ui32_to_hex hex_type;
     };
 
-    template <> struct T_to_hex<ui64> {
+    template <>
+    struct T_to_hex<ui64> {
         typedef ui64_to_hex hex_type;
     };
 
-    template <typename T = ui8> struct make {
+    template <typename T = ui8>
+    struct make {
 
         typedef T value_type;
         typedef typename T_to_hex<value_type>::hex_type value_info;

@@ -135,14 +135,16 @@ namespace etool { namespace queues { namespace condition {
             }
         }
 
-        template <typename CallType> void for_each_unsafe(CallType call)
+        template <typename CallType>
+        void for_each_unsafe(CallType call)
         {
             for (auto& c : queue_) {
                 call(c);
             }
         }
 
-        template <typename CallType> void for_each(CallType call)
+        template <typename CallType>
+        void for_each(CallType call)
         {
             locker_type l(queue_lock_);
             for_each_unsafe(std::move(call));

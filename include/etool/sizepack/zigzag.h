@@ -5,18 +5,23 @@
 
 namespace etool { namespace sizepack {
 
-    template <typename SignType> struct zigzag;
+    template <typename SignType>
+    struct zigzag;
 
-    template <> struct zigzag<float> {
+    template <>
+    struct zigzag<float> {
     };
 
-    template <> struct zigzag<double> {
+    template <>
+    struct zigzag<double> {
     };
 
-    template <> struct zigzag<long double> {
+    template <>
+    struct zigzag<long double> {
     };
 
-    template <typename SignType> struct zigzag {
+    template <typename SignType>
+    struct zigzag {
 
         typedef SignType value_type;
         typedef types<sizeof(value_type)> type_trait;

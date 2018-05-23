@@ -14,7 +14,8 @@
 
 namespace etool { namespace queues { namespace delayed {
 
-    template <typename ConditionTrait> class base {
+    template <typename ConditionTrait>
+    class base {
 
         using monotonic_clock = std::chrono::steady_clock;
         using time_point = monotonic_clock::time_point;
@@ -24,7 +25,8 @@ namespace etool { namespace queues { namespace delayed {
             return monotonic_clock::now();
         }
 
-        template <typename Duration> static time_point from_now(Duration plus)
+        template <typename Duration>
+        static time_point from_now(Duration plus)
         {
             return now() + plus;
         }
@@ -146,7 +148,8 @@ namespace etool { namespace queues { namespace delayed {
          *   It just is created for the future.
          *   For example use std::future std::promise
          */
-        template <typename TaskT> struct templ_task_wrapper {
+        template <typename TaskT>
+        struct templ_task_wrapper {
             templ_task_wrapper(TaskT task)
                 : task_(std::move(task))
             {
@@ -174,7 +177,8 @@ namespace etool { namespace queues { namespace delayed {
                 return task_.operator bool();
             }
 
-            template <typename... Args> void operator()(Args&&... args) const
+            template <typename... Args>
+            void operator()(Args&&... args) const
             {
                 task_(std::forward<decltype(args)>(args)...);
             }
@@ -355,7 +359,8 @@ namespace etool { namespace queues { namespace delayed {
                 });
             }
 
-            template <typename Handler> bool post_task(Handler&& handler)
+            template <typename Handler>
+            bool post_task(Handler&& handler)
             {
                 /*
                  *   Unable to post to inactive queue
@@ -597,7 +602,8 @@ namespace etool { namespace queues { namespace delayed {
          *   It holds the reference to the Delayed object and a task.
          *   It will post the task to the queue whan it is invoked.
          */
-        template <typename TaskT> struct post_task_wrapper {
+        template <typename TaskT>
+        struct post_task_wrapper {
             post_task_wrapper(base& queue, TaskT task)
                 : queue_(queue)
                 , task_(std::move(task))
@@ -613,7 +619,8 @@ namespace etool { namespace queues { namespace delayed {
              *   Warning! std::bind loses references.
              *   Use pointers or std::ref
              */
-            template <typename... Args> void operator()(Args&&... args) const
+            template <typename... Args>
+            void operator()(Args&&... args) const
             {
                 auto t
                     = std::bind(task_, std::forward<decltype(args)>(args)...);
@@ -715,7 +722,8 @@ namespace etool { namespace queues { namespace delayed {
          *   Returns true if the task was successfully posted
          *       and false if the queue is already stopped
          */
-        template <typename Handler> bool post_task(Handler&& task)
+        template <typename Handler>
+        bool post_task(Handler&& task)
         {
             return get_impl().post_task(std::forward<decltype(task)>(task));
         }
@@ -783,7 +791,8 @@ namespace etool { namespace queues { namespace delayed {
          *   when invoked, will automatically pass the wrapped handler
          *   to the queue.
          */
-        template <typename TaskT> post_task_wrapper<TaskT> wrap(TaskT&& task)
+        template <typename TaskT>
+        post_task_wrapper<TaskT> wrap(TaskT&& task)
         {
             return post_task_wrapper<TaskT>(*this,
                                             std::forward<decltype(task)>(task));

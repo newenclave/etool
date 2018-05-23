@@ -5,7 +5,8 @@
 
 namespace etool { namespace intervals {
 
-    template <typename TraitT> class tree {
+    template <typename TraitT>
+    class tree {
     public:
         using trait_type = TraitT;
 
@@ -205,7 +206,8 @@ namespace etool { namespace intervals {
     protected:
         tree() = default;
 
-        template <typename ItrT> struct intersect_info {
+        template <typename ItrT>
+        struct intersect_info {
 
             ItrT itr;
             bool contains;
@@ -224,7 +226,8 @@ namespace etool { namespace intervals {
             }
         };
 
-        template <typename ItrT> struct intersect_pair {
+        template <typename ItrT>
+        struct intersect_pair {
             intersect_info<ItrT> left;
             intersect_info<ItrT> right;
 

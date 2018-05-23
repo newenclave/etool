@@ -5,9 +5,11 @@
 
 namespace etool { namespace details {
 
-    template <typename ToT, typename FromT> struct lexical_cast_impl;
+    template <typename ToT, typename FromT>
+    struct lexical_cast_impl;
 
-    template <typename FloatT, typename CharT> struct lexical_cast_floating {
+    template <typename FloatT, typename CharT>
+    struct lexical_cast_floating {
 
         using float_type = FloatT;
         using char_type = CharT;
@@ -96,14 +98,16 @@ namespace etool { namespace details {
         }
     };
 
-    template <typename T> struct lexical_cast_impl<T, T> {
+    template <typename T>
+    struct lexical_cast_impl<T, T> {
         static T cast(T from)
         {
             return from;
         }
     };
 
-    template <> struct lexical_cast_impl<std::string, const char*> {
+    template <>
+    struct lexical_cast_impl<std::string, const char*> {
         static std::string cast(const char* from)
         {
             return from;
@@ -118,7 +122,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <typename T> struct lexical_cast_impl<std::string, T> {
+    template <typename T>
+    struct lexical_cast_impl<std::string, T> {
         static std::string cast(T from)
         {
             std::ostringstream oss;
@@ -127,7 +132,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <typename T> struct lexical_cast_impl<std::wstring, T> {
+    template <typename T>
+    struct lexical_cast_impl<std::wstring, T> {
         static std::wstring cast(T from)
         {
             std::wostringstream oss;
@@ -136,7 +142,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <typename T> struct lexical_cast_impl<T, std::wstring> {
+    template <typename T>
+    struct lexical_cast_impl<T, std::wstring> {
         static T cast(std::wstring from)
         {
             std::wstringstream wss;
@@ -161,7 +168,8 @@ namespace etool { namespace details {
 
     /////////////// Floating
     /// Wstring
-    template <> struct lexical_cast_impl<float, std::wstring> {
+    template <>
+    struct lexical_cast_impl<float, std::wstring> {
         static float cast(const std::wstring& from)
         {
             using val_type = std::wstring::value_type;
@@ -178,7 +186,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct lexical_cast_impl<double, std::wstring> {
+    template <>
+    struct lexical_cast_impl<double, std::wstring> {
         static double cast(const std::wstring& from)
         {
             using val_type = std::wstring::value_type;
@@ -195,7 +204,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct lexical_cast_impl<long double, std::wstring> {
+    template <>
+    struct lexical_cast_impl<long double, std::wstring> {
         static long double cast(const std::wstring& from)
         {
             using val_type = std::wstring::value_type;
@@ -214,7 +224,8 @@ namespace etool { namespace details {
     };
 
     /// string
-    template <> struct lexical_cast_impl<float, std::string> {
+    template <>
+    struct lexical_cast_impl<float, std::string> {
         static float cast(const std::string& from)
         {
             using val_type = std::string::value_type;
@@ -222,14 +233,16 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct lexical_cast_impl<float, const char*> {
+    template <>
+    struct lexical_cast_impl<float, const char*> {
         static float cast(const char* from)
         {
             return lexical_cast_floating<float, char>::cast(from);
         }
     };
 
-    template <> struct lexical_cast_impl<double, std::string> {
+    template <>
+    struct lexical_cast_impl<double, std::string> {
         static double cast(const std::string& from)
         {
             using val_type = std::string::value_type;
@@ -237,14 +250,16 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct lexical_cast_impl<double, const char*> {
+    template <>
+    struct lexical_cast_impl<double, const char*> {
         static double cast(const char* from)
         {
             return lexical_cast_floating<double, char>::cast(from);
         }
     };
 
-    template <> struct lexical_cast_impl<long double, std::string> {
+    template <>
+    struct lexical_cast_impl<long double, std::string> {
         static long double cast(const std::string& from)
         {
             using val_type = std::string::value_type;
@@ -253,7 +268,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct lexical_cast_impl<long double, const char*> {
+    template <>
+    struct lexical_cast_impl<long double, const char*> {
         static long double cast(const char* from)
         {
             return lexical_cast_floating<long double, char>::cast(from);
@@ -262,7 +278,8 @@ namespace etool { namespace details {
     /////////////// Floating
 
     /////////////// Common
-    template <typename ToT, typename FromT> struct lexical_cast_impl {
+    template <typename ToT, typename FromT>
+    struct lexical_cast_impl {
         static ToT cast(FromT from)
         {
             std::stringstream sstr;
@@ -273,7 +290,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <typename ToT, typename FromT> inline ToT lexical_cast(FromT from)
+    template <typename ToT, typename FromT>
+    inline ToT lexical_cast(FromT from)
     {
         return lexical_cast_impl<ToT, FromT>::cast(std::move(from));
     }

@@ -5,7 +5,8 @@
 
 namespace etool { namespace observers { namespace traits {
 
-    template <typename SigType> struct simple {
+    template <typename SigType>
+    struct simple {
 
         typedef std::function<SigType> value_type;
 

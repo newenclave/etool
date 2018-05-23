@@ -20,7 +20,8 @@ namespace etool { namespace intervals { namespace operators {
     struct zero_ref {
     protected:
         zero_ref();
-        template <typename T> static const T& get();
+        template <typename T>
+        static const T& get();
     };
 
     namespace equal {
@@ -112,7 +113,8 @@ namespace etool { namespace intervals { namespace operators {
         using cmp = comparator<T, LessComparator, exists<T>::value>;
     }
 
-    template <typename ValueT, typename Comparator> struct cmp {
+    template <typename ValueT, typename Comparator>
+    struct cmp {
         using value_type = ValueT;
         using comparator_type = Comparator;
 

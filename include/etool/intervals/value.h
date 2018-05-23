@@ -43,22 +43,26 @@ namespace etool { namespace intervals {
             return value(a, std::forward<Args>(args)...);
         }
 
-        template <typename... Args> static value make_open(Args&&... args)
+        template <typename... Args>
+        static value make_open(Args&&... args)
         {
             return value(attributes::OPEN, std::forward<Args>(args)...);
         }
 
-        template <typename... Args> static value make_closed(Args&&... args)
+        template <typename... Args>
+        static value make_closed(Args&&... args)
         {
             return value(attributes::CLOSE, std::forward<Args>(args)...);
         }
 
-        template <typename... Args> static value make_max_inf(Args&&... args)
+        template <typename... Args>
+        static value make_max_inf(Args&&... args)
         {
             return value(attributes::MAX_INF, std::forward<Args>(args)...);
         }
 
-        template <typename... Args> static value make_min_inf(Args&&... args)
+        template <typename... Args>
+        static value make_min_inf(Args&&... args)
         {
             return value(attributes::MIN_INF, std::forward<Args>(args)...);
         }

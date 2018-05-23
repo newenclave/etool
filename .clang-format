@@ -8,9 +8,9 @@ IndentWidth: 4
 CompactNamespaces: true
 AlignAfterOpenBracket: Align
 AllowShortFunctionsOnASingleLine: Empty
-AlwaysBreakTemplateDeclarations: BTDS_Yes
 ReflowComments: true
 AccessModifierOffset: -4
+AlwaysBreakTemplateDeclarations: true
 
 BreakBeforeBraces: Custom
 BraceWrapping:

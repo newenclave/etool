@@ -8,7 +8,8 @@ namespace etool { namespace details {
 
     namespace traits {
 
-        template <typename T> struct value {
+        template <typename T>
+        struct value {
 
             typedef T value_type;
 
@@ -22,7 +23,8 @@ namespace etool { namespace details {
                 return value_type();
             }
 
-            template <typename... Args> static value_type create(Args&&... args)
+            template <typename... Args>
+            static value_type create(Args&&... args)
             {
                 return value_type(std::forward<Args>(args)...);
             }
@@ -45,7 +47,8 @@ namespace etool { namespace details {
             }
         };
 
-        template <typename T> struct shared_ptr {
+        template <typename T>
+        struct shared_ptr {
 
             typedef std::shared_ptr<T> value_type;
 
@@ -59,7 +62,8 @@ namespace etool { namespace details {
                 return std::make_shared<T>();
             }
 
-            template <typename... Args> static value_type create(Args&&... args)
+            template <typename... Args>
+            static value_type create(Args&&... args)
             {
                 return std::make_shared<T>(std::forward<Args>(args)...);
             }
@@ -178,12 +182,14 @@ namespace etool { namespace details {
             Trait::destroy(value_);
         }
 
-        template <typename... Args> static result ok(Args&&... args)
+        template <typename... Args>
+        static result ok(Args&&... args)
         {
             return result(value_arg(std::forward<Args>(args)...));
         }
 
-        template <typename... Args> static result fail(Args&&... args)
+        template <typename... Args>
+        static result fail(Args&&... args)
         {
             return result(error_arg(std::forward<Args>(args)...));
         }

@@ -7,7 +7,8 @@
 
 namespace etool { namespace sizepack {
 
-    template <typename SizeType> struct varint {
+    template <typename SizeType>
+    struct varint {
 
         typedef SizeType size_type;
 

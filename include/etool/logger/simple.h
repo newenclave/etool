@@ -59,7 +59,8 @@ namespace etool { namespace logger {
         using log_data_sptr = std::shared_ptr<log_data>;
         using log_data_uptr = std::unique_ptr<log_data>;
 
-        template <typename T> using cache_trait = cache::traits::unique<T>;
+        template <typename T>
+        using cache_trait = cache::traits::unique<T>;
         using cache_type = cache::simple<log_data, std::mutex, cache_trait>;
 
         //        using cache_type = cache::none<log_data>;
@@ -166,7 +167,8 @@ namespace etool { namespace logger {
             queue_.push(std::move(element));
         }
 
-        template <int Id> const std::string& thread_data() const
+        template <int Id>
+        const std::string& thread_data() const
         {
             return get_thread_data<Id>();
         }
@@ -176,7 +178,8 @@ namespace etool { namespace logger {
             return get_thread_data<0>();
         }
 
-        template <int Id> void set_thread_data(std::string data)
+        template <int Id>
+        void set_thread_data(std::string data)
         {
             get_thread_data<Id>().swap(std::move(data));
         }
@@ -187,7 +190,8 @@ namespace etool { namespace logger {
         }
 
     private:
-        template <int Id = 0> static std::string& get_thread_data()
+        template <int Id = 0>
+        static std::string& get_thread_data()
         {
             static thread_local std::string data;
             return data;

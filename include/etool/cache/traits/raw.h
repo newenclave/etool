@@ -3,11 +3,13 @@
 
 namespace etool { namespace cache { namespace traits {
 
-    template <typename T> struct raw {
+    template <typename T>
+    struct raw {
 
         typedef T* value_type;
 
-        template <typename... Args> static value_type create(Args&&... args)
+        template <typename... Args>
+        static value_type create(Args&&... args)
         {
             return new T(std::forward<Args>(args)...);
         }

@@ -7,7 +7,8 @@
 namespace etool { namespace details {
 
     //// This IS NOT STL LIST!!!
-    template <typename T> class list {
+    template <typename T>
+    class list {
 
         struct node {
 
@@ -283,7 +284,8 @@ namespace etool { namespace details {
             size_++;
         }
 
-        template <typename... Args> void emplace_back(Args&&... data)
+        template <typename... Args>
+        void emplace_back(Args&&... data)
         {
             node* new_node = new node(std::forward<Args>(data)...);
             if (front_) {
@@ -309,7 +311,8 @@ namespace etool { namespace details {
             size_++;
         }
 
-        template <typename... Args> void emplace_front(Args&&... data)
+        template <typename... Args>
+        void emplace_front(Args&&... data)
         {
             node* new_node = new node(std::forward<Args>(data)...);
             if (front_) {

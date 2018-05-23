@@ -33,7 +33,8 @@ namespace etool { namespace cache {
             impl_.clear();
         }
 
-        template <typename... Args> value_type get(Args&&... args)
+        template <typename... Args>
+        value_type get(Args&&... args)
         {
             return impl_.get(std::forward<Args>(args)...);
         }

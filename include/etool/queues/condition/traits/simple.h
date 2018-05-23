@@ -6,7 +6,8 @@
 
 namespace etool { namespace queues { namespace condition { namespace traits {
 
-    template <typename ValueType> struct simple {
+    template <typename ValueType>
+    struct simple {
 
         typedef ValueType value_type;
         typedef std::queue<value_type> queue_type;

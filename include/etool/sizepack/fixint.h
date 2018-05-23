@@ -7,7 +7,8 @@
 
 namespace etool { namespace sizepack {
 
-    template <typename SizeType> struct fixint {
+    template <typename SizeType>
+    struct fixint {
 
         typedef SizeType size_type;
 

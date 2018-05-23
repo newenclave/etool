@@ -9,10 +9,12 @@
 
 namespace etool { namespace details {
 
-    template <typename T, endian> struct byte_order;
+    template <typename T, endian>
+    struct byte_order;
 
     ///////////////////////// u8
-    template <endian E> struct byte_order<std::uint8_t, E> {
+    template <endian E>
+    struct byte_order<std::uint8_t, E> {
         typedef std::uint8_t value_type;
 
         value_type value(value_type v)
@@ -20,13 +22,15 @@ namespace etool { namespace details {
             return v;
         }
 
-        template <typename U> static std::size_t write(value_type v, U* out)
+        template <typename U>
+        static std::size_t write(value_type v, U* out)
         {
             *reinterpret_cast<value_type*>(out) = v;
             return sizeof(value_type);
         }
 
-        template <typename U> static value_type read(const U* out)
+        template <typename U>
+        static value_type read(const U* out)
         {
             return *reinterpret_cast<const value_type*>(out);
         }
@@ -63,7 +67,8 @@ namespace etool { namespace details {
 #endif // }
 
     ///////////////////////// u16
-    template <> struct byte_order<std::uint16_t, endian::BIG> {
+    template <>
+    struct byte_order<std::uint16_t, endian::BIG> {
 
         typedef std::uint16_t value_type;
 
@@ -74,7 +79,8 @@ namespace etool { namespace details {
                 : byte_swap<value_type>::swap(v);
         }
 
-        template <typename U> static std::size_t write(value_type v, U* out)
+        template <typename U>
+        static std::size_t write(value_type v, U* out)
         {
             std::uint8_t* o = reinterpret_cast<std::uint8_t*>(out);
             o[0] = (v >> 8) & 0xFF;
@@ -82,7 +88,8 @@ namespace etool { namespace details {
             return sizeof(v);
         }
 
-        template <typename U> static value_type read(const U* in)
+        template <typename U>
+        static value_type read(const U* in)
         {
             const std::uint8_t* i = reinterpret_cast<const std::uint8_t*>(in);
             return (static_cast<value_type>(i[0]) << 8)
@@ -90,7 +97,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct byte_order<std::uint16_t, endian::LITTLE> {
+    template <>
+    struct byte_order<std::uint16_t, endian::LITTLE> {
 
         typedef std::uint16_t value_type;
 
@@ -101,7 +109,8 @@ namespace etool { namespace details {
                 : byte_swap<value_type>::swap(v);
         }
 
-        template <typename U> static std::size_t write(value_type v, U* out)
+        template <typename U>
+        static std::size_t write(value_type v, U* out)
         {
             std::uint8_t* o = reinterpret_cast<std::uint8_t*>(out);
             o[1] = (v >> 8) & 0xFF;
@@ -109,7 +118,8 @@ namespace etool { namespace details {
             return sizeof(v);
         }
 
-        template <typename U> static value_type read(const U* in)
+        template <typename U>
+        static value_type read(const U* in)
         {
             const std::uint8_t* i = reinterpret_cast<const std::uint8_t*>(in);
             return (static_cast<value_type>(i[1]) << 8)
@@ -118,7 +128,8 @@ namespace etool { namespace details {
     };
 
     ///////////////////////// u32
-    template <> struct byte_order<std::uint32_t, endian::BIG> {
+    template <>
+    struct byte_order<std::uint32_t, endian::BIG> {
         typedef std::uint32_t value_type;
 
         static value_type value(value_type v)
@@ -128,7 +139,8 @@ namespace etool { namespace details {
                 : byte_swap<value_type>::swap(v);
         }
 
-        template <typename U> static std::size_t write(value_type v, U* out)
+        template <typename U>
+        static std::size_t write(value_type v, U* out)
         {
             std::uint8_t* o = reinterpret_cast<std::uint8_t*>(out);
             o[0] = (v >> 24) & 0xFF;
@@ -138,7 +150,8 @@ namespace etool { namespace details {
             return sizeof(v);
         }
 
-        template <typename U> static value_type read(const U* in)
+        template <typename U>
+        static value_type read(const U* in)
         {
             const std::uint8_t* i = reinterpret_cast<const std::uint8_t*>(in);
             return (static_cast<value_type>(i[0]) << 24)
@@ -148,7 +161,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct byte_order<std::uint32_t, endian::LITTLE> {
+    template <>
+    struct byte_order<std::uint32_t, endian::LITTLE> {
 
         typedef std::uint32_t value_type;
 
@@ -159,7 +173,8 @@ namespace etool { namespace details {
                 : byte_swap<value_type>::swap(v);
         }
 
-        template <typename U> static std::size_t write(value_type v, U* out)
+        template <typename U>
+        static std::size_t write(value_type v, U* out)
         {
             std::uint8_t* o = reinterpret_cast<std::uint8_t*>(out);
             o[3] = (v >> 24) & 0xFF;
@@ -169,7 +184,8 @@ namespace etool { namespace details {
             return sizeof(v);
         }
 
-        template <typename U> static value_type read(const U* in)
+        template <typename U>
+        static value_type read(const U* in)
         {
             const std::uint8_t* i = reinterpret_cast<const std::uint8_t*>(in);
             return (static_cast<value_type>(i[3]) << 24)
@@ -180,7 +196,8 @@ namespace etool { namespace details {
     };
 
     ///////////////////////// u64
-    template <> struct byte_order<std::uint64_t, endian::BIG> {
+    template <>
+    struct byte_order<std::uint64_t, endian::BIG> {
 
         typedef std::uint64_t value_type;
 
@@ -191,7 +208,8 @@ namespace etool { namespace details {
                 : byte_swap<value_type>::swap(v);
         }
 
-        template <typename U> static std::size_t write(value_type v, U* out)
+        template <typename U>
+        static std::size_t write(value_type v, U* out)
         {
             std::uint8_t* o = reinterpret_cast<std::uint8_t*>(out);
             o[0] = (v >> 56) & 0xFF;
@@ -205,7 +223,8 @@ namespace etool { namespace details {
             return sizeof(v);
         }
 
-        template <typename U> static value_type read(const U* in)
+        template <typename U>
+        static value_type read(const U* in)
         {
             const std::uint8_t* i = reinterpret_cast<const std::uint8_t*>(in);
             return (static_cast<value_type>(i[0]) << 56)
@@ -219,7 +238,8 @@ namespace etool { namespace details {
         }
     };
 
-    template <> struct byte_order<std::uint64_t, endian::LITTLE> {
+    template <>
+    struct byte_order<std::uint64_t, endian::LITTLE> {
 
         typedef std::uint64_t value_type;
 
@@ -230,7 +250,8 @@ namespace etool { namespace details {
                 : byte_swap<value_type>::swap(v);
         }
 
-        template <typename U> static std::size_t write(value_type v, U* out)
+        template <typename U>
+        static std::size_t write(value_type v, U* out)
         {
             std::uint8_t* o = reinterpret_cast<std::uint8_t*>(out);
             o[7] = (v >> 56) & 0xFF;
@@ -244,7 +265,8 @@ namespace etool { namespace details {
             return sizeof(v);
         }
 
-        template <typename U> static value_type read(const U* in)
+        template <typename U>
+        static value_type read(const U* in)
         {
             const std::uint8_t* i = reinterpret_cast<const std::uint8_t*>(in);
             return (static_cast<value_type>(i[7]) << 56)
@@ -261,7 +283,8 @@ namespace etool { namespace details {
     template <typename T>
     using byte_order_little = byte_order<T, endian::LITTLE>;
 
-    template <typename T> using byte_order_big = byte_order<T, endian::BIG>;
+    template <typename T>
+    using byte_order_big = byte_order<T, endian::BIG>;
 
 }}
 

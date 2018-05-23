@@ -21,7 +21,8 @@ namespace etool { namespace intervals {
         using comparator_type = Comparator;
 
     private:
-        template <typename IvalT> static IvalT& check(IvalT& ival)
+        template <typename IvalT>
+        static IvalT& check(IvalT& ival)
         {
 #ifdef DEBUG
             if (ival.invalid()) {
@@ -332,7 +333,8 @@ namespace etool { namespace intervals {
             return oss.str();
         }
 
-        template <typename Out> Out& out(Out& o) const
+        template <typename Out>
+        Out& out(Out& o) const
         {
             static const char lbracket[2] = { '[', '(' };
             static const char rbracket[2] = { ']', ')' };
@@ -583,13 +585,15 @@ namespace etool { namespace intervals {
         friend struct cmp;
         friend struct cmp_not_overlap;
 
-        template <endpoint_name Side> bool is_close() const
+        template <endpoint_name Side>
+        bool is_close() const
         {
             using S = endpoint_type<Side>;
             return (attrs_[S::id] == attributes::CLOSE);
         }
 
-        template <endpoint_name Side> bool is_open() const
+        template <endpoint_name Side>
+        bool is_open() const
         {
             using S = endpoint_type<Side>;
             return (attrs_[S::id] == attributes::OPEN);
@@ -610,24 +614,28 @@ namespace etool { namespace intervals {
                 || is_open<endpoint_name::RIGHT>();
         }
 
-        template <endpoint_name Side> bool is_any_inf() const
+        template <endpoint_name Side>
+        bool is_any_inf() const
         {
             return is_minus_inf<Side>() || is_plus_inf<Side>();
         }
 
-        template <endpoint_name Side> bool is_minus_inf() const
+        template <endpoint_name Side>
+        bool is_minus_inf() const
         {
             using S = endpoint_type<Side>;
             return (attrs_[S::id] == attributes::MIN_INF);
         }
 
-        template <endpoint_name Side> bool is_plus_inf() const
+        template <endpoint_name Side>
+        bool is_plus_inf() const
         {
             using S = endpoint_type<Side>;
             return (attrs_[S::id] == attributes::MAX_INF);
         }
 
-        template <endpoint_name Side> const domain_type& value() const
+        template <endpoint_name Side>
+        const domain_type& value() const
         {
             using S = endpoint_type<Side>;
             return value(typename S::pointer());
@@ -643,14 +651,16 @@ namespace etool { namespace intervals {
             return right_;
         }
 
-        template <endpoint_name Side> const attributes& attrs() const
+        template <endpoint_name Side>
+        const attributes& attrs() const
         {
             using S = endpoint_type<Side>;
             return attrs_[S::id];
         }
 
     private:
-        template <endpoint_name Side> domain_type&& mv_value()
+        template <endpoint_name Side>
+        domain_type&& mv_value()
         {
             using S = endpoint_type<Side>;
             return mv_value(typename S::pointer());
@@ -732,7 +742,8 @@ namespace etool { namespace intervals {
             }
         }
 
-        template <endpoint_name Side> attributes connected_attr() const
+        template <endpoint_name Side>
+        attributes connected_attr() const
         {
             auto f = attrs<Side>();
             switch (f) {
@@ -749,7 +760,8 @@ namespace etool { namespace intervals {
             return f;
         }
 
-        template <endpoint_name Side> attributes factor() const
+        template <endpoint_name Side>
+        attributes factor() const
         {
             auto f = attrs<Side>();
             switch (f) {

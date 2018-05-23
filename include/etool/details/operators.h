@@ -21,7 +21,8 @@ namespace etool { namespace details { namespace operators {
     struct zero_ref {
     protected:
         zero_ref();
-        template <typename T> static const T& get()
+        template <typename T>
+        static const T& get()
         {
             return *reinterpret_cast<T*>(nullptr);
         }
@@ -116,7 +117,8 @@ namespace etool { namespace details { namespace operators {
         using cmp = comparator<ValueT, LessComparator, exists<ValueT>::value>;
     }
 
-    template <typename ValueT, typename LessComparator> struct cmp {
+    template <typename ValueT, typename LessComparator>
+    struct cmp {
         using value_type = ValueT;
         using comparator_type = LessComparator;
 

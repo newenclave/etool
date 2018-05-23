@@ -5,11 +5,13 @@
 
 namespace etool { namespace cache { namespace traits {
 
-    template <typename T> struct unique {
+    template <typename T>
+    struct unique {
 
         typedef std::unique_ptr<T> value_type;
 
-        template <typename... Args> static value_type create(Args&&... args)
+        template <typename... Args>
+        static value_type create(Args&&... args)
         {
             value_type res(new T(std::forward<Args>(args)...));
             return res;

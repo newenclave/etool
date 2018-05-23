@@ -268,7 +268,8 @@ struct btree {
     std::unique_ptr<bnode> root_;
 };
 
-template <typename A> void print(const A& a)
+template <typename A>
+void print(const A& a)
 {
     for (auto& v : a) {
         std::cout << " " << v;

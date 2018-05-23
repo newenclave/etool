@@ -43,7 +43,8 @@ namespace etool { namespace logger {
                 }
             }
 
-            template <typename T> string_accumulator& operator<<(const T& data)
+            template <typename T>
+            string_accumulator& operator<<(const T& data)
             {
                 if (level_ <= parent_->level_) {
                     oss_ << data;
