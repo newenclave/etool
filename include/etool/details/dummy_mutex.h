@@ -4,9 +4,12 @@
 namespace etool { namespace details {
 
     struct dummy_mutex {
-        bool try_lock( ) { return true; }
-        void lock( )     {              }
-        void unlock( )   {              }
+        bool try_lock()
+        {
+            return true;
+        }
+        void lock() {}
+        void unlock() {}
     };
 
 }}

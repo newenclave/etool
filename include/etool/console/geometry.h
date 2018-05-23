@@ -1,9 +1,9 @@
 #ifndef ETOOL_CONDOLE_GEOMETRY_H
 #define ETOOL_CONDOLE_GEOMETRY_H
 
+#include <iostream>
 #include <sstream>
 #include <string>
-#include <iostream>
 
 #ifdef _WIN32
 #define NOMINMAX
@@ -22,31 +22,29 @@ namespace etool { namespace console {
             unsigned x = 0;
             unsigned y = 0;
 
-            coord( unsigned xin, unsigned yin )
-                :x(xin)
-                ,y(yin)
-            { }
-            coord( ) = default;
+            coord(unsigned xin, unsigned yin)
+                : x(xin)
+                , y(yin)
+            {
+            }
+            coord() = default;
         };
 
 #ifdef _WIN32
 
-        static
-        void clear( )
+        static void clear()
         {
             HANDLE sout = GetStdHandle(STD_OUTPUT_HANDLE);
-            COORD coord = {0, 0};
+            COORD coord = { 0, 0 };
             DWORD count;
             CONSOLE_SCREEN_BUFFER_INFO csbi;
-            GetConsoleScreenBufferInfo( sout, &csbi );
-            FillConsoleOutputCharacter( sout, ' ',
-                                        csbi.dwSize.X * csbi.dwSize.Y,
-                                        coord, &count);
-            SetConsoleCursorPosition( sout, coord );
+            GetConsoleScreenBufferInfo(sout, &csbi);
+            FillConsoleOutputCharacter(sout, ' ', csbi.dwSize.X * csbi.dwSize.Y,
+                                       coord, &count);
+            SetConsoleCursorPosition(sout, coord);
         }
 
-        static
-        coord size( )
+        static coord size()
         {
             CONSOLE_SCREEN_BUFFER_INFO csbi;
 
@@ -55,69 +53,62 @@ namespace etool { namespace console {
 
             GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 
-            columns = csbi.srWindow.Right  - csbi.srWindow.Left + 1;
-            rows    = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+            columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+            rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 
-            return info::coord( columns, rows );
+            return info::coord(columns, rows);
         }
 
-        static
-        void set_pos( int x, int y )
+        static void set_pos(int x, int y)
         {
             COORD coord;
 
             coord.X = x;
             coord.Y = y;
 
-            SetConsoleCursorPosition( GetStdHandle(STD_OUTPUT_HANDLE), coord );
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
         }
 #else
 
-        static
-        coord size( )
+        static coord size()
         {
             struct winsize w;
-            ioctl( STDOUT_FILENO, TIOCGWINSZ, &w );
-            return coord( w.ws_col, w.ws_row );
+            ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+            return coord(w.ws_col, w.ws_row);
         }
 
-        static
-        void clear( )
+        static void clear()
         {
-            auto xy = size( );
-            std::string ws( xy.x, ' ' );
+            auto xy = size();
+            std::string ws(xy.x, ' ');
 
-            for( int i = 0; i < static_cast<int>(xy.y); i++ ) {
-                set_pos( 0, i );
-                std::cout.write( ws.c_str( ),
-                                 static_cast<std::streamsize>(ws.size( )) );
+            for (int i = 0; i < static_cast<int>(xy.y); i++) {
+                set_pos(0, i);
+                std::cout.write(ws.c_str(),
+                                static_cast<std::streamsize>(ws.size()));
             }
             // clear command that does "write("\E[H\E[2J", 7 )" we don't want
-            std::cout.flush( );
+            std::cout.flush();
         }
 
-        static
-        void set_pos( int x, int y )
+        static void set_pos(int x, int y)
         {
             std::ostringstream oss;
             oss << "\033[" << (y + 1) << ";" << (x + 1) << "H";
-            std::string s(oss.str( ));
-            std::cout.write( s.c_str( ),
-                             static_cast<std::streamsize>(s.size( )) );
+            std::string s(oss.str());
+            std::cout.write(s.c_str(), static_cast<std::streamsize>(s.size()));
 
-            //write( STDIN_FILENO, s.c_str( ), s.size( ) );
+            // write( STDIN_FILENO, s.c_str( ), s.size( ) );
         }
 
-        static
-        void set_size( std::uint16_t x, std::uint16_t y )
+        static void set_size(std::uint16_t x, std::uint16_t y)
         {
             struct winsize w = { 0, 0, 0, 0 };
             w.ws_col = x;
             w.ws_row = y;
-            ioctl( 0, TIOCSWINSZ, &w);
+            ioctl(0, TIOCSWINSZ, &w);
         }
 #endif
-
     };
 }}
 

@@ -1,57 +1,54 @@
 #ifndef ETOOL_CHACHE_SHARED_H
 #define ETOOL_CHACHE_SHARED_H
 
+#include "etool/cache/simple.h"
 #include <memory>
 #include <mutex>
-#include "etool/cache/simple.h"
 
 namespace etool { namespace cache {
 
     template <typename T, typename MutexType = std::mutex>
-    class shared: public std::enable_shared_from_this<shared<T, MutexType> >
-    {
-        struct key { };
+    class shared : public std::enable_shared_from_this<shared<T, MutexType>> {
+        struct key {
+        };
         typedef cache::simple<T, MutexType> cache_impl;
 
     public:
-
         typedef typename cache_impl::value_type value_type;
         typedef typename cache_impl::mutex_type mutex_type;
-        typedef std::shared_ptr<shared>        shared_type;
+        typedef std::shared_ptr<shared> shared_type;
 
-        shared( size_t maximum, key )
-            :impl_(maximum)
-        { }
-
-        static
-        shared_type create( size_t maximum = 0 )
+        shared(size_t maximum, key)
+            : impl_(maximum)
         {
-            return std::make_shared<shared>(maximum, key( ));
         }
 
-        void clear( )
+        static shared_type create(size_t maximum = 0)
         {
-            impl_.clear( );
+            return std::make_shared<shared>(maximum, key());
         }
 
-        template <typename ...Args>
-        value_type get( Args && ...args )
+        void clear()
         {
-            return impl_.get( std::forward<Args>(args)... );
+            impl_.clear();
         }
 
-        void push( value_type val )
+        template <typename... Args> value_type get(Args&&... args)
         {
-            impl_.push( val );
+            return impl_.get(std::forward<Args>(args)...);
         }
 
-        size_t size( ) const
+        void push(value_type val)
         {
-            return impl_.size( );
+            impl_.push(val);
+        }
+
+        size_t size() const
+        {
+            return impl_.size();
         }
 
     private:
-
         cache_impl impl_;
     };
 

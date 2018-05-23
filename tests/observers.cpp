@@ -1,18 +1,24 @@
+#include "etool/observers/simple.h"
 #include <iostream>
 #include <mutex>
-#include "etool/observers/simple.h"
 
 #include "catch.hpp"
 
 using namespace etool;
 
-TEST_CASE("Observers", "[observer]") {
+TEST_CASE("Observers", "[observer]")
+{
 
     observers::simple<void()> observer;
 
-    SECTION("simple_call") {
+    SECTION("simple_call")
+    {
         int test = 0;
-        auto call1 = [&]() { if (test++ == 0) { observer.unsubscribe_all(); } };
+        auto call1 = [&]() {
+            if (test++ == 0) {
+                observer.unsubscribe_all();
+            }
+        };
         auto call2 = [&]() {
             if (++test == 2) {
                 observer();

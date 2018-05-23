@@ -16,6 +16,7 @@ class ignores:
         with open(self.path) as f:
             content = f.readlines()
         self.content = [re.compile(x.strip()) for x in content]
+        print("got %d ignore lines" % len(self.content))
         
     def match(self, str):
         for r in self.content: 

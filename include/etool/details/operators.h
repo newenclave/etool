@@ -6,36 +6,38 @@ namespace etool { namespace details { namespace operators {
 
     class no_type {
         bool b[2];
-        bool do_not_use( ) const { return b[0]; } /// avoid warning for
+        bool do_not_use() const
+        {
+            return b[0];
+        } /// avoid warning for
     public:
-        no_type( );
-        ~no_type( );
+        no_type();
+        ~no_type();
     };
 
     bool check(...);
-    no_type check( const no_type& );
+    no_type check(const no_type&);
 
     struct zero_ref {
     protected:
-        zero_ref( );
-        template <typename T>
-        static const T &get( )
+        zero_ref();
+        template <typename T> static const T& get()
         {
-            return *reinterpret_cast<T*>( nullptr );
+            return *reinterpret_cast<T*>(nullptr);
         }
     };
 
     //// operator ==
     namespace equal {
-        template<typename T, typename Arg>
-        no_type operator == ( const T&, const Arg& );
+        template <typename T, typename Arg>
+        no_type operator==(const T&, const Arg&);
 
         template <typename T, typename Arg = T>
-        struct exists: public zero_ref {
+        struct exists : public zero_ref {
             enum {
-                res_size = sizeof( check( get<T>( ) == get<Arg>( ) ) ),
+                res_size = sizeof(check(get<T>() == get<Arg>())),
             };
-            static const bool value = ( res_size != sizeof( no_type ) );
+            static const bool value = (res_size != sizeof(no_type));
         };
 
         template <typename ValueT, typename LessComparator, bool>
@@ -44,15 +46,13 @@ namespace etool { namespace details { namespace operators {
         /// for those who have opetator ==
         template <typename ValueT, typename LessComparator>
         struct comparator<ValueT, LessComparator, true> {
-            static
-            bool less( const ValueT &lh, const ValueT &rh )
+            static bool less(const ValueT& lh, const ValueT& rh)
             {
                 const LessComparator compare;
-                return compare( lh, rh );
+                return compare(lh, rh);
             }
 
-            static
-            bool equal( const ValueT &lh, const ValueT &rh )
+            static bool equal(const ValueT& lh, const ValueT& rh)
             {
                 return lh == rh;
             }
@@ -61,36 +61,33 @@ namespace etool { namespace details { namespace operators {
         /// for those who don't know how to compare with ==
         template <typename ValueT, typename LessComparator>
         struct comparator<ValueT, LessComparator, false> {
-            static
-            bool less( const ValueT &lh, const ValueT &rh )
+            static bool less(const ValueT& lh, const ValueT& rh)
             {
                 const LessComparator compare;
-                return compare( lh, rh );
+                return compare(lh, rh);
             }
 
-            static
-            bool equal( const ValueT &lh, const ValueT &rh )
+            static bool equal(const ValueT& lh, const ValueT& rh)
             {
-                return !less( lh, rh ) && !less( rh, lh );
+                return !less(lh, rh) && !less(rh, lh);
             }
         };
 
         template <typename ValueT, typename LessComparator>
         using cmp = comparator<ValueT, LessComparator, exists<ValueT>::value>;
-
     }
 
     //// operator <=
     namespace less_equal {
-        template<typename T, typename Arg>
-        no_type operator <= ( const T&, const Arg& );
+        template <typename T, typename Arg>
+        no_type operator<=(const T&, const Arg&);
 
         template <typename T, typename Arg = T>
-        struct exists: public zero_ref {
+        struct exists : public zero_ref {
             enum {
-                res_size = sizeof( check( get<T>( ) <= get<Arg>( ) ) ),
+                res_size = sizeof(check(get<T>() <= get<Arg>())),
             };
-            static const bool value = ( res_size != sizeof( no_type ) );
+            static const bool value = (res_size != sizeof(no_type));
         };
 
         template <typename ValueT, typename LessComparator, bool>
@@ -99,8 +96,7 @@ namespace etool { namespace details { namespace operators {
         /// for those who have opetator <=
         template <typename ValueT, typename LessComparator>
         struct comparator<ValueT, LessComparator, true> {
-            static
-            bool less_equal( const ValueT &lh, const ValueT &rh )
+            static bool less_equal(const ValueT& lh, const ValueT& rh)
             {
                 return lh <= rh;
             }
@@ -109,11 +105,10 @@ namespace etool { namespace details { namespace operators {
         /// for those who don't know how to compare with <=
         template <typename ValueT, typename LessComparator>
         struct comparator<ValueT, LessComparator, false> {
-            static
-            bool less_equal( const ValueT &lh, const ValueT &rh )
+            static bool less_equal(const ValueT& lh, const ValueT& rh)
             {
                 using eq_op = equal::cmp<ValueT, LessComparator>;
-                return eq_op::less( lh, rh ) || eq_op::equal( lh, rh );
+                return eq_op::less(lh, rh) || eq_op::equal(lh, rh);
             }
         };
 
@@ -121,42 +116,36 @@ namespace etool { namespace details { namespace operators {
         using cmp = comparator<ValueT, LessComparator, exists<ValueT>::value>;
     }
 
-    template <typename ValueT, typename LessComparator>
-    struct cmp {
-        using value_type      = ValueT;
+    template <typename ValueT, typename LessComparator> struct cmp {
+        using value_type = ValueT;
         using comparator_type = LessComparator;
 
-        static
-        bool less( const value_type &lh, const value_type &rh )
+        static bool less(const value_type& lh, const value_type& rh)
         {
             using myop = equal::cmp<value_type, comparator_type>;
-            return myop::less( lh, rh );
+            return myop::less(lh, rh);
         }
 
-        static
-        bool greater( const value_type &lh, const value_type &rh )
+        static bool greater(const value_type& lh, const value_type& rh)
         {
-            return less( rh, lh );
+            return less(rh, lh);
         }
 
-        static
-        bool equal( const value_type &lh, const value_type &rh )
+        static bool equal(const value_type& lh, const value_type& rh)
         {
             using myop = equal::cmp<value_type, comparator_type>;
-            return myop::equal( lh, rh );
+            return myop::equal(lh, rh);
         }
 
-        static
-        bool less_equal( const value_type &lh, const value_type &rh )
+        static bool less_equal(const value_type& lh, const value_type& rh)
         {
             using myop = less_equal::cmp<value_type, comparator_type>;
-            return myop::less_equal( lh, rh );
+            return myop::less_equal(lh, rh);
         }
 
-        static
-        bool greater_equal( const value_type &lh, const value_type &rh )
+        static bool greater_equal(const value_type& lh, const value_type& rh)
         {
-            return less_equal( rh, lh );
+            return less_equal(rh, lh);
         }
     };
 

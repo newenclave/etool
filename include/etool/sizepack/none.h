@@ -1,8 +1,8 @@
 #ifndef ETOOL_SIZEPACK_NONE_H
 #define ETOOL_SIZEPACK_NONE_H
 
-#include <string>
 #include <algorithm>
+#include <string>
 
 #include <cstdint>
 
@@ -15,55 +15,51 @@ namespace etool { namespace sizepack {
         static const size_t max_length = 0;
         static const size_t min_length = 0;
 
-        static
-        bool valid_length( size_t )
+        static bool valid_length(size_t)
         {
             return true;
         }
 
         template <typename IterT>
-        static size_t packed_length( IterT, const IterT & )
+        static size_t packed_length(IterT, const IterT&)
         {
             return 0;
         }
 
         template <typename IterT>
-        static bool valid_packed( const IterT &, const IterT & )
+        static bool valid_packed(const IterT&, const IterT&)
         {
             return true;
         }
 
-        static size_t result_length( size_type )
+        static size_t result_length(size_type)
         {
             return max_length;
         }
 
-        static std::string pack( size_type )
+        static std::string pack(size_type)
         {
-            return std::string( );
+            return std::string();
         }
 
-        static void pack( size_type, std::string & )
-        { }
+        static void pack(size_type, std::string&) {}
 
-        static void append( size_type, std::string & )
-        { }
+        static void append(size_type, std::string&) {}
 
-        static size_t pack( size_type, void * )
+        static size_t pack(size_type, void*)
         {
             return max_length;
         }
 
         template <typename IterT>
-        static size_type unpack( const IterT &begin, const IterT &end )
+        static size_type unpack(const IterT& begin, const IterT& end)
         {
-            return std::distance( begin, end );
+            return std::distance(begin, end);
         }
 
-        static
-        size_t unpack( const void *, size_t len, size_type *res )
+        static size_t unpack(const void*, size_t len, size_type* res)
         {
-            if( res ) {
+            if (res) {
                 *res = len;
             }
             return 0;

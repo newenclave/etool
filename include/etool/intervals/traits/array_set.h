@@ -1,122 +1,120 @@
 #ifndef ETOOL_INTERVALS_TRAITS_ARRAY_SET_H
 #define ETOOL_INTERVALS_TRAITS_ARRAY_SET_H
 
+#include "etool/intervals/interval.h"
 #include <set>
 #include <vector>
-#include "etool/intervals/interval.h"
 
 namespace etool { namespace intervals { namespace traits {
 
     template <typename KeyT, typename Comparator, typename AllocT>
     struct array_set {
 
-        using interval_type     = interval<KeyT, Comparator>;
-        using value_type        = interval_type;
+        using interval_type = interval<KeyT, Comparator>;
+        using value_type = interval_type;
 
-        using allocator_type    = AllocT;
-        using array_type        = std::vector<value_type, allocator_type>;
-        using iterator          = typename array_type::iterator;
-        using const_iterator    = typename array_type::const_iterator;
+        using allocator_type = AllocT;
+        using array_type = std::vector<value_type, allocator_type>;
+        using iterator = typename array_type::iterator;
+        using const_iterator = typename array_type::const_iterator;
 
         using set_cmp = typename interval_type::cmp_not_overlap;
 
         struct container_type {
 
-            using iterator       = typename array_type::iterator;
+            using iterator = typename array_type::iterator;
             using const_iterator = typename array_type::const_iterator;
 
-            iterator begin( )
+            iterator begin()
             {
-                return arr_.begin( );
+                return arr_.begin();
             }
 
-            const_iterator begin( ) const
+            const_iterator begin() const
             {
-                return arr_.begin( );
+                return arr_.begin();
             }
 
-            iterator end( )
+            iterator end()
             {
-                return arr_.end( );
+                return arr_.end();
             }
 
-            const_iterator cbegin( ) const
+            const_iterator cbegin() const
             {
-                return arr_.begin( );
+                return arr_.begin();
             }
 
-            const_iterator cend( ) const
+            const_iterator cend() const
             {
-                return arr_.end( );
+                return arr_.end();
             }
 
-            const_iterator end( ) const
+            const_iterator end() const
             {
-                return arr_.end( );
+                return arr_.end();
             }
 
-            size_t size( ) const
+            size_t size() const
             {
-                return arr_.size( );
+                return arr_.size();
             }
 
-            size_t empty( ) const
+            size_t empty() const
             {
-                return arr_.empty( );
+                return arr_.empty();
             }
 
-            void swap( container_type &other )
+            void swap(container_type& other)
             {
-                arr_.swap( other.arr_ );
+                arr_.swap(other.arr_);
             }
 
-            iterator lower_bound( const value_type &val )
+            iterator lower_bound(const value_type& val)
             {
-                return std::lower_bound( begin( ), end( ), val, set_cmp( ) );
+                return std::lower_bound(begin(), end(), val, set_cmp());
             }
 
-            iterator upper_bound( const value_type &val )
+            iterator upper_bound(const value_type& val)
             {
-                return std::upper_bound( begin( ), end( ), val, set_cmp( ) );
+                return std::upper_bound(begin(), end(), val, set_cmp());
             }
 
-            iterator find( const value_type &val )
+            iterator find(const value_type& val)
             {
-                return std::binary_search( begin( ), end( ), val, set_cmp( ) );
+                return std::binary_search(begin(), end(), val, set_cmp());
             }
 
-            const_iterator find( const value_type &val ) const
+            const_iterator find(const value_type& val) const
             {
-                return std::binary_search( begin( ), end( ), val, set_cmp( ) );
+                return std::binary_search(begin(), end(), val, set_cmp());
             }
 
-            iterator emplace_hint( const_iterator where, value_type val )
+            iterator emplace_hint(const_iterator where, value_type val)
             {
 
-                if( where != cend( )) {
+                if (where != cend()) {
                     const set_cmp cless;
                     const_iterator lb;
-                    if( cless( val, *where ) ) {
-                        lb = std::lower_bound( cbegin( ), where,
-                                               val, set_cmp( ) );
+                    if (cless(val, *where)) {
+                        lb = std::lower_bound(cbegin(), where, val, set_cmp());
                     } else {
-                        lb = std::lower_bound( where, cend( ),
-                                               val, set_cmp( ) );
+                        lb = std::lower_bound(where, cend(), val, set_cmp());
                     }
-                    return arr_.emplace( lb, std::move(val) );
+                    return arr_.emplace(lb, std::move(val));
                 } else {
-                    return arr_.emplace( arr_.end( ), std::move( val ) );
+                    return arr_.emplace(arr_.end(), std::move(val));
                 }
             }
 
-            iterator erase( const_iterator where )
+            iterator erase(const_iterator where)
             {
-                return arr_.erase( where );
+                return arr_.erase(where);
             }
 
-            iterator erase( const_iterator from, const_iterator to )
+            iterator erase(const_iterator from, const_iterator to)
             {
-                return arr_.erase( from, to );
+                return arr_.erase(from, to);
             }
 
             array_type arr_;
@@ -124,49 +122,41 @@ namespace etool { namespace intervals { namespace traits {
 
         struct iterator_access {
 
-            static
-            const interval_type &key( const_iterator itr )
+            static const interval_type& key(const_iterator itr)
             {
                 return *itr;
             }
 
-            static
-            interval_type &mutable_key( iterator itr )
+            static interval_type& mutable_key(iterator itr)
             {
                 return *itr;
             }
 
-            static
-            const interval_type &key( const value_type &val )
+            static const interval_type& key(const value_type& val)
             {
                 return val;
             }
 
-            static
-            interval_type &mutable_key( value_type &val )
+            static interval_type& mutable_key(value_type& val)
             {
                 return val;
             }
 
-            static
-            void copy( value_type &, const value_type & )
+            static void copy(value_type&, const value_type&)
             {
-                //to = from;
+                // to = from;
             }
 
-            static
-            const value_type &val( const_iterator itr )
+            static const value_type& val(const_iterator itr)
             {
                 return *itr;
             }
 
-            static
-            value_type &mutable_val( iterator itr )
+            static value_type& mutable_val(iterator itr)
             {
                 return *itr;
             }
         };
-
     };
 
 }}}

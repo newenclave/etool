@@ -1,8 +1,8 @@
 #ifndef ETOOL_OBSERVERS_SCOPED_SUBSCRIPTION_H
 #define ETOOL_OBSERVERS_SCOPED_SUBSCRIPTION_H
 
-#include <memory>
 #include "etool/observers/subscription.h"
+#include <memory>
 
 namespace etool { namespace observers {
 
@@ -11,97 +11,97 @@ namespace etool { namespace observers {
         typedef subscription::unsubscriber_sptr unsubscriber_sptr;
 
     public:
-
         /// C-tors
-        scoped_subscription( scoped_subscription &&o )
+        scoped_subscription(scoped_subscription&& o)
         {
             unsubscriber_.swap(o.unsubscriber_);
-            o.reset( );
+            o.reset();
         }
 
-        scoped_subscription &operator = ( scoped_subscription &&o )
+        scoped_subscription& operator=(scoped_subscription&& o)
         {
-            if( this != &o ) {
+            if (this != &o) {
                 unsubscriber_.swap(o.unsubscriber_);
-                o.reset( );
+                o.reset();
             }
             return *this;
         }
 
-        scoped_subscription( subscription &&o )
-            :unsubscriber_(std::move(o.unsubscriber_))
-        { }
-
-        scoped_subscription & operator = ( subscription &&o )
+        scoped_subscription(subscription&& o)
+            : unsubscriber_(std::move(o.unsubscriber_))
         {
-            unsubscribe( );
+        }
+
+        scoped_subscription& operator=(subscription&& o)
+        {
+            unsubscribe();
             unsubscriber_.swap(o.unsubscriber_);
             return *this;
         }
 
-        scoped_subscription( scoped_subscription &o ) = delete;
+        scoped_subscription(scoped_subscription& o) = delete;
 
-        scoped_subscription( )
-        { }
+        scoped_subscription() {}
 
-        scoped_subscription( const subscription &o )
-            :unsubscriber_(o.unsubscriber_)
-        { }
+        scoped_subscription(const subscription& o)
+            : unsubscriber_(o.unsubscriber_)
+        {
+        }
 
         /// D-tor
-        ~scoped_subscription( )
+        ~scoped_subscription()
         {
-            unsubscribe( );
+            unsubscribe();
         }
 
         /// O-tor
-        scoped_subscription &operator = ( scoped_subscription &o )
+        scoped_subscription& operator=(scoped_subscription& o)
         {
-            if( this != &o ) {
-                unsubscriber_.swap( o.unsubscriber_ );
-                o.reset( );
+            if (this != &o) {
+                unsubscriber_.swap(o.unsubscriber_);
+                o.reset();
             }
             return *this;
         }
 
-        scoped_subscription &operator = ( const subscription &o )
+        scoped_subscription& operator=(const subscription& o)
         {
-            unsubscribe( );
+            unsubscribe();
             unsubscriber_ = o.unsubscriber_;
             return *this;
         }
 
-        void unsubscribe(  )
+        void unsubscribe()
         {
-            if( unsubscriber_ ) {
-                unsubscriber_->run( );
+            if (unsubscriber_) {
+                unsubscriber_->run();
             }
         }
 
-        void disconnect(  )
+        void disconnect()
         {
-            unsubscribe( );
+            unsubscribe();
         }
 
-        subscription release( )
+        subscription release()
         {
             subscription tmp;
-            unsubscriber_.swap( tmp.unsubscriber_ );
+            unsubscriber_.swap(tmp.unsubscriber_);
             return tmp;
         }
 
-        void reset( )
+        void reset()
         {
-            if( unsubscriber_ ) {
+            if (unsubscriber_) {
                 unsubscriber_sptr tmp;
                 unsubscriber_.swap(tmp);
-                tmp->run( );
+                tmp->run();
             }
         }
 
-        void swap( scoped_subscription &other )
+        void swap(scoped_subscription& other)
         {
-            unsubscriber_.swap( other.unsubscriber_ );
+            unsubscriber_.swap(other.unsubscriber_);
         }
 
     private:

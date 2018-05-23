@@ -3,38 +3,26 @@
 
 #include <functional>
 
-namespace etool { namespace observers {
+namespace etool { namespace observers { namespace traits {
 
-namespace traits {
-
-    template <typename SigType>
-    struct simple {
+    template <typename SigType> struct simple {
 
         typedef std::function<SigType> value_type;
 
-        static
-        void erase( value_type & )
-        { }
+        static void erase(value_type&) {}
 
-        static
-        bool expired( value_type & )
+        static bool expired(value_type&)
         {
             return false;
         }
 
-        template <typename ...Args>
-        static
-        void exec( value_type &self, Args&& ...args )
+        template <typename... Args>
+        static void exec(value_type& self, Args&&... args)
         {
-            self( std::forward<Args>(args)... );
+            self(std::forward<Args>(args)...);
         }
-
     };
 
-}
-
-
-}}
-
+}}}
 
 #endif // SIMPLE_H
