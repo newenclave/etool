@@ -68,19 +68,19 @@ SCENARIO("The Trie", "[trie]")
         test.set(value, "123");
         test.set("123456", "123456");
         test.set("456"_s, "456");
-		WHEN("Remove is called")
-		{
-			test.remove(value.begin(), value.end());
-			auto res = test.get(value.begin(), value.end(), true);
-			REQUIRE(!res);
-		}
-	
-		WHEN("Remove invalid value")
-		{
-			auto inval = "12"_s;
-			test.remove(inval.begin(), inval.end());
-			auto res = test.get(value.begin(), value.end(), true);
-			REQUIRE(res);
-		}
-	}
+        WHEN("Remove is called")
+        {
+            test.remove(value.begin(), value.end());
+            auto res = test.get(value.begin(), value.end(), true);
+            REQUIRE(!res);
+        }
+    
+        WHEN("Remove invalid value")
+        {
+            auto inval = "12"_s;
+            test.remove(inval.begin(), inval.end());
+            auto res = test.get(value.begin(), value.end(), true);
+            REQUIRE(res);
+        }
+    }
 }
