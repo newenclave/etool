@@ -170,6 +170,7 @@ namespace etool { namespace trees { namespace trie {
         std::size_t remove(IterT b, const IterT& e)
         {
             auto st = get_node_stack(b, e);
+            std::size_t result = 0;
             if (!st.empty()) {
                 st.top().first->get_node(st.top().second)->reset_value();
             }
@@ -179,11 +180,12 @@ namespace etool { namespace trees { namespace trie {
                 auto node = last.first->get_node(last.second);
                 if (node->empty() && !node->value()) {
                     last.first->erase(last.second);
+                    ++result;
                 } else {
                     break;
                 }
             }
-            return 0;
+            return result;
         }
 
     private:
