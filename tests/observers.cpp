@@ -45,8 +45,8 @@ TEST_CASE("Observers", "[observer]")
         {
             observers::scoped_subscription ss
                 = observer.subscribe([&]() { ++test; });
-			observer();
-		}
+            observer();
+        }
         observer();
         REQUIRE(test == 1);
     }

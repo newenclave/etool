@@ -5,12 +5,16 @@ ColumnLimit: 80
 UseTab: Never
 TabWidth: 4
 IndentWidth: 4
+#ContinuationIndentWidth: 3
 CompactNamespaces: true
 AlignAfterOpenBracket: Align
 AllowShortFunctionsOnASingleLine: Empty
+AllowShortIfStatementsOnASingleLine: false
+AlwaysBreakTemplateDeclarations: true
+SpaceAfterTemplateKeyword: true
 ReflowComments: true
 AccessModifierOffset: -4
-AlwaysBreakTemplateDeclarations: true
+MaxEmptyLinesToKeep: 2
 
 BreakBeforeBraces: Custom
 BraceWrapping:
