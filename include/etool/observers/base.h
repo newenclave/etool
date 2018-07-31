@@ -176,7 +176,7 @@ namespace etool { namespace observers {
                 }
             }
 
-            void clear_unsafe() /// unsafe
+            void clear_unsafe()
             {
                 clear_main_unsafe();
                 clear_added_unsafe();
