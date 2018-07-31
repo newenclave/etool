@@ -74,7 +74,7 @@ SCENARIO("The Trie", "[trie]")
             auto res = test.get(value.begin(), value.end(), true);
             REQUIRE(!res);
         }
-    
+
         WHEN("Remove invalid value")
         {
             auto inval = "12"_s;
