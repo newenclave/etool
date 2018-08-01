@@ -8,16 +8,21 @@ def cd():
     return os.path.dirname(os.path.realpath(__file__))
 
 def runformat(exe, file):
-    os.system("%s -style=file -i -verbose %s" % (exe, file))
+    command = '%s -style=file -i -verbose "%s"' % (exe, file)
+    print(f"Execute: {command}")
+    os.system(command)
 
 class ignores:
     def __init__(self, filename=".clang-format-ignore"):
-        self.path = os.path.join(cd(), filename)
-        with open(self.path) as f:
-            content = f.readlines()
-        self.content = [re.compile(x.strip()) for x in content]
-        print("got %d ignore lines" % len(self.content))
-        
+        try:
+            self.path = os.path.join(cd(), filename)
+            with open(self.path) as f:
+                content = f.readlines()
+            self.content = [re.compile(x.strip()) for x in content]
+            print("got %d ignore lines" % len(self.content))
+        except:
+            self.content = []
+
     def match(self, str):
         for r in self.content: 
             if r.match(str): 
