@@ -1,10 +1,11 @@
 #include "etool/sizepack/fixint.h"
+#include "etool/sizepack/zigzag.h"
 
 #include "catch.hpp"
 
 using namespace etool;
 
-TEST_CASE("FixedInteger", "[fixints]")
+TEST_CASE("Fixed Integer", "[fixints]")
 {
 	SECTION("pack unpack")
 	{
@@ -16,5 +17,10 @@ TEST_CASE("FixedInteger", "[fixints]")
 
 		std::uint32_t res_data = pack_type::unpack(result.begin(), result.end());
 		REQUIRE(res_data == test_data);
+	}
+
+	SECTION("zig-zag")
+	{
+		
 	}
 }
