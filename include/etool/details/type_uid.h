@@ -10,6 +10,7 @@ namespace etool { namespace details {
 
     template <typename T>
     struct type_uid {
+        using value_type = T;
         enum { is_const = 0, is_ref = 0, is_ptr = 0 };
         static std::uintptr_t get()
         {
@@ -21,6 +22,7 @@ namespace etool { namespace details {
     /// remove const
     template <typename T>
     struct type_uid<const T> {
+        using value_type = T;
         enum { is_const = 1, is_ref = 0, is_ptr = 0 };
         static std::uintptr_t get()
         {
@@ -31,6 +33,7 @@ namespace etool { namespace details {
     /// remove pointer
     template <typename T>
     struct type_uid<T*> {
+        using value_type = T;
         enum { is_const = 0, is_ref = 0, is_ptr = 1 };
         static std::uintptr_t get()
         {
@@ -40,6 +43,7 @@ namespace etool { namespace details {
 
     template <typename T>
     struct type_uid<T const*> {
+        using value_type = T;
         enum { is_const = 1, is_ref = 0, is_ptr = 1 };
         static std::uintptr_t get()
         {
@@ -50,6 +54,7 @@ namespace etool { namespace details {
     /// remove reference
     template <typename T>
     struct type_uid<T&> {
+        using value_type = T;
         enum { is_const = 0, is_ref = 1, is_ptr = 0 };
         static std::uintptr_t get()
         {
@@ -59,6 +64,28 @@ namespace etool { namespace details {
 
     template <typename T>
     struct type_uid<T const&> {
+        using value_type = T;
+        enum { is_const = 1, is_ref = 1, is_ptr = 0 };
+        static std::uintptr_t get()
+        {
+            return type_uid<T>::get();
+        }
+    };
+
+    /// remove && reference
+    template <typename T>
+    struct type_uid<T&&> {
+        using value_type = T;
+        enum { is_const = 0, is_ref = 1, is_ptr = 0 };
+        static std::uintptr_t get()
+        {
+            return type_uid<T>::get();
+        }
+    };
+
+    template <typename T>
+    struct type_uid<T const&&> {
+        using value_type = T;
         enum { is_const = 1, is_ref = 1, is_ptr = 0 };
         static std::uintptr_t get()
         {
