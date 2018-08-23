@@ -61,9 +61,8 @@ namespace etool { namespace subsystems {
         template <typename T, typename... Args>
         void add(Args&&... args)
         {
-            using ss_type = typename uid_type<T>::value_type;
-            std::unique_ptr<Interface> inst(
-                new ss_type(std::forward<Args>(args)...));
+            using stype = typename uid_type<T>::value_type;
+            std::unique_ptr<iface> inst(new stype(std::forward<Args>(args)...));
             std::lock_guard<mutex_type> lock(ifaces_lock_);
             ifaces_order_.push_back(inst.get());
             ifaces_.insert(std::make_pair(uid_type<T>::get(), std::move(inst)));
@@ -92,6 +91,12 @@ namespace etool { namespace subsystems {
                 call(s);
             }
         }
+
+		std::size_t size() const
+		{
+			std::lock_guard<mutex_type> lock(ifaces_lock_);
+			return ifaces_.size();
+		}
 
     private:
         iface* get_iface(std::uintptr_t id)
