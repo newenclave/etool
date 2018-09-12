@@ -26,16 +26,18 @@ namespace etool { namespace subsystems {
         auto get() -> typename uid_type<SubSys>::value_type*
         {
             using UidType = uid_type<SubSys>;
+            using value_type = typename UidType::value_type;
             static const auto id = UidType::get();
-            return static_cast<UidType::value_type*>(get_iface(id));
+            return static_cast<value_type *>(get_iface(id));
         }
 
         template <typename SubSys>
         auto get() const -> const typename uid_type<SubSys>::value_type*
         {
             using UidType = uid_type<SubSys>;
+            using value_type = typename UidType::value_type;
             static const auto id = UidType::get();
-            return static_cast<const UidType::value_type*>(get_iface(id));
+            return static_cast<const value_type *>(get_iface(id));
         }
 
         template <typename SubSys>
