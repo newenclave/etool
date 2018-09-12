@@ -16,7 +16,7 @@ public:                                                                        \
     {                                                                          \
         return Name.subscribe(slot);                                           \
     }                                                                          \
-    Visible:                                                                   \
+Visible:                                                                       \
     Name##_type Name
 
 #define ETOOL_OBSERVER_DEFINE_SAFE(Name, Sig)                                  \

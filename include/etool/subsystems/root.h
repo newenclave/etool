@@ -92,11 +92,11 @@ namespace etool { namespace subsystems {
             }
         }
 
-		std::size_t size() const
-		{
-			std::lock_guard<mutex_type> lock(ifaces_lock_);
-			return ifaces_.size();
-		}
+        std::size_t size() const
+        {
+            std::lock_guard<mutex_type> lock(ifaces_lock_);
+            return ifaces_.size();
+        }
 
     private:
         iface* get_iface(std::uintptr_t id)
@@ -114,8 +114,8 @@ namespace etool { namespace subsystems {
         }
 
         mutable mutex_type ifaces_lock_;
-        std::map<std::uintptr_t, std::unique_ptr<iface>> ifaces_;
-        std::list<iface*> ifaces_order_;
+        std::map<std::uintptr_t, std::unique_ptr<iface> > ifaces_;
+        std::list<iface *> ifaces_order_;
     };
 
     using root = base_root<std::recursive_mutex>;
