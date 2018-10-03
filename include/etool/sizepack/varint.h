@@ -90,9 +90,12 @@ namespace etool { namespace sizepack {
             std::uint32_t shift = 0x00;
             std::uint8_t last = 0x80;
 
-            for (; (begin != end) && (last & 0x80); ++begin, shift += 7) {
+            for (; begin != end; ++begin, shift += 7) {
                 last = (*begin);
                 res |= (static_cast<size_type>(last & 0x7F) << shift);
+                if (last & 0x80) {
+                    return res;
+                }
             }
             return res;
         }
