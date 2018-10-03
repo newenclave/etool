@@ -113,9 +113,26 @@ namespace etool { namespace sizepack {
                 last = d[i];
                 res_ |= (static_cast<size_type>(last & 0x7F) << shift);
                 if ((last & 0x80) == 0) {
-                    if (res) {
-                        *res = res_;
-                    }
+                    *res = res_;
+                    return i + 1;
+                }
+            }
+            return 0;
+        }
+
+        static size_t unpack(const void* data, size_t len)
+        {
+            const std::uint8_t* d = static_cast<const std::uint8_t*>(data);
+
+            size_type res_ = 0x00;
+            std::uint32_t shift = 0x00;
+            std::uint8_t last = 0x80;
+            size_t i = 0;
+
+            for (; i < len; shift += 7, ++i) {
+                last = d[i];
+                res_ |= (static_cast<size_type>(last & 0x7F) << shift);
+                if ((last & 0x80) == 0) {
                     return i + 1;
                 }
             }
