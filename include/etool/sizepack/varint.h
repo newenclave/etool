@@ -109,13 +109,12 @@ namespace etool { namespace sizepack {
             for (; i < len; shift += 7, ++i) {
                 last = d[i];
                 res_ |= (static_cast<size_type>(last & 0x7F) << shift);
-            }
-
-            if (0 == (last & 0x80)) {
-                if (res) {
-                    *res = res_;
+                if ((last & 0x80) == 0) {
+                    if (res) {
+                        *res = res_;
+                    }
+                    return i + 1;
                 }
-                return i;
             }
             return 0;
         }
