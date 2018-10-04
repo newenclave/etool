@@ -84,10 +84,14 @@ namespace etool { namespace sizepack {
                 return min_length;
             } else if (size <= 0xFFFF) {
                 res[0] = static_cast<std::uint8_t>(PREFIX_VARINT16);
-                return u16_little::write(size, &res[1]) + min_length;
+                return u16_little::write(
+                    static_cast<u16_little::value_type>(size), &res[1]) + 
+                    min_length;
             } else if (size <= 0xFFFFFFFF) {
                 res[0] = static_cast<std::uint8_t>(PREFIX_VARINT32);
-                return u32_little::write(size, &res[1]) + min_length;
+                return u32_little::write(
+                    static_cast<u32_little::value_type>(size), &res[1]) + 
+                    min_length;
             } else {
                 res[0] = static_cast<std::uint8_t>(PREFIX_VARINT64);
                 return u64_little::write(size, &res[1]) + min_length;
