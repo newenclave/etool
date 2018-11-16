@@ -28,7 +28,7 @@ namespace etool { namespace subsystems {
             using UidType = uid_type<SubSys>;
             using value_type = typename UidType::value_type;
             static const auto id = UidType::get();
-            return static_cast<value_type *>(get_iface(id));
+            return static_cast<value_type*>(get_iface(id));
         }
 
         template <typename SubSys>
@@ -37,7 +37,7 @@ namespace etool { namespace subsystems {
             using UidType = uid_type<SubSys>;
             using value_type = typename UidType::value_type;
             static const auto id = UidType::get();
-            return static_cast<const value_type *>(get_iface(id));
+            return static_cast<const value_type*>(get_iface(id));
         }
 
         template <typename SubSys>
@@ -116,8 +116,8 @@ namespace etool { namespace subsystems {
         }
 
         mutable mutex_type ifaces_lock_;
-        std::map<std::uintptr_t, std::unique_ptr<iface> > ifaces_;
-        std::list<iface *> ifaces_order_;
+        std::map<std::uintptr_t, std::unique_ptr<iface>> ifaces_;
+        std::list<iface*> ifaces_order_;
     };
 
     using root = base_root<std::recursive_mutex>;

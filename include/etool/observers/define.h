@@ -16,6 +16,7 @@ public:                                                                        \
     {                                                                          \
         return Name.subscribe(slot);                                           \
     }                                                                          \
+    \
 Visible:                                                                       \
     Name##_type Name
 

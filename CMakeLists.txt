@@ -40,6 +40,8 @@ list( APPEND src ./include/etool/cache
                  ./include/etool/console
                  ./include/etool/charset
                  ./include/etool/subsystems
+                 ./include/etool/layers
+                 ./include/etool/layers/traits
                  ./tests
                  )
 
