@@ -9,7 +9,7 @@ namespace etool { namespace layers { namespace traits {
         using pointer_type = std::unique_ptr<T>;
 
         template <typename T>
-        static bool is_empty(pointer_type<T>& ptr)
+        static bool is_empty(const pointer_type<T>& ptr)
         {
             return ptr == nullptr;
         }

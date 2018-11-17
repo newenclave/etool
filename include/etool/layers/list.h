@@ -118,7 +118,6 @@ namespace etool { namespace layers {
 
     private:
         std::list<layer_uptr> list_;
-
     };
 }}
 

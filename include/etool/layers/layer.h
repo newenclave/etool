@@ -5,7 +5,7 @@
 #include "etool/layers/traits/unique_pointers.h"
 
 namespace etool { namespace layers {
-    template <typename ReqType, typename ResType,
+    template <typename ReqType, typename ResType = ReqType,
               typename UpperPtrTrait = traits::raw_pointers,
               typename LowerPtrTrait = UpperPtrTrait>
     class layer {
@@ -40,20 +40,42 @@ namespace etool { namespace layers {
             return *this;
         }
 
-        virtual void set_upper(upper_pointer_type upper)
+        virtual upper_pointer_type& set_upper(upper_pointer_type upper)
         {
             std::swap(upper_, upper);
+            return get_upper();
         }
 
-        virtual void set_lower(lower_pointer_type lower)
+        virtual lower_pointer_type& set_lower(lower_pointer_type lower)
         {
             std::swap(lower_, lower);
+            return get_lower();
         }
 
     public:
         virtual void from_upper(res_type msg) = 0; // from upper layer
 
         virtual void from_lower(req_type msg) = 0; // from lower layer
+
+        upper_pointer_type& get_upper()
+        {
+            return upper_;
+        }
+
+        lower_pointer_type& get_lower()
+        {
+            return lower_;
+        }
+
+        const upper_pointer_type& get_upper() const
+        {
+            return upper_;
+        }
+
+        const lower_pointer_type& get_lower() const
+        {
+            return lower_;
+        }
 
     protected:
         void swap(this_type& other)
@@ -82,16 +104,6 @@ namespace etool { namespace layers {
             return !lower_traits::is_empty(lower_);
         }
 
-        upper_pointer_type& get_upper()
-        {
-            return upper_;
-        }
-
-        lower_pointer_type& get_lower()
-        {
-            return lower_;
-        }
-
     private:
         upper_pointer_type upper_ = nullptr;
         lower_pointer_type lower_ = nullptr;
@@ -100,13 +112,13 @@ namespace etool { namespace layers {
     template <typename ReqType, typename ResType,
               typename UpperPtrTrait = traits::raw_pointers,
               typename LowerPtrTrait = UpperPtrTrait>
-    class pass_through_layer
+    class pass_through
         : public layer<ReqType, ResType, UpperPtrTrait, LowerPtrTrait> {
 
         using upper_traits = UpperPtrTrait;
         using lower_traits = LowerPtrTrait;
         using this_type
-            = pass_through_layer<ReqType, ResType, upper_traits, lower_traits>;
+            = pass_through<ReqType, ResType, upper_traits, lower_traits>;
         using super_type = layer<ReqType, ResType, upper_traits, lower_traits>;
 
     public:
