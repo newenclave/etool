@@ -8,9 +8,7 @@ using namespace etool;
 TEST_CASE("Layers", "[root]")
 {
     using message_type = std::string;
-    using layer_type = layers::pass_through<message_type, message_type,
-                                            layers::traits::raw_pointers,
-                                            layers::traits::unique_pointer>;
+    using layer_type = layers::pass_through<message_type>;
 
     class extra_symbol : public layer_type {
     public:
@@ -38,7 +36,7 @@ TEST_CASE("Layers", "[root]")
 
     class execute_layer : public layer_type {
     public:
-        execute_layer(std::function<void(message_type)> call)
+        execute_layer(std::function<void(const message_type&)> call)
             : call_(std::move(call))
         {
         }
@@ -46,28 +44,38 @@ TEST_CASE("Layers", "[root]")
     private:
         void from_upper(message_type msg) override
         {
-            call_(std::move(msg));
+            call_(msg);
+            if (has_lower()) {
+                send_to_lower(std::move(msg));
+            }
         }
         void from_lower(message_type msg) override
         {
-            call_(std::move(msg));
+            call_(msg);
+            if (has_upper()) {
+                send_to_upper(std::move(msg));
+            }
         }
-        std::function<void(message_type)> call_;
+        std::function<void(const message_type&)> call_;
     };
 
     SECTION("layer list")
     {
-        extra_symbol root('!');
+        layers::list<message_type> lst;
         std::string result;
-        auto show = [&](message_type msg) { result.swap(msg); };
-        root.set_lower(std::make_unique<extra_symbol>('1'))
-            ->set_lower(std::make_unique<extra_symbol>('2'))
-            ->set_lower(std::make_unique<extra_symbol>('3'))
-            ->set_lower(std::make_unique<extra_symbol>('4'))
-            ->set_lower(std::make_unique<execute_layer>(show));
-        root.from_upper("");
-        execute_layer show_layer(show);
-        root.set_upper(&show_layer);
-        REQUIRE(result == "!1234");
+        lst.create_back<extra_symbol>('1');
+        lst.create_back<extra_symbol>('2');
+        lst.create_back<extra_symbol>('3');
+        lst.create_back<extra_symbol>('4');
+        lst.create_back<extra_symbol>('5');
+
+        lst.create_back<execute_layer>(
+            [&](const message_type& msg) { result = msg; });
+        lst.create_front<execute_layer>(
+            [&](const message_type& msg) { result = msg; });
+        lst.from_upper("");
+        REQUIRE(result == "12345");
+        lst.from_lower(result);
+        REQUIRE(result == "");
     }
 }

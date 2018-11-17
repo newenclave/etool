@@ -109,7 +109,7 @@ namespace etool { namespace layers {
         lower_pointer_type lower_ = nullptr;
     };
 
-    template <typename ReqType, typename ResType,
+    template <typename ReqType, typename ResType = ReqType,
               typename UpperPtrTrait = traits::raw_pointers,
               typename LowerPtrTrait = UpperPtrTrait>
     class pass_through

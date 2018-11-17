@@ -6,7 +6,7 @@
 
 namespace etool { namespace layers {
 
-    template <typename ReqType, typename ResType>
+    template <typename ReqType, typename ResType = ReqType>
     class list : public layer<ReqType, ResType, traits::raw_pointers,
                               traits::raw_pointers> {
     public:
@@ -98,22 +98,22 @@ namespace etool { namespace layers {
             return list_.empty();
         }
 
-        void set_upper(upper_pointer_type ptr) override
+        upper_pointer_type& set_upper(upper_pointer_type ptr) override
         {
             auto upper_ptr = list_.empty() ? nullptr : list_.front().get();
             if (upper_ptr) {
                 upper_ptr->set_upper(ptr);
             }
-            super_type::set_upper(ptr);
+            return super_type::set_upper(ptr);
         }
 
-        void set_lower(lower_pointer_type ptr) override
+        lower_pointer_type& set_lower(lower_pointer_type ptr) override
         {
             auto lower_ptr = list_.empty() ? nullptr : list_.back().get();
             if (lower_ptr) {
                 lower_ptr->set_lower(ptr);
             }
-            super_type::set_lower(ptr);
+            return super_type::set_lower(ptr);
         }
 
     private:
