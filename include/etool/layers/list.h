@@ -64,7 +64,7 @@ namespace etool { namespace layers {
         }
 
         template <typename LT, typename... Args>
-        void create_front(Args&&... args)
+        void emplace_front(Args&&... args)
         {
             auto nv = layer_uptr(new LT(std::forward<Args>(args)...));
             push_front(std::move(nv));
@@ -82,7 +82,7 @@ namespace etool { namespace layers {
         }
 
         template <typename LT, typename... Args>
-        void create_back(Args&&... args)
+        void emplace_back(Args&&... args)
         {
             auto nv = layer_uptr(new LT(std::forward<Args>(args)...));
             push_back(std::move(nv));

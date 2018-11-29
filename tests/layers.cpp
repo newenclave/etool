@@ -63,15 +63,15 @@ TEST_CASE("Layers", "[root]")
     {
         layers::list<message_type> lst;
         std::string result;
-        lst.create_back<extra_symbol>('1');
-        lst.create_back<extra_symbol>('2');
-        lst.create_back<extra_symbol>('3');
-        lst.create_back<extra_symbol>('4');
-        lst.create_back<extra_symbol>('5');
+        lst.emplace_back<extra_symbol>('1');
+        lst.emplace_back<extra_symbol>('2');
+        lst.emplace_back<extra_symbol>('3');
+        lst.emplace_back<extra_symbol>('4');
+        lst.emplace_back<extra_symbol>('5');
 
-        lst.create_back<execute_layer>(
+        lst.emplace_back<execute_layer>(
             [&](const message_type& msg) { result = msg; });
-        lst.create_front<execute_layer>(
+        lst.emplace_front<execute_layer>(
             [&](const message_type& msg) { result = msg; });
         lst.from_upper("");
         REQUIRE(result == "12345");
