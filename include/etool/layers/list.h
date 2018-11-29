@@ -118,7 +118,7 @@ namespace etool { namespace layers {
         }
 
     private:
-        std::deque<layer_uptr> list_;
+        container_type list_;
     };
 }}
 
