@@ -2,7 +2,7 @@
 #define ETOOL_LAYERS_LLIST_H
 
 #include "layer.h"
-#include <list>
+#include <deque>
 
 namespace etool { namespace layers {
 
@@ -18,8 +18,9 @@ namespace etool { namespace layers {
         using upper_pointer_type = typename layer_type::upper_pointer_type;
         using lower_pointer_type = typename layer_type::lower_pointer_type;
         using layer_uptr = std::unique_ptr<layer_type>;
-        using iterator = typename std::list<layer_uptr>::iterator;
-        using const_iterator = typename std::list<layer_uptr>::const_iterator;
+		using container_type = std::deque<layer_uptr>;
+        using iterator = typename container_type::iterator;
+        using const_iterator = typename container_type::const_iterator;
 
         iterator begin()
         {
@@ -117,7 +118,7 @@ namespace etool { namespace layers {
         }
 
     private:
-        std::list<layer_uptr> list_;
+        std::deque<layer_uptr> list_;
     };
 }}
 
