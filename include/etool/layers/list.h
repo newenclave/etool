@@ -18,7 +18,7 @@ namespace etool { namespace layers {
         using upper_pointer_type = typename layer_type::upper_pointer_type;
         using lower_pointer_type = typename layer_type::lower_pointer_type;
         using layer_uptr = std::unique_ptr<layer_type>;
-		using container_type = std::deque<layer_uptr>;
+        using container_type = std::deque<layer_uptr>;
         using iterator = typename container_type::iterator;
         using const_iterator = typename container_type::const_iterator;
 
