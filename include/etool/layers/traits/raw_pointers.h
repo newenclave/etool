@@ -1,6 +1,8 @@
 #ifndef ETOOL_LAYERS_TRAITS_RAW_POINTERS_H
 #define ETOOL_LAYERS_TRAITS_RAW_POINTERS_H
 
+#include <algorithm>
+
 namespace etool { namespace layers { namespace traits {
     struct raw_pointers {
         template <typename T>

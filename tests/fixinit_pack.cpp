@@ -13,7 +13,8 @@ TEST_CASE("Fixed Integer", "[fixints]")
         std::uint32_t test_data = 0xC8F681A3;
         std::string result;
         pack_type::pack(test_data, result);
-        REQUIRE(result.size() == pack_type::min_length);
+        auto min_len = pack_type::min_length;
+        REQUIRE(result.size() == min_len);
 
         std::uint32_t res_data
             = pack_type::unpack(result.begin(), result.end());

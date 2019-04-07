@@ -2,6 +2,7 @@
 #define ETOOL_OBSERVERS_BASE_H
 
 #include <set>
+#include <list>
 
 #include <memory>
 #include <mutex>
@@ -20,20 +21,20 @@ namespace etool { namespace observers {
         typedef base<SlotType, MutexType> this_type;
 
     public:
-        typedef SlotType slot_traits;
-        typedef typename SlotType::value_type slot_type;
+        using slot_traits = SlotType;
+        using slot_type = typename SlotType::value_type;
 
     private:
         struct special {
             enum { unsubscribe_all = 1 };
         };
 
-        typedef MutexType mutex_type;
-        typedef std::lock_guard<mutex_type> guard_type;
+        using mutex_type = MutexType;
+        using guard_type = std::lock_guard<mutex_type>;
 
         struct impl {
 
-            typedef base<SlotType, MutexType> parent_type;
+            using parent_type = base<SlotType, MutexType>;
 
             struct slot_info {
                 slot_info(const slot_type& slot, size_t id)
@@ -45,8 +46,7 @@ namespace etool { namespace observers {
                 size_t id_;
             };
 
-            /// NOT STL LIST!
-            typedef details::list<slot_info> list_type;
+            typedef std::list<slot_info> list_type;
             typedef typename list_type::iterator list_iterator;
             typedef std::set<size_t> iterator_set;
 
@@ -62,19 +62,13 @@ namespace etool { namespace observers {
             ~impl()
             {
                 clear_unsafe();
-                // clear( ); // ??? hm
+                //clear(); // ??? hm
             }
 
             static list_iterator itr_erase(list_type& lst, list_iterator itr)
             {
                 slot_traits::erase(itr->slot_);
                 return lst.erase(itr);
-            }
-
-            static list_iterator itr_rerase(list_type& lst, list_iterator itr)
-            {
-                slot_traits::erase(itr->slot_);
-                return lst.rerase(itr);
             }
 
             void unsubscribe(size_t itr)
@@ -113,26 +107,12 @@ namespace etool { namespace observers {
 
                         return;
 
-                    } else if ((id - min_id) < (max_id - id)) {
-                        /// CLOSE to begin!
-                        list_iterator b(lst.begin());
-
-                        for (; b && (b->id_ < id); ++b)
-                            ;
-
-                        if (b && (b->id_ == id)) {
-                            itr_erase(lst, b);
-                        }
-
                     } else {
-                        /// CLOSE to end!
-                        list_iterator b(lst.rbegin());
+                        list_iterator b(lst.begin());
+                        for (; (b != lst.end()) && (b->id_ < id); ++b);
 
-                        for (; b && (id < b->id_); --b)
-                            ;
-
-                        if (b && (b->id_ == id)) {
-                            itr_rerase(lst, b);
+                        if ((b != lst.end()) && (b->id_ == id)) {
+                            itr_erase(lst, b);
                         }
                     }
                 }
@@ -151,10 +131,10 @@ namespace etool { namespace observers {
 
                 list_iterator bl(list_.begin());
 
-                for (; (b != e) && bl; ++b) {
-                    for (; bl && (bl->id_ < *b); ++bl) {
+                for (; (b != e) && (bl != list_.end()); ++b) {
+                    for (; (bl != list_.end()) && (bl->id_ < *b); ++bl) {
                     }
-                    if (bl && (bl->id_ == *b)) {
+                    if ((bl != list_.end()) && (bl->id_ == *b)) {
                         bl = itr_erase(list_, bl);
                     }
                 }
@@ -163,7 +143,7 @@ namespace etool { namespace observers {
             void clear_added_unsafe()
             {
                 list_iterator b = added_.begin();
-                while (b) {
+                while (b != added_.end()) {
                     b = itr_erase(added_, b);
                 }
             }
@@ -171,7 +151,7 @@ namespace etool { namespace observers {
             void clear_main_unsafe()
             {
                 list_iterator b = list_.begin();
-                while (b) {
+                while (b != list_.end()) {
                     b = itr_erase(list_, b);
                 }
             }
@@ -193,7 +173,7 @@ namespace etool { namespace observers {
             void splice_added()
             {
                 guard_type lck(tmp_lock_);
-                list_.splice_back(added_);
+                list_.splice(list_.end(), added_);
             }
 
             std::size_t next_id()
@@ -222,7 +202,7 @@ namespace etool { namespace observers {
                 }
 
                 typename impl::list_iterator b(list_.begin());
-                while (b) {
+                while (b != list_.end()) {
                     if (is_removed(b->id_)) {
                         b = impl::itr_erase(list_, b);
                     } else {
