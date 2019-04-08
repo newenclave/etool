@@ -18,7 +18,7 @@ namespace etool { namespace observers {
     template <typename SlotType, typename MutexType>
     class base {
 
-        typedef base<SlotType, MutexType> this_type;
+    using this_type = base<SlotType, MutexType>;
 
     public:
         using slot_traits = SlotType;
@@ -103,11 +103,7 @@ namespace etool { namespace observers {
                     size_t min_id = lst.begin()->id_;
                     size_t max_id = lst.rbegin()->id_;
 
-                    if ((id < min_id) || (id > max_id)) {
-
-                        return;
-
-                    } else {
+                    if ((id >= min_id) || (id <= max_id)) {
                         list_iterator b(lst.begin());
                         for (; (b != lst.end()) && (b->id_ < id); ++b);
 
@@ -140,20 +136,22 @@ namespace etool { namespace observers {
                 }
             }
 
+            static void clear_list(list_type &lst)
+            {
+                list_iterator b = lst.begin();
+                while (b != lst.end()) {
+                    b = itr_erase(lst, b);
+                }
+            }
+
             void clear_added_unsafe()
             {
-                list_iterator b = added_.begin();
-                while (b != added_.end()) {
-                    b = itr_erase(added_, b);
-                }
+                clear_list(added_);
             }
 
             void clear_main_unsafe()
             {
-                list_iterator b = list_.begin();
-                while (b != list_.end()) {
-                    b = itr_erase(list_, b);
-                }
+                clear_list(list_);
             }
 
             void clear_unsafe()
