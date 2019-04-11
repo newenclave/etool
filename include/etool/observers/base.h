@@ -1,13 +1,12 @@
 #ifndef ETOOL_OBSERVERS_BASE_H
 #define ETOOL_OBSERVERS_BASE_H
 
-#include <set>
 #include <list>
+#include <set>
 
 #include <memory>
 #include <mutex>
 
-#include "etool/details/list.h"
 #include "etool/observers/traits/simple.h"
 
 #include "etool/observers/scoped-subscription.h"
@@ -18,7 +17,7 @@ namespace etool { namespace observers {
     template <typename SlotType, typename MutexType>
     class base {
 
-    using this_type = base<SlotType, MutexType>;
+        using this_type = base<SlotType, MutexType>;
 
     public:
         using slot_traits = SlotType;
@@ -46,9 +45,9 @@ namespace etool { namespace observers {
                 size_t id_;
             };
 
-            typedef std::list<slot_info> list_type;
-            typedef typename list_type::iterator list_iterator;
-            typedef std::set<size_t> iterator_set;
+            using list_type = std::list<slot_info>;
+            using list_iterator = typename list_type::iterator;
+            using iterator_set = std::set<size_t>;
 
             iterator_set removed_;
             list_type list_;
@@ -56,13 +55,13 @@ namespace etool { namespace observers {
 
             mutable mutex_type list_lock_;
             mutable mutex_type tmp_lock_;
-            std::size_t id_ = 10;
+            std::size_t id_ = 100;
             std::uint32_t current_enter_ = 0;
 
             ~impl()
             {
                 clear_unsafe();
-                //clear(); // ??? hm
+                // clear(); // ??? hm
             }
 
             static list_iterator itr_erase(list_type& lst, list_iterator itr)
@@ -105,8 +104,8 @@ namespace etool { namespace observers {
 
                     if ((id >= min_id) || (id <= max_id)) {
                         list_iterator b(lst.begin());
-                        for (; (b != lst.end()) && (b->id_ < id); ++b);
-
+                        for (; (b != lst.end()) && (b->id_ < id); ++b) {
+                        }
                         if ((b != lst.end()) && (b->id_ == id)) {
                             itr_erase(lst, b);
                         }
@@ -136,7 +135,7 @@ namespace etool { namespace observers {
                 }
             }
 
-            static void clear_list(list_type &lst)
+            static void clear_list(list_type& lst)
             {
                 list_iterator b = lst.begin();
                 while (b != lst.end()) {
@@ -176,7 +175,11 @@ namespace etool { namespace observers {
 
             std::size_t next_id()
             {
-                return id_ += 2;
+                id_ += 2;
+                if (id_ < 100) {
+                    id_ = 100;
+                }
+                return id_;
             }
 
             std::size_t connect(slot_type call)
@@ -225,10 +228,10 @@ namespace etool { namespace observers {
 
         struct unsubscriber : subscription::unsubscriber {
 
-            typedef base<SlotType, MutexType> base_type;
+            using base_type = base<SlotType, MutexType>;
 
-            typedef typename base_type::impl_sptr impl_sptr;
-            typedef typename base_type::impl_wptr impl_wptr;
+            using impl_sptr = typename base_type::impl_sptr;
+            using impl_wptr = typename base_type::impl_wptr;
 
             unsubscriber(impl_wptr p, std::size_t k)
                 : parent(p)
@@ -243,8 +246,7 @@ namespace etool { namespace observers {
 
             void run()
             {
-                impl_sptr lock(parent.lock());
-                if (lock) {
+                if (auto lock = parent.lock()) {
                     lock->unsubscribe(key);
                 }
             }
@@ -300,11 +302,13 @@ namespace etool { namespace observers {
         subscription subscribe(slot_type call)
         {
             size_t next = get_impl().connect(call);
-
-            subscription::unsubscriber_sptr us
-                = std::make_shared<unsubscriber>(get_impl_wptr(), next);
-
+            auto us = std::make_shared<unsubscriber>(get_impl_wptr(), next);
             return subscription(us);
+        }
+
+        scoped_subscription subscribe_scoped(slot_type call)
+        {
+            return scoped_subscription(subscribe(std::move(call)));
         }
 
         subscription connect(slot_type call)

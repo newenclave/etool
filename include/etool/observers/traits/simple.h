@@ -8,7 +8,7 @@ namespace etool { namespace observers { namespace traits {
     template <typename SigType>
     struct simple {
 
-        typedef std::function<SigType> value_type;
+        using value_type = std::function<SigType>;
 
         static void erase(value_type&) {}
 
@@ -26,4 +26,4 @@ namespace etool { namespace observers { namespace traits {
 
 }}}
 
-#endif // SIMPLE_H
+#endif // ETOOL_OBSERVERS_SLOTS_SIMPLE_H

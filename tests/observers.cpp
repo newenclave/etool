@@ -8,7 +8,6 @@ using namespace etool;
 
 TEST_CASE("Observers", "[observer]")
 {
-
     observers::simple<void()> observer;
     SECTION("simple call")
     {
@@ -43,8 +42,7 @@ TEST_CASE("Observers", "[observer]")
     {
         int test = 0;
         {
-            observers::scoped_subscription ss
-                = observer.subscribe([&]() { ++test; });
+            auto ss = observer.subscribe_scoped([&]() { ++test; });
             observer();
         }
         observer();
@@ -63,5 +61,28 @@ TEST_CASE("Observers", "[observer]")
         observer();
         observer();
         REQUIRE(test == 3);
+    }
+    SECTION("multiply observers")
+    {
+        int test = 0;
+        auto call = [&]() { test++; };
+        std::vector<observers::subscription> s = {
+            observer.subscribe(call),
+            observer.subscribe(call),
+            observer.subscribe(call),
+            observer.subscribe(call),
+        };
+        observer();
+        REQUIRE(test == s.size());
+
+        test = 0;
+        s[2].unsubscribe();
+        observer();
+        REQUIRE(test == s.size() - 1);
+
+        test = 0;
+        s[3].unsubscribe();
+        observer();
+        REQUIRE(test == s.size() - 2);
     }
 }

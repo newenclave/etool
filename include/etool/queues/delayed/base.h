@@ -85,7 +85,8 @@ namespace etool { namespace queues { namespace delayed {
         }
 
         class delayed_task {
-            // friend class base;
+            friend class base;
+
         public:
             delayed_task(typename base::impl& queue,
                          const delayed_task_info& task)
@@ -254,7 +255,7 @@ namespace etool { namespace queues { namespace delayed {
                 }
             }
 
-            void reset()
+            void reset(bool clear = false)
             {
                 std::unique_lock<mutex_type> lock(work_lock_);
                 enabled_ = true;
@@ -308,7 +309,7 @@ namespace etool { namespace queues { namespace delayed {
                 /*
                  *   Cancel is also a regular task for the queue
                  */
-                return post_task([task]() mutable { task(true); });
+                return post_task([task]() { task(true); });
             }
 
             void activate_delayed_task(task_token_type id,
@@ -700,7 +701,7 @@ namespace etool { namespace queues { namespace delayed {
         };
 
         template <typename Duration>
-        delayed_task post_delayed_task(Duration dur, delayed_task_type handler)
+        delayed_task post_delayed_task(delayed_task_type handler, Duration dur)
         {
             return get_impl().post_delayed_task(dur, std::move(handler));
         }
@@ -712,7 +713,7 @@ namespace etool { namespace queues { namespace delayed {
          *   But the call will not be made in the case of the cancellation.
          */
         template <typename Duration>
-        delayed_task post_delayed_task(Duration dur, task_type handler)
+        delayed_task post_delayed_task(task_type handler, Duration dur)
         {
             return get_impl().post_delayed_task(dur, std::move(handler));
         }

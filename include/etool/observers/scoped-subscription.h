@@ -8,7 +8,7 @@ namespace etool { namespace observers {
 
     class scoped_subscription {
 
-        typedef subscription::unsubscriber_sptr unsubscriber_sptr;
+        using unsubscriber_sptr = subscription::unsubscriber_sptr;
 
     public:
         /// C-tors
@@ -39,9 +39,9 @@ namespace etool { namespace observers {
             return *this;
         }
 
+        scoped_subscription() = default;
         scoped_subscription(scoped_subscription& o) = delete;
-
-        scoped_subscription() {}
+        scoped_subscription& operator=(scoped_subscription& o) = delete;
 
         scoped_subscription(const subscription& o)
             : unsubscriber_(o.unsubscriber_)
@@ -52,16 +52,6 @@ namespace etool { namespace observers {
         ~scoped_subscription()
         {
             unsubscribe();
-        }
-
-        /// O-tor
-        scoped_subscription& operator=(scoped_subscription& o)
-        {
-            if (this != &o) {
-                unsubscriber_.swap(o.unsubscriber_);
-                o.reset();
-            }
-            return *this;
         }
 
         scoped_subscription& operator=(const subscription& o)

@@ -26,10 +26,10 @@ namespace etool { namespace observers {
                 return 0;
             }
             virtual void run() = 0;
-            typedef std::shared_ptr<unsubscriber> sptr;
+            using sptr = std::shared_ptr<unsubscriber>;
         };
 
-        typedef std::shared_ptr<unsubscriber> unsubscriber_sptr;
+        using unsubscriber_sptr = std::shared_ptr<unsubscriber>;
 
         subscription(unsubscriber_sptr call)
             : unsubscriber_(call)
