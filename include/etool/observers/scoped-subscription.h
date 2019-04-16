@@ -40,8 +40,8 @@ namespace etool { namespace observers {
         }
 
         scoped_subscription() = default;
-        scoped_subscription(scoped_subscription& o) = delete;
-        scoped_subscription& operator=(scoped_subscription& o) = delete;
+        scoped_subscription(const scoped_subscription& o) = delete;
+        scoped_subscription& operator=(const scoped_subscription& o) = delete;
 
         scoped_subscription(const subscription& o)
             : unsubscriber_(o.unsubscriber_)

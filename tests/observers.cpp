@@ -66,12 +66,12 @@ TEST_CASE("Observers", "[observer]")
     {
         int test = 0;
         auto call = [&]() { test++; };
-        std::vector<observers::subscription> s = {
-            observer.subscribe(call),
-            observer.subscribe(call),
-            observer.subscribe(call),
-            observer.subscribe(call),
-        };
+        std::vector<observers::scoped_subscription> s;
+        s.emplace_back(observer.subscribe_scoped(call));
+        s.emplace_back(observer.subscribe_scoped(call));
+        s.emplace_back(observer.subscribe_scoped(call));
+        s.emplace_back(observer.subscribe_scoped(call));
+        s.emplace_back(observer.subscribe_scoped(call));
         observer();
         REQUIRE(test == s.size());
 
