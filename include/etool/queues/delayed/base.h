@@ -321,8 +321,8 @@ namespace etool { namespace queues { namespace delayed {
             }
 
             template <typename Duration>
-            delayed_task post_delayed_task(Duration dur,
-                                           delayed_task_type handler)
+            delayed_task post_delayed_task(delayed_task_type handler,
+                                           Duration dur)
             {
                 using namespace std::chrono;
                 /*
@@ -352,13 +352,15 @@ namespace etool { namespace queues { namespace delayed {
             }
 
             template <typename Duration>
-            delayed_task post_delayed_task(Duration dur, task_type handler)
+            delayed_task post_delayed_task(task_type handler, Duration dur)
             {
-                return post_delayed_task(dur, [handler](bool cancelled) {
-                    if (!cancelled) {
-                        handler();
-                    }
-                });
+                return post_delayed_task(
+                    [handler](bool cancelled) {
+                        if (!cancelled) {
+                            handler();
+                        }
+                    },
+                    dur);
             }
 
             template <typename Handler>
@@ -704,7 +706,7 @@ namespace etool { namespace queues { namespace delayed {
         template <typename Duration>
         delayed_task post_delayed_task(delayed_task_type handler, Duration dur)
         {
-            return get_impl().post_delayed_task(dur, std::move(handler));
+            return get_impl().post_delayed_task(std::move(handler), dur);
         }
 
         /*
@@ -716,7 +718,7 @@ namespace etool { namespace queues { namespace delayed {
         template <typename Duration>
         delayed_task post_delayed_task(task_type handler, Duration dur)
         {
-            return get_impl().post_delayed_task(dur, std::move(handler));
+            return get_impl().post_delayed_task(std::move(handler), dur);
         }
 
         /*
