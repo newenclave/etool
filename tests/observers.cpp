@@ -1,4 +1,6 @@
+#include "etool/observers/observable.h"
 #include "etool/observers/simple.h"
+
 #include <iostream>
 #include <mutex>
 
@@ -82,6 +84,11 @@ TEST_CASE("Observers", "[observer]")
 
         test = 0;
         s[3].unsubscribe();
+        observer();
+        REQUIRE(test == s.size() - 2);
+
+        test = 0;
+        s.pop_back();
         observer();
         REQUIRE(test == s.size() - 2);
     }
