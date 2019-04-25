@@ -6,13 +6,13 @@
 
 namespace etool { namespace observers { namespace details {
 
-	template <typename SlotTraits, typename MutexType>
-	struct fimpl {
+    template <typename SlotTraits, typename MutexType>
+    struct fimpl {
 
-		using slot_traits = SlotTraits;
-		using slot_type = typename slot_traits::value_type;
-		using mutex_type = MutexType;
-		using guard_type = std::lock_guard<mutex_type>;
+        using slot_traits = SlotTraits;
+        using slot_type = typename slot_traits::value_type;
+        using mutex_type = MutexType;
+        using guard_type = std::lock_guard<mutex_type>;
 
         struct slot_info {
             slot_info(slot_type slot, size_t id)
@@ -78,16 +78,6 @@ namespace etool { namespace observers { namespace details {
             }
         }
 
-        void clear_added_unsafe()
-        {
-            clear_list(added_);
-        }
-
-        void clear_main_unsafe()
-        {
-            clear_list(list_);
-        }
-
         void clear_unsafe()
         {
             list_.clear();
@@ -128,15 +118,14 @@ namespace etool { namespace observers { namespace details {
             list_iterator b(tmp.begin());
             while (b != tmp.end()) {
                 if (!slot_traits::expired(b->slot_)) {
-                    slot_traits::exec(b->slot_,
-                                        std::forward<Args>(args)...);
+                    slot_traits::exec(b->slot_, std::forward<Args>(args)...);
                     ++b;
                 } else {
                     b = itr_erase(tmp, b);
                 }
             }
         }
-	};
+    };
 }}}
 
 #endif

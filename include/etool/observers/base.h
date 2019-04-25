@@ -7,8 +7,8 @@
 #include <memory>
 #include <mutex>
 
-#include "etool/observers/traits/simple.h"
 #include "etool/observers/details/impl.h"
+#include "etool/observers/traits/simple.h"
 
 #include "etool/observers/scoped-subscription.h"
 #include "etool/observers/subscription.h"
@@ -25,7 +25,6 @@ namespace etool { namespace observers {
         using slot_type = typename slot_traits::value_type;
 
     private:
-
         using impl = ImplType;
         using mutex_type = typename impl::mutex_type;
         using guard_type = std::lock_guard<mutex_type>;

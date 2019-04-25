@@ -192,7 +192,7 @@ namespace etool { namespace observers { namespace details {
                 } else {
                     if (!slot_traits::expired(b->slot_)) {
                         slot_traits::exec(b->slot_,
-                                            std::forward<Args>(args)...);
+                                          std::forward<Args>(args)...);
                         ++b;
                     } else {
                         b = itr_erase(list_, b);

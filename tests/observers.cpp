@@ -10,7 +10,7 @@ using namespace etool;
 
 TEST_CASE("Observers", "[observer]")
 {
-    observers::simple<void()> observer;
+    observers::fsimple<void()> observer;
     SECTION("simple call")
     {
         int test = 0;
