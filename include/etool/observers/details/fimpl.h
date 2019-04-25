@@ -26,7 +26,6 @@ namespace etool { namespace observers { namespace details {
 
         using list_type = std::list<slot_info>;
         using list_iterator = typename list_type::iterator;
-        using iterator_set = std::set<size_t>;
 
         list_type list_;
 

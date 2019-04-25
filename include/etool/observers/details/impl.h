@@ -3,6 +3,7 @@
 
 #include <list>
 #include <mutex>
+#include <set>
 
 namespace etool { namespace observers { namespace details {
 

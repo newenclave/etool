@@ -2,13 +2,9 @@
 #define ETOOL_OBSERVERS_BASE_H
 
 #include <list>
-#include <set>
 
 #include <memory>
 #include <mutex>
-
-#include "etool/observers/details/impl.h"
-#include "etool/observers/traits/simple.h"
 
 #include "etool/observers/scoped-subscription.h"
 #include "etool/observers/subscription.h"
