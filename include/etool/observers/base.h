@@ -36,8 +36,8 @@ namespace etool { namespace observers {
             using parent_type = base<SlotType, MutexType>;
 
             struct slot_info {
-                slot_info(const slot_type& slot, size_t id)
-                    : slot_(slot)
+                slot_info(slot_type slot, size_t id)
+                    : slot_(std::move(slot))
                     , id_(id)
                 {
                 }
@@ -186,7 +186,7 @@ namespace etool { namespace observers {
             {
                 guard_type l(tmp_lock_);
                 std::size_t next = next_id();
-                added_.emplace_back(slot_info(call, next));
+                added_.emplace_back(slot_info(std::move(call), next));
                 return next;
             }
 
