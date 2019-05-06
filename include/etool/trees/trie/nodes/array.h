@@ -15,7 +15,7 @@ namespace etool { namespace trees { namespace trie { namespace nodes {
         using value_ptr = std::unique_ptr<value_type>;
 
     private:
-        using this_type = array<key_type, value_type>;
+        using this_type = array<key_type, value_type, Comp>;
         struct key_data {
 
             key_type key;
@@ -44,7 +44,8 @@ namespace etool { namespace trees { namespace trie { namespace nodes {
 
             bool equal_keys(const key_type& rh) const
             {
-                return (!(key < rh)) && (!(rh < key));
+                Comp compare;
+                return (!compare(key, rh)) && (!compare(rh, key));
             }
         };
 

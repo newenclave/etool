@@ -155,13 +155,14 @@ namespace etool { namespace trees { namespace trie {
         }
 
         template <typename IterT>
-        result_view<IterT> get(IterT b, const IterT& e, bool greedy)
+        result_view<IterT> get(IterT b, const IterT& e, bool greedy = true)
         {
             return get_s<result_view>(&root_, b, e, greedy);
         }
 
         template <typename IterT>
-        const_result_view<IterT> get(IterT b, const IterT& e, bool greedy) const
+        const_result_view<IterT> get(IterT b, const IterT& e,
+                                     bool greedy = true) const
         {
             return get_s<const_result_view>(&root_, b, e, greedy);
         }

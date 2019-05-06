@@ -25,6 +25,11 @@
 #include "etool/trees/trie/base.h"
 
 
+// int main()
+//{
+//
+//}
+
 int main(int argc, char* argv[])
 {
     int result = Catch::Session().run(argc, argv);

@@ -6,6 +6,14 @@
 namespace {
 using trie_type = etool::trees::trie::base<char, std::string>;
 
+struct caseless_less {
+    bool operator()(char lh, char rh)
+    {
+        return std::toupper(lh) < std::toupper(rh);
+    }
+};
+using trie_i_type = etool::trees::trie::base<char, std::string, caseless_less>;
+
 std::string str_toupper(std::string s)
 {
     std::transform(s.begin(), s.end(), s.begin(),
@@ -16,17 +24,19 @@ std::string str_toupper(std::string s)
 const std::set<std::string> replace_set
     = { "yellow", "red", "green", "blue", "black", "white" };
 
-trie_type make_replace_trie()
+
+template <typename TrieType>
+TrieType make_replace_trie()
 {
-    trie_type tt;
+    TrieType tt;
     for (auto& v : replace_set) {
         tt.set(v.begin(), v.end(), str_toupper(v));
     }
     return tt;
 }
 
-std::string replace_values(const std::string& data,
-                           const trie_type& replacement)
+template <typename TrieType>
+std::string replace_values(const std::string& data, const TrieType& replacement)
 {
     std::string result;
     auto begin = data.cbegin();
@@ -58,7 +68,8 @@ SCENARIO("The Trie", "[trie]")
                                "BLACK. But not WHITE";
         WHEN("replace is called")
         {
-            REQUIRE(expected == replace_values(test, make_replace_trie()));
+            REQUIRE(expected
+                    == replace_values(test, make_replace_trie<trie_type>()));
         }
     }
     GIVEN("Some values to remove")
@@ -81,6 +92,20 @@ SCENARIO("The Trie", "[trie]")
             test.remove(inval.begin(), inval.end());
             auto res = test.get(value.begin(), value.end(), true);
             REQUIRE(res);
+        }
+    }
+    GIVEN("Caseless trie")
+    {
+        auto caseless_trie = make_replace_trie<trie_i_type>();
+        std::string test = "The colors are yeLloW, GreEN, bLue, ReD and BlAck. "
+                           "But not WhiTe";
+        std::string expected
+            = "The colors are YELLOW, GREEN, BLUE, RED and BLACK. "
+              "But not WHITE";
+
+        WHEN("replace is called")
+        {
+            REQUIRE(expected == replace_values(test, caseless_trie));
         }
     }
 }
