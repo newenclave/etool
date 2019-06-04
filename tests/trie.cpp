@@ -7,7 +7,7 @@ namespace {
 using trie_type = etool::trees::trie::base<char, std::string>;
 
 struct caseless_less {
-    bool operator()(char lh, char rh)
+    bool operator()(char lh, char rh) const noexcept
     {
         return std::toupper(lh) < std::toupper(rh);
     }
@@ -52,7 +52,7 @@ std::string replace_values(const std::string& data, const TrieType& replacement)
     return result;
 }
 
-std::string operator"" _s(const char* data, std::size_t)
+std::string operator "" _s(const char* data, std::size_t)
 {
     return data;
 }

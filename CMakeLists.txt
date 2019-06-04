@@ -51,5 +51,5 @@ foreach( src_dir ${src} )
     list(APPEND lib_src ${headers})
 endforeach( )
 
-add_executable( ${PROJECT_NAME} ${lib_src} )
+add_executable(${PROJECT_NAME} ${lib_src})
 

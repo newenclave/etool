@@ -93,7 +93,7 @@ namespace etool { namespace sizepack {
             for (; begin != end; ++begin, shift += 7) {
                 last = (*begin);
                 res |= (static_cast<size_type>(last & 0x7F) << shift);
-                if (last & 0x80) {
+                if ((last & 0x80) == 0) {
                     return res;
                 }
             }
