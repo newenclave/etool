@@ -19,7 +19,8 @@ TEST_CASE("Layers", "[root]")
         void from_upper(message_type msg) override
         {
             if (has_lower()) {
-                send_to_lower(msg + c_);
+                msg.push_back(c_);
+                send_to_lower(std::move(msg));
             }
         }
         void from_lower(message_type msg)

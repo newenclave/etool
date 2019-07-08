@@ -63,9 +63,9 @@ SCENARIO("The Trie", "[trie]")
     GIVEN("Some text to replace")
     {
         std::string test = "The colors are yellow, green, blue, red and black. "
-                           "But not white";
+                           "And also white";
         std::string expected = "The colors are YELLOW, GREEN, BLUE, RED and "
-                               "BLACK. But not WHITE";
+                               "BLACK. And also WHITE";
         WHEN("replace is called")
         {
             REQUIRE(expected
@@ -98,10 +98,10 @@ SCENARIO("The Trie", "[trie]")
     {
         auto caseless_trie = make_replace_trie<trie_i_type>();
         std::string test = "The colors are yeLloW, GreEN, bLue, ReD and BlAck. "
-                           "But not WhiTe";
+                           "And also WhiTe";
         std::string expected
             = "The colors are YELLOW, GREEN, BLUE, RED and BLACK. "
-              "But not WHITE";
+              "And also WHITE";
 
         WHEN("replace is called")
         {

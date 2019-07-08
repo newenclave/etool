@@ -6,7 +6,7 @@
 
 namespace etool { namespace sizepack {
 
-    template <int BITS>
+    template <int BYTES>
     struct types;
 
     template <>
