@@ -143,6 +143,13 @@ namespace etool { namespace trees { namespace trie {
             set_s(&root_, begin, end, std::move(value));
         }
 
+        // template <typename ContainerT>
+        // value_type &operator [] (const ContainerT& cnt)
+        //{
+        //	auto node = set_s(&root_, std::begin(cnt), std::end(cnt), {});
+        //	return *node->value();
+        //}
+
         template <typename ContainerT>
         void set(const ContainerT& cnt, value_type value)
         {
@@ -226,14 +233,15 @@ namespace etool { namespace trees { namespace trie {
 
     private:
         template <typename IterT>
-        static void set_s(node_type* last, IterT begin, const IterT& end,
-                          value_type value)
+        static node_type* set_s(node_type* last, IterT begin, const IterT& end,
+                                value_type value)
         {
             for (; begin != end; ++begin) {
                 auto itr = last->set(*begin);
                 last = last->get_node(itr);
             }
             last->set_value(std::move(value));
+            return last;
         }
 
         template <template <typename> class ResultType, typename IterT,

@@ -52,7 +52,7 @@ std::string replace_values(const std::string& data, const TrieType& replacement)
     return result;
 }
 
-std::string operator "" _s(const char* data, std::size_t)
+std::string operator"" _s(const char* data, std::size_t)
 {
     return data;
 }
@@ -77,8 +77,9 @@ SCENARIO("The Trie", "[trie]")
         trie_type test;
         auto value = "123"_s;
         test.set(value, "123");
-        test.set("123456", "123456");
+        test.set("123456"_s, "123456");
         test.set("456"_s, "456");
+
         WHEN("Remove is called")
         {
             test.remove(value.begin(), value.end());
