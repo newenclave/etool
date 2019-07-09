@@ -30,7 +30,7 @@ TrieType make_replace_trie()
 {
     TrieType tt;
     for (auto& v : replace_set) {
-        tt.set(v.begin(), v.end(), str_toupper(v));
+        tt.insert(v.begin(), v.end(), str_toupper(v));
     }
     return tt;
 }
@@ -72,17 +72,20 @@ SCENARIO("The Trie", "[trie]")
                     == replace_values(test, make_replace_trie<trie_type>()));
         }
     }
-    GIVEN("Some values to remove")
+    GIVEN("Some values to erase")
     {
         trie_type test;
         auto value = "123"_s;
-        test.set(value, "123");
-        test.set("123456"_s, "123456");
-        test.set("456"_s, "456");
+        test.insert(value, "123");
+        test.insert("123456"_s, "123456");
+        test.insert("456"_s, "456");
+
+        auto test_value = test["456"_s];
+        REQUIRE(test_value == "456");
 
         WHEN("Remove is called")
         {
-            test.remove(value.begin(), value.end());
+            test.erase(value.begin(), value.end());
             auto res = test.get(value.begin(), value.end(), true);
             REQUIRE(!res);
         }
@@ -90,7 +93,7 @@ SCENARIO("The Trie", "[trie]")
         WHEN("Remove invalid value")
         {
             auto inval = "12"_s;
-            test.remove(inval.begin(), inval.end());
+            test.erase(inval.begin(), inval.end());
             auto res = test.get(value.begin(), value.end(), true);
             REQUIRE(res);
         }

@@ -88,7 +88,7 @@ TEST_CASE("The intervals", "[intervals]")
     }
 }
 
-TEST_CASE("SET", "[set]")
+TEST_CASE("SET", "[insert]")
 {
 
     ival_set is;

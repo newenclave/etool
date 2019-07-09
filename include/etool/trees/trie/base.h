@@ -138,27 +138,30 @@ namespace etool { namespace trees { namespace trie {
         };
 
         template <typename IterT>
-        void set(IterT begin, const IterT& end, value_type value)
+        void insert(IterT begin, const IterT& end, value_type value)
         {
             set_s(&root_, begin, end, std::move(value));
         }
 
-        // template <typename ContainerT>
-        // value_type &operator [] (const ContainerT& cnt)
-        //{
-        //	auto node = set_s(&root_, std::begin(cnt), std::end(cnt), {});
-        //	return *node->value();
-        //}
-
         template <typename ContainerT>
-        void set(const ContainerT& cnt, value_type value)
+        value_type& operator[](const ContainerT& cnt)
         {
-            set(std::begin(cnt), std::end(cnt), std::move(value));
+            auto node = get_set_node(&root_, std::begin(cnt), std::end(cnt));
+            if (!node->value()) {
+                node->set_value({});
+            }
+            return *node->value();
         }
 
-        void set(const key_type* ptr, size_t len, value_type value)
+        template <typename ContainerT>
+        void insert(const ContainerT& cnt, value_type value)
         {
-            set(ptr, ptr + len, std::move(value));
+            insert(std::begin(cnt), std::end(cnt), std::move(value));
+        }
+
+        void insert(const key_type* ptr, size_t len, value_type value)
+        {
+            insert(ptr, ptr + len, std::move(value));
         }
 
         template <typename IterT>
@@ -175,7 +178,7 @@ namespace etool { namespace trees { namespace trie {
         }
 
         template <typename IterT>
-        std::size_t remove(IterT b, const IterT& e)
+        std::size_t erase(IterT b, const IterT& e)
         {
             auto st = get_node_stack(b, e);
             std::size_t result = 0;
@@ -233,13 +236,21 @@ namespace etool { namespace trees { namespace trie {
 
     private:
         template <typename IterT>
-        static node_type* set_s(node_type* last, IterT begin, const IterT& end,
-                                value_type value)
+        static node_type* get_set_node(node_type* last, IterT begin,
+                                       const IterT& end)
         {
             for (; begin != end; ++begin) {
                 auto itr = last->set(*begin);
                 last = last->get_node(itr);
             }
+            return last;
+        }
+
+        template <typename IterT>
+        static node_type* set_s(node_type* last, IterT begin, const IterT& end,
+                                value_type value)
+        {
+            last = get_set_node(last, begin, end);
             last->set_value(std::move(value));
             return last;
         }
