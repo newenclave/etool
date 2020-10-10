@@ -84,7 +84,7 @@ namespace etool { namespace observers { namespace details {
 
         void clear()
         {
-            guard_type lock(tmp_lock_);
+            guard_type lock(list_lock_);
             clear_unsafe();
         }
 

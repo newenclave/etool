@@ -147,7 +147,7 @@ namespace etool { namespace observers { namespace details {
         void clear()
         {
             guard_type lock(tmp_lock_);
-            removed_.insert(this_type::special::unsubscribe_all);
+            removed_.insert(impl::special::unsubscribe_all);
             clear_added_unsafe();
         }
 
@@ -186,7 +186,7 @@ namespace etool { namespace observers { namespace details {
                 splice_added();
             }
 
-            typename list_iterator b(list_.begin());
+            list_iterator b(list_.begin());
             while (b != list_.end()) {
                 if (is_removed(b->id_)) {
                     b = itr_erase(list_, b);
