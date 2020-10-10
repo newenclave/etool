@@ -45,6 +45,8 @@ list( APPEND src ./include/etool/cache
                  ./tests
                  )
 
+find_package (Threads)
+
 foreach( src_dir ${src} )
     aux_source_directory(${src_dir} lib_src)
     file(GLOB headers ${src_dir}/*.h)
@@ -52,4 +54,4 @@ foreach( src_dir ${src} )
 endforeach( )
 
 add_executable(${PROJECT_NAME} ${lib_src})
-
+target_link_libraries (${PROJECT_NAME} ${CMAKE_THREAD_LIBS_INIT})

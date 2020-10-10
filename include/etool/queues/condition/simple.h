@@ -6,7 +6,7 @@
 
 namespace etool { namespace queues { namespace condition {
     template <typename T>
-    using simple = base<traits::simple<T>>;
+    using simple = base<T, traits::simple>;
 }}}
 
 #endif // SIMPLE_H
