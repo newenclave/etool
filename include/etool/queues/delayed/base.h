@@ -259,6 +259,10 @@ namespace etool { namespace queues { namespace delayed {
             {
                 std::unique_lock<mutex_type> lock(work_lock_);
                 enabled_ = true;
+                if(clear) {
+                    task_queue_type tmp;
+                    task_queue_.swap(tmp);
+                }
             }
 
             std::size_t tasks_size() const
