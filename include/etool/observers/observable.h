@@ -7,18 +7,18 @@
 namespace etool { namespace observers {
 
     template <typename T>
-    class obserevable {
+    class observable {
     public:
         using value_type = T;
 
-        obserevable() = default;
-        obserevable(obserevable&&) = default;
-        obserevable(const obserevable&) = default;
-        obserevable& operator=(obserevable&&) = default;
-        obserevable& operator=(const obserevable&) = default;
+        observable() = default;
+        observable(observable&&) = default;
+        observable(const observable&) = default;
+        observable& operator=(observable&&) = default;
+        observable& operator=(const observable&) = default;
 
         template <typename... Args>
-        obserevable(Args&&... args)
+        observable(Args&&... args)
             : value_(std::forward<Args>(args)...)
         {
         }

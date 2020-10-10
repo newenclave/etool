@@ -111,7 +111,7 @@ namespace etool { namespace queues { namespace condition {
         result wait(value_type& out)
         {
             locker_type l(queue_lock_);
-            queue_cond_.wait(l, not_empty(this));
+            queue_cond_.wait(l, [this](){return not_empty(this);});
             if (cancel_) {
                 return QUEUE_WAIT_CANCELED;
             } else {
@@ -157,33 +157,34 @@ namespace etool { namespace queues { namespace condition {
         }
 
     private:
-        struct not_empty {
+        static bool not_empty(const base* parent) {
+            return !q_traits::empty(parent->queue_) || parent->cancel_;
+        }
+//            not_empty(const base* parent)
+//                : parent_(parent)
+//            {
+//            }
 
-            not_empty(const base* parent)
-                : parent_(parent)
-            {
-            }
+//            not_empty(const not_empty& other)
+//                : parent_(other.parent)
+//            {
+//            }
 
-            not_empty(const not_empty& other)
-                : parent_(other.parent)
-            {
-            }
+//            not_empty& operator=(const not_empty& other)
+//            {
+//                parent_ = other.parent_;
+//                return *this;
+//            }
 
-            not_empty& operator=(const not_empty& other)
-            {
-                parent_ = other.parent_;
-                return *this;
-            }
+//            bool operator()() const
+//            {
+//                return !q_traits::empty(parent_->queue_) || parent_->cancel_;
+//            }
 
-            bool operator()() const
-            {
-                return !q_traits::empty(parent_->queue_) || parent_->cancel_;
-            }
+//            const base* parent_;
+//        };
 
-            const base* parent_;
-        };
-
-        friend struct not_empty;
+        //friend struct not_empty;
 
         bool cancel_;
         queue_type queue_;

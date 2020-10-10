@@ -80,8 +80,6 @@ namespace etool { namespace logger {
         {
         }
 
-        ~simple() {}
-
         simple(const simple&) = delete;
         simple& operator=(const simple&) = delete;
 
